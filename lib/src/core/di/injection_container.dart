@@ -14,8 +14,9 @@ import '../../domain/use_cases/auth/login_use_case.dart';
 import '../../domain/use_cases/auth/otp_verification_use_case.dart';
 import '../../domain/use_cases/auth/register_use_case.dart';
 import '../../domain/use_cases/product/get_products_use_case.dart';
-import '../../presentation/providers/auth_provider.dart';
-import '../../presentation/providers/product_provider.dart';
+import '../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../features/product/presentation/bloc/product_bloc.dart';
+import '../../../features/cart/presentation/bloc/cart_bloc.dart';
 
 /// Dependency injection container using GetIt
 /// Configured with Clean Architecture principles
@@ -35,8 +36,8 @@ Future<void> initializeDependencies() async {
   // Use cases
   _initializeUseCases();
 
-  // Providers (State Management)
-  _initializeProviders();
+  // Blocs (State Management)
+  _initializeBlocs();
 }
 
 /// Initialize external dependencies (third-party libraries)
@@ -128,22 +129,24 @@ void _initializeUseCases() {
   );
 }
 
-/// Initialize providers (State Management)
-void _initializeProviders() {
-  // Authentication provider
-  getIt.registerLazySingleton<AuthProvider>(
-    () => AuthProvider(
+/// Initialize blocs (State Management)
+void _initializeBlocs() {
+  getIt.registerFactory<AuthBloc>(
+    () => AuthBloc(
       loginUseCase: getIt<LoginUseCase>(),
       registerUseCase: getIt<RegisterUseCase>(),
-      otpVerificationUseCase: getIt<OtpVerificationUseCase>(),
+      otpUseCase: getIt<OtpVerificationUseCase>(),
       secureStorage: getIt<SecureStorage>(),
     ),
   );
 
-  // Product provider
-  getIt.registerLazySingleton<ProductProvider>(
-    () => ProductProvider(
+  getIt.registerFactory<ProductBloc>(
+    () => ProductBloc(
       getProductsUseCase: getIt<GetProductsUseCase>(),
     ),
+  );
+
+  getIt.registerFactory<CartBloc>(
+    () => CartBloc(),
   );
 }
