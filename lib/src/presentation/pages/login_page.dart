@@ -1,41 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_strings.dart';
-import '../providers/auth_provider.dart';
+import '../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../features/auth/presentation/cubit/login_cubit.dart';
 import '../widgets/auth_text_field.dart';
 import '../assets/figma_assets.dart';
 import '../widgets/loading_button.dart';
 import '../widgets/error_message.dart';
 
 /// Login page for Vietnamese fish sauce e-commerce app
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   static const String routeName = '/login';
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final phoneController = TextEditingController();
+    final passwordController = TextEditingController();
+
     return Scaffold(
       body: Stack(
         children: [
@@ -53,12 +41,16 @@ class _LoginPageState extends State<LoginPage> {
           ),
           // Content
           SafeArea(
-            child: Consumer<AuthProvider>(
-              builder: (context, authProvider, child) {
-                return SingleChildScrollView(
+            child: BlocProvider(
+              create: (_) => LoginCubit(),
+              child: BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, authState) {
+                  final isLoading = authState.isLoading;
+                  final error = authState.errorMessage;
+                  return SingleChildScrollView(
                   padding: const EdgeInsets.all(24.0),
                   child: Form(
-                    key: _formKey,
+                    key: formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -106,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
 
                         // Phone Number Field
                         AuthTextField(
-                          controller: _phoneController,
+                          controller: phoneController,
                           labelText: AppStrings.enterPhoneNumber,
                           hintText: '0123456789',
                           keyboardType: TextInputType.phone,
@@ -117,25 +109,27 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 16),
 
                         // Password Field
-                        AuthTextField(
-                          controller: _passwordController,
+                        BlocBuilder<LoginCubit, LoginState>(
+                          builder: (context, loginState) {
+                            return AuthTextField(
+                              controller: passwordController,
                           labelText: AppStrings.enterPassword,
                           hintText: '••••••••',
-                          obscureText: _obscurePassword,
+                              obscureText: loginState.obscurePassword,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
+                                  loginState.obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
+                                onPressed: () {
+                                  context.read<LoginCubit>().toggleObscurePassword();
+                                },
                           ),
-                          validator: _validatePassword,
+                              validator: _validatePassword,
+                            );
+                          },
                         ),
 
                         const SizedBox(height: 8),
@@ -157,15 +151,16 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 24),
 
                         // Error Message
-                        if (authProvider.state.error != null)
-                          ErrorMessage(message: authProvider.state.error!),
+                        if (error != null) ErrorMessage(message: error),
 
                         const SizedBox(height: 16),
 
                         // Login Button
                         LoadingButton(
-                          isLoading: authProvider.state.isLoading,
-                          onPressed: _handleLogin,
+                          isLoading: isLoading,
+                          onPressed: () {
+                            _handleLogin(context, formKey, phoneController);
+                          },
                           child: const Text(
                             AppStrings.login,
                             style: TextStyle(
@@ -229,23 +224,20 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
-  void _handleLogin() {
-    if (_formKey.currentState?.validate() == true) {
+  void _handleLogin(BuildContext context, GlobalKey<FormState> formKey, TextEditingController phoneController) {
+    if (formKey.currentState?.validate() == true) {
       FocusScope.of(context).unfocus();
-
-      // Navigate to OTP verification per flow
-      context.push('/otp-verification', extra: _phoneController.text.trim());
+      context.push('/otp-verification', extra: phoneController.text.trim());
     }
   }
 
-  void _handleForgotPassword() {
-    // Forgot password functionality will be implemented in Phase 3
+  void _handleForgotPassword(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Chức năng đang được phát triển')),
     );
   }
 
-  void _navigateToRegister() {
+  void _navigateToRegister(BuildContext context) {
     context.push('/register');
   }
 }
