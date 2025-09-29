@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_strings.dart';
 
@@ -13,7 +14,7 @@ class OrderHistoryPage extends StatefulWidget {
 }
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
-  String _selectedFilter = 'all'; // all, pending, completed, cancelled
+  final ValueNotifier<String> _selectedFilter = ValueNotifier<String>('all'); // all, pending, completed, cancelled
 
   // Mock order data
   final List<Map<String, dynamic>> _orders = [
@@ -98,11 +99,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Widget _buildFilterChip(String value, String label) {
     return FilterChip(
       label: Text(label),
-      selected: _selectedFilter == value,
+      selected: _selectedFilter.value == value,
       onSelected: (selected) {
-        setState(() {
-          _selectedFilter = selected ? value : 'all';
-        });
+        _selectedFilter.value = selected ? value : 'all';
       },
     );
   }
@@ -132,7 +131,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/products');
+              context.pushReplacement('/products');
             },
             child: const Text(AppStrings.continueShopping),
           ),
@@ -332,9 +331,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 value: 'all',
                 groupValue: _selectedFilter,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedFilter = value!;
-                  });
+                  _selectedFilter.value = value!;
                   Navigator.of(context).pop();
                 },
               ),
@@ -345,9 +342,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 value: 'pending',
                 groupValue: _selectedFilter,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedFilter = value!;
-                  });
+                  _selectedFilter.value = value!;
                   Navigator.of(context).pop();
                 },
               ),
@@ -358,9 +353,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 value: 'completed',
                 groupValue: _selectedFilter,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedFilter = value!;
-                  });
+                  _selectedFilter.value = value!;
                   Navigator.of(context).pop();
                 },
               ),
@@ -371,9 +364,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 value: 'cancelled',
                 groupValue: _selectedFilter,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedFilter = value!;
-                  });
+                  _selectedFilter.value = value!;
                   Navigator.of(context).pop();
                 },
               ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../providers/auth_provider.dart';
+import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 
 /// Home page for authenticated users with banners and categories
 class HomePage extends StatefulWidget {
@@ -42,9 +42,9 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) {
-          final user = authProvider.state.user;
+      body: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, authState) {
+          final user = authState.user;
 
           return CustomScrollView(
             slivers: [
@@ -364,7 +364,7 @@ class _HomePageState extends State<HomePage> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              context.read<AuthProvider>().logout();
+              context.read<AuthBloc>().add(const AuthLogoutRequested());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

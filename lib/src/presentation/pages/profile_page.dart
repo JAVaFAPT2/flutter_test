@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_strings.dart';
 import '../../domain/entities/user.dart';
-import '../providers/auth_provider.dart';
+import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../widgets/auth_text_field.dart';
 
 /// User profile page for managing personal information
@@ -51,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _loadUserProfile() {
-    final user = context.read<AuthProvider>().state.user;
+    final user = context.read<AuthBloc>().state.user;
     if (user != null) {
       _fullNameController.text = user.fullName;
       _emailController.text = user.email ?? '';
@@ -79,9 +80,9 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-      body: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) {
-          final user = authProvider.state.user;
+      body: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, authState) {
+          final user = authState.user;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -471,11 +472,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _navigateToOrderHistory() {
-    Navigator.of(context).pushNamed('/order-history');
+    context.push('/order-history');
   }
 
   void _navigateToSettings() {
-    Navigator.of(context).pushNamed('/settings');
+    context.push('/settings');
   }
 
   void _showLogoutDialog() {
@@ -492,7 +493,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              context.read<AuthProvider>().logout();
+              context.read<AuthBloc>().add(const AuthLogoutRequested());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

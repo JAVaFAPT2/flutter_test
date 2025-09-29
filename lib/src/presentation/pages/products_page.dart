@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/constants/app_constants.dart';
@@ -250,7 +251,7 @@ class ProductsPage extends StatelessWidget {
   }
 
   void _navigateToProductDetail(Product product) {
-    Navigator.of(context).pushNamed('/product-detail', arguments: product);
+    context.push('/product-detail', extra: product);
   }
 }
 

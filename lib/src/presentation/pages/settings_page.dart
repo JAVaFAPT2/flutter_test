@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_constants.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/constants/app_strings.dart';
 
 /// Settings page for app preferences and configuration
@@ -14,10 +15,10 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool _notificationsEnabled = true;
-  bool _darkModeEnabled = false;
-  bool _biometricEnabled = false;
-  String _language = 'vi'; // vi, en
+  final ValueNotifier<bool> _notificationsEnabled = ValueNotifier<bool>(true);
+  final ValueNotifier<bool> _darkModeEnabled = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _biometricEnabled = ValueNotifier<bool>(false);
+  final ValueNotifier<String> _language = ValueNotifier<String>('vi'); // vi, en
   final bool _isLoading = false;
 
   @override
@@ -108,7 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.person,
             title: 'Thông tin cá nhân',
             subtitle: 'Quản lý thông tin tài khoản',
-            onTap: () => Navigator.of(context).pushNamed('/profile'),
+            onTap: () => context.push('/profile'),
           ),
           const Divider(),
           _buildSettingTile(
@@ -118,14 +119,15 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: () {
               _showSnackBar('Chức năng đang được phát triển');
             },
-            trailing: Switch(
-              value: _notificationsEnabled,
-              onChanged: (value) {
-                setState(() {
-                  _notificationsEnabled = value;
-                });
-                _showSnackBar('Cài đặt thông báo đã được cập nhật');
-              },
+            trailing: ValueListenableBuilder<bool>(
+              valueListenable: _notificationsEnabled,
+              builder: (context, v, _) => Switch(
+                value: v,
+                onChanged: (value) {
+                  _notificationsEnabled.value = value;
+                  _showSnackBar('Cài đặt thông báo đã được cập nhật');
+                },
+              ),
             ),
           ),
           const Divider(),
@@ -136,15 +138,16 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: () {
               _showSnackBar('Chức năng đang được phát triển');
             },
-            trailing: Switch(
-              value: _biometricEnabled,
-              onChanged: (value) {
-                setState(() {
-                  _biometricEnabled = value;
-                });
-                _showSnackBar(
-                    'Cài đặt xác thực sinh trắc học đã được cập nhật');
-              },
+            trailing: ValueListenableBuilder<bool>(
+              valueListenable: _biometricEnabled,
+              builder: (context, v, _) => Switch(
+                value: v,
+                onChanged: (value) {
+                  _biometricEnabled.value = value;
+                  _showSnackBar(
+                      'Cài đặt xác thực sinh trắc học đã được cập nhật');
+                },
+              ),
             ),
           ),
         ],
@@ -162,11 +165,14 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       child: Column(
         children: [
-          _buildSettingTile(
-            icon: Icons.language,
-            title: 'Ngôn ngữ',
-            subtitle: _getLanguageText(_language),
-            onTap: _showLanguageDialog,
+          ValueListenableBuilder<String>(
+            valueListenable: _language,
+            builder: (context, lang, _) => _buildSettingTile(
+              icon: Icons.language,
+              title: 'Ngôn ngữ',
+              subtitle: _getLanguageText(lang),
+              onTap: _showLanguageDialog,
+            ),
           ),
           const Divider(),
           _buildSettingTile(
@@ -176,15 +182,15 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: () {
               _showSnackBar('Chức năng đang được phát triển');
             },
-            trailing: Switch(
-              value: _darkModeEnabled,
-              onChanged: (value) {
-                setState(() {
-                  _darkModeEnabled = value;
-                });
-                _showSnackBar(
-                    'Chế độ tối đã được ${_darkModeEnabled ? 'bật' : 'tắt'}');
-              },
+            trailing: ValueListenableBuilder<bool>(
+              valueListenable: _darkModeEnabled,
+              builder: (context, v, _) => Switch(
+                value: v,
+                onChanged: (value) {
+                  _darkModeEnabled.value = value;
+                  _showSnackBar('Chế độ tối đã được ${value ? 'bật' : 'tắt'}');
+                },
+              ),
             ),
           ),
           const Divider(),
@@ -383,11 +389,9 @@ class _SettingsPageState extends State<SettingsPage> {
               title: const Text('Tiếng Việt'),
               leading: Radio<String>(
                 value: 'vi',
-                groupValue: _language,
+                groupValue: _language.value,
                 onChanged: (value) {
-                  setState(() {
-                    _language = value!;
-                  });
+                  _language.value = value!;
                   Navigator.of(context).pop();
                   _showSnackBar('Ngôn ngữ đã được thay đổi');
                 },
@@ -397,11 +401,9 @@ class _SettingsPageState extends State<SettingsPage> {
               title: const Text('English'),
               leading: Radio<String>(
                 value: 'en',
-                groupValue: _language,
+                groupValue: _language.value,
                 onChanged: (value) {
-                  setState(() {
-                    _language = value!;
-                  });
+                  _language.value = value!;
                   Navigator.of(context).pop();
                   _showSnackBar('Language has been changed');
                 },

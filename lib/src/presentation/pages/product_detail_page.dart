@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_strings.dart';
 import '../../domain/entities/product.dart';
@@ -710,7 +711,7 @@ class ProductDetailPage extends StatelessWidget {
         action: SnackBarAction(
           label: 'Xem giỏ hàng',
           onPressed: () {
-            Navigator.of(context).pushNamed('/cart');
+            context.push('/cart');
           },
         ),
       ),
