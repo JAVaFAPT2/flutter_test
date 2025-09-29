@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
-import '../providers/cart_provider.dart';
+import '../../../features/cart/presentation/bloc/cart_bloc.dart';
 
 /// Shopping cart page
 class CartPage extends StatelessWidget {
@@ -21,13 +21,13 @@ class CartPage extends StatelessWidget {
         foregroundColor: Colors.white,
         actions: [
           TextButton(
-            onPressed: context.read<CartProvider>().state.items.isNotEmpty
+            onPressed: context.read<CartBloc>().state.items.isNotEmpty
                 ? () => _showClearCartDialog(context)
                 : null,
             child: Text(
               AppStrings.clearCart,
               style: TextStyle(
-                color: context.read<CartProvider>().state.items.isNotEmpty
+                color: context.read<CartBloc>().state.items.isNotEmpty
                     ? Colors.white
                     : Colors.white.withValues(alpha: 0.5),
               ),
@@ -35,9 +35,8 @@ class CartPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<CartProvider>(
-        builder: (context, cartProvider, child) {
-          final cartState = cartProvider.state;
+      body: BlocBuilder<CartBloc, CartState>(
+        builder: (context, cartState) {
 
           if (cartState.items.isEmpty) {
             return _buildEmptyCartView(context);
@@ -46,7 +45,7 @@ class CartPage extends StatelessWidget {
           return Column(
             children: [
               // Cart Summary
-              _buildCartSummary(context, cartProvider),
+              _buildCartSummary(context),
 
               // Cart Items
               Expanded(
@@ -56,7 +55,6 @@ class CartPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return _buildCartItem(
                       context,
-                      cartProvider,
                       cartState.items[index],
                     );
                   },
@@ -64,7 +62,7 @@ class CartPage extends StatelessWidget {
               ),
 
               // Checkout Section
-              _buildCheckoutSection(context, cartProvider),
+              _buildCheckoutSection(context),
             ],
           );
         },
@@ -106,7 +104,8 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCartSummary(BuildContext context, CartProvider cartProvider) {
+  Widget _buildCartSummary(BuildContext context) {
+    final cartState = context.watch<CartBloc>().state;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -125,7 +124,7 @@ class CartPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                '${cartProvider.getTotalItems()} sản phẩm',
+                '${cartState.totalItems} sản phẩm',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey[600],
                     ),
@@ -134,7 +133,7 @@ class CartPage extends StatelessWidget {
           ),
           const Spacer(),
           Text(
-            cartProvider.state.formattedTotalPrice,
+            '${cartState.totalPrice.toStringAsFixed(0)}₫',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.bold,
@@ -147,7 +146,6 @@ class CartPage extends StatelessWidget {
 
   Widget _buildCartItem(
     BuildContext context,
-    CartProvider cartProvider,
     CartItem cartItem,
   ) {
     return Card(
@@ -231,10 +229,10 @@ class CartPage extends StatelessWidget {
                         onPressed: () {
                           final currentQuantity = cartItem.quantity;
                           if (currentQuantity > 1) {
-                            cartProvider.updateQuantity(
-                              cartItem.product.id,
-                              currentQuantity - 1,
-                            );
+                            context.read<CartBloc>().add(CartItemQuantityUpdated(
+                                  productId: cartItem.product.id,
+                                  quantity: currentQuantity - 1,
+                                ));
                           }
                         },
                         icon: const Icon(Icons.remove, size: 16),
@@ -255,12 +253,11 @@ class CartPage extends StatelessWidget {
                       IconButton(
                         onPressed: () {
                           final currentQuantity = cartItem.quantity;
-                          if (currentQuantity <
-                              cartItem.product.stockQuantity) {
-                            cartProvider.updateQuantity(
-                              cartItem.product.id,
-                              currentQuantity + 1,
-                            );
+                          if (currentQuantity < cartItem.product.stockQuantity) {
+                            context.read<CartBloc>().add(CartItemQuantityUpdated(
+                                  productId: cartItem.product.id,
+                                  quantity: currentQuantity + 1,
+                                ));
                           }
                         },
                         icon: const Icon(Icons.add, size: 16),
@@ -287,7 +284,9 @@ class CartPage extends StatelessWidget {
                 // Remove Button
                 IconButton(
                   onPressed: () {
-                    cartProvider.removeFromCart(cartItem.product.id);
+                    context
+                        .read<CartBloc>()
+                        .add(CartItemRemoved(productId: cartItem.product.id));
                   },
                   icon: const Icon(
                     Icons.delete_outline,
@@ -305,7 +304,8 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCheckoutSection(BuildContext context, CartProvider cartProvider) {
+  Widget _buildCheckoutSection(BuildContext context) {
+    final cartState = context.watch<CartBloc>().state;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -330,7 +330,7 @@ class CartPage extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                cartProvider.state.formattedTotalPrice,
+                '${cartState.totalPrice.toStringAsFixed(0)}₫',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Theme.of(context).primaryColor,
                       fontWeight: FontWeight.bold,
@@ -345,7 +345,7 @@ class CartPage extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: cartProvider.state.items.isNotEmpty
+              onPressed: cartState.items.isNotEmpty
                   ? () => _proceedToCheckout(context) 
                   : null,
               style: ElevatedButton.styleFrom(
@@ -381,8 +381,8 @@ class CartPage extends StatelessWidget {
             child: const Text(AppStrings.cancel),
           ),
           ElevatedButton(
-            onPressed: () {
-              context.read<CartProvider>().clearCart();
+          onPressed: () {
+            context.read<CartBloc>().add(const CartCleared());
               Navigator.of(context).pop();
             },
             style: ElevatedButton.styleFrom(

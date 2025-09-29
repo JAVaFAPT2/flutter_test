@@ -1,56 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/errors/app_error.dart';
 import '../../domain/entities/product.dart';
-import '../providers/product_provider.dart';
+import '../../../features/product/presentation/bloc/product_bloc.dart';
+import '../../../features/product/presentation/cubit/products_view_cubit.dart';
 import '../widgets/product_card.dart';
 import '../widgets/loading_shimmer.dart';
 import '../widgets/error_message.dart';
 
 /// Products listing page for Vietnamese fish sauce e-commerce app
-class ProductsPage extends StatefulWidget {
+class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
 
   static const String routeName = '/products';
 
   @override
-  State<ProductsPage> createState() => _ProductsPageState();
-}
-
-class _ProductsPageState extends State<ProductsPage> {
-  bool _isGridView = true;
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-
-    // Load initial products
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProductProvider>().loadProducts();
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      // Load more products when reaching bottom
-      context.read<ProductProvider>().loadMoreProducts();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final ScrollController scrollController = ScrollController();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        context.read<ProductBloc>().add(const ProductLoadMoreRequested());
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.products),
@@ -69,54 +45,56 @@ class _ProductsPageState extends State<ProductsPage> {
             onPressed: _showFilterDialog,
           ),
           // View toggle button
-          IconButton(
-            icon: Icon(_isGridView ? Icons.list : Icons.grid_view),
-            onPressed: () {
-              setState(() {
-                _isGridView = !_isGridView;
-              });
+          BlocBuilder<ProductsViewCubit, ProductsViewState>(
+            builder: (context, viewState) {
+              return IconButton(
+                icon: Icon(viewState.isGridView ? Icons.list : Icons.grid_view),
+                onPressed: () => context.read<ProductsViewCubit>().toggleView(),
+              );
             },
           ),
         ],
       ),
-      body: Consumer<ProductProvider>(
-        builder: (context, productProvider, child) {
-          final state = productProvider.state;
-
-          if (state.isLoading && state.products.isEmpty) {
-            return _buildLoadingView();
-          }
-
-          if (state.error != null && state.products.isEmpty) {
-            return _buildErrorView(state.error!);
-          }
-
-          return _buildProductsView(state.products);
-        },
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider<ProductsViewCubit>(create: (_) => ProductsViewCubit()),
+        ],
+        child: BlocBuilder<ProductBloc, ProductState>(
+          builder: (context, state) {
+            if (state.isLoading && state.products.isEmpty) {
+              return _buildLoadingView(context);
+            }
+            if (state.errorMessage != null && state.products.isEmpty) {
+              return _buildErrorView(context, state.errorMessage!);
+            }
+            return _buildProductsView(context, state.products, scrollController);
+          },
+        ),
       ),
       floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
-  Widget _buildLoadingView() {
+  Widget _buildLoadingView(BuildContext context) {
+    final isGridView = context.watch<ProductsViewCubit>().state.isGridView;
     return LoadingShimmer(
       itemCount: 10,
-      isGridView: _isGridView,
+      isGridView: isGridView,
     );
   }
 
-  Widget _buildErrorView(AppError error) {
+  Widget _buildErrorView(BuildContext context, String message) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ErrorMessage(message: error.localizedMessage),
+            ErrorMessage(message: message),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                context.read<ProductProvider>().refreshProducts();
+                context.read<ProductBloc>().add(const ProductRefreshRequested());
               },
               child: const Text(AppStrings.retry),
             ),
@@ -126,9 +104,10 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
-  Widget _buildProductsView(List<Product> products) {
+  Widget _buildProductsView(BuildContext context, List<Product> products, ScrollController scrollController) {
+    final isGridView = context.watch<ProductsViewCubit>().state.isGridView;
     if (products.isEmpty) {
-      return _buildEmptyView();
+      return _buildEmptyView(context);
     }
 
     return Column(
@@ -159,11 +138,11 @@ class _ProductsPageState extends State<ProductsPage> {
         // Products List/Grid
         Expanded(
           child:
-              _isGridView ? _buildGridView(products) : _buildListView(products),
+              isGridView ? _buildGridView(context, products, scrollController) : _buildListView(context, products, scrollController),
         ),
 
         // Load More Indicator
-        if (context.watch<ProductProvider>().state.isLoading)
+        if (context.watch<ProductBloc>().state.isLoading)
           Container(
             padding: const EdgeInsets.all(16),
             child: const CircularProgressIndicator(),
@@ -172,7 +151,7 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
-  Widget _buildEmptyView() {
+  Widget _buildEmptyView(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -197,7 +176,7 @@ class _ProductsPageState extends State<ProductsPage> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              context.read<ProductProvider>().refreshProducts();
+              context.read<ProductBloc>().add(const ProductRefreshRequested());
             },
             child: const Text(AppStrings.tryAgain),
           ),
@@ -206,9 +185,9 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
-  Widget _buildGridView(List<Product> products) {
+  Widget _buildGridView(BuildContext context, List<Product> products, ScrollController scrollController) {
     return GridView.builder(
-      controller: _scrollController,
+      controller: scrollController,
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -227,9 +206,9 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
-  Widget _buildListView(List<Product> products) {
+  Widget _buildListView(BuildContext context, List<Product> products, ScrollController scrollController) {
     return ListView.separated(
-      controller: _scrollController,
+      controller: scrollController,
       padding: const EdgeInsets.all(16),
       itemCount: products.length,
       separatorBuilder: (context, index) => const Divider(height: 1),
@@ -305,7 +284,7 @@ class _ProductSearchDialogState extends State<ProductSearchDialog> {
         autofocus: true,
         onSubmitted: (value) {
           if (value.isNotEmpty) {
-            context.read<ProductProvider>().searchProducts(value);
+            context.read<ProductBloc>().add(ProductSearchRequested(value));
             Navigator.of(context).pop();
           }
         },
@@ -319,7 +298,7 @@ class _ProductSearchDialogState extends State<ProductSearchDialog> {
           onPressed: () {
             final query = _searchController.text.trim();
             if (query.isNotEmpty) {
-              context.read<ProductProvider>().searchProducts(query);
+              context.read<ProductBloc>().add(ProductSearchRequested(query));
               Navigator.of(context).pop();
             }
           },
@@ -449,11 +428,11 @@ class _ProductFilterDialogState extends State<ProductFilterDialog> {
         ElevatedButton(
           onPressed: () {
             // Apply filters
-            context.read<ProductProvider>().loadProducts(
+            context.read<ProductBloc>().add(ProductFilterChanged(
                   category: _selectedCategory,
                   brand: _selectedBrand,
                   sortBy: _sortBy,
-                );
+                ));
             Navigator.of(context).pop();
           },
           child: const Text(AppStrings.confirm),

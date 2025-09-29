@@ -1,47 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_strings.dart';
-import '../providers/auth_provider.dart';
+import '../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../features/auth/presentation/cubit/login_cubit.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/loading_button.dart';
 import '../widgets/error_message.dart';
 
 /// Register page for Vietnamese fish sauce e-commerce app
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
 
   static const String routeName = '/register';
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
-
-class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  final _fullNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
-  bool _agreeToTerms = false;
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    _fullNameController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final phoneController = TextEditingController();
+    final passwordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    final fullNameController = TextEditingController();
+    final emailController = TextEditingController();
+    final agreeToTerms = ValueNotifier<bool>(false);
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.register),
@@ -51,12 +34,16 @@ class _RegisterPageState extends State<RegisterPage> {
         foregroundColor: Colors.white,
       ),
       body: SafeArea(
-        child: Consumer<AuthProvider>(
-          builder: (context, authProvider, child) {
-            return SingleChildScrollView(
+        child: BlocProvider(
+          create: (_) => LoginCubit(),
+          child: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, authState) {
+              final isLoading = authState.isLoading;
+              final error = authState.errorMessage;
+              return SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -97,7 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // Full Name Field
                     AuthTextField(
-                      controller: _fullNameController,
+                      controller: fullNameController,
                       labelText: AppStrings.fullName,
                       hintText: 'Nguyễn Văn A',
                       prefixIcon: const Icon(Icons.person),
@@ -108,7 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // Phone Number Field
                     AuthTextField(
-                      controller: _phoneController,
+                      controller: phoneController,
                       labelText: AppStrings.phoneNumber,
                       hintText: '0123456789',
                       keyboardType: TextInputType.phone,
@@ -120,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // Email Field (Optional)
                     AuthTextField(
-                      controller: _emailController,
+                      controller: emailController,
                       labelText: AppStrings.email,
                       hintText: 'example@email.com',
                       keyboardType: TextInputType.emailAddress,
@@ -131,49 +118,49 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 16),
 
                     // Password Field
-                    AuthTextField(
-                      controller: _passwordController,
+                    BlocBuilder<LoginCubit, LoginState>(
+                      builder: (context, loginState) {
+                        return AuthTextField(
+                          controller: passwordController,
                       labelText: AppStrings.newPassword,
                       hintText: '••••••••',
-                      obscureText: _obscurePassword,
+                          obscureText: loginState.obscurePassword,
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                              loginState.obscurePassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                        onPressed: () => context.read<LoginCubit>().toggleObscurePassword(),
                       ),
                       validator: _validatePassword,
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 16),
 
                     // Confirm Password Field
-                    AuthTextField(
-                      controller: _confirmPasswordController,
+                    BlocBuilder<LoginCubit, LoginState>(
+                      builder: (context, loginState) {
+                        return AuthTextField(
+                          controller: confirmPasswordController,
                       labelText: AppStrings.confirmNewPassword,
                       hintText: '••••••••',
-                      obscureText: _obscureConfirmPassword,
+                          obscureText: loginState.obscurePassword,
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                              loginState.obscurePassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
+                        onPressed: () => context.read<LoginCubit>().toggleObscurePassword(),
                       ),
                       validator: _validateConfirmPassword,
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 24),
@@ -190,12 +177,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       child: Row(
                         children: [
-                          Checkbox(
-                            value: _agreeToTerms,
-                            onChanged: (value) {
-                              setState(() {
-                                _agreeToTerms = value ?? false;
-                              });
+                          ValueListenableBuilder<bool>(
+                            valueListenable: agreeToTerms,
+                            builder: (context, v, _) {
+                              return Checkbox(
+                                value: v,
+                                onChanged: (value) => agreeToTerms.value = value ?? false,
+                              );
                             },
                           ),
                           Expanded(
@@ -230,15 +218,24 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 24),
 
                     // Error Message
-                    if (authProvider.state.error != null)
-                      ErrorMessage(message: authProvider.state.error!),
+                    if (error != null) ErrorMessage(message: error),
 
                     const SizedBox(height: 16),
 
                     // Register Button
                     LoadingButton(
-                      isLoading: authProvider.state.isLoading,
-                      onPressed: _agreeToTerms ? _handleRegister : null,
+                      isLoading: isLoading,
+                      onPressed: agreeToTerms.value
+                          ? () => _handleRegister(
+                                context,
+                                formKey,
+                                phoneController,
+                                passwordController,
+                                confirmPasswordController,
+                                fullNameController,
+                                emailController,
+                              )
+                          : null,
                       child: const Text(
                         AppStrings.register,
                         style: TextStyle(
@@ -259,7 +256,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         TextButton(
-                          onPressed: _navigateToLogin,
+                          onPressed: () => _navigateToLogin(context),
                           child: Text(
                             AppStrings.login,
                             style: TextStyle(
@@ -274,7 +271,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
             );
-          },
+            },
         ),
       ),
     );
@@ -327,28 +324,38 @@ class _RegisterPageState extends State<RegisterPage> {
     if (value == null || value.isEmpty) {
       return AppStrings.requiredField;
     }
-    if (value != _passwordController.text) {
-      return AppStrings.passwordsNotMatch;
-    }
     return null;
   }
 
-  void _handleRegister() {
-    if (_formKey.currentState?.validate() == true && _agreeToTerms) {
+  void _handleRegister(
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    TextEditingController phoneController,
+    TextEditingController passwordController,
+    TextEditingController confirmPasswordController,
+    TextEditingController fullNameController,
+    TextEditingController emailController,
+  ) {
+    if (formKey.currentState?.validate() == true) {
+      if (confirmPasswordController.text != passwordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(AppStrings.passwordsNotMatch)),
+        );
+        return;
+      }
       FocusScope.of(context).unfocus();
-
-      context.read<AuthProvider>().register(
-            phone: _phoneController.text.trim(),
-            password: _passwordController.text,
-            fullName: _fullNameController.text.trim(),
-            email: _emailController.text.trim().isEmpty
+      context.read<AuthBloc>().add(AuthRegisterRequested(
+            phone: phoneController.text.trim(),
+            password: passwordController.text,
+            fullName: fullNameController.text.trim(),
+            email: emailController.text.trim().isEmpty
                 ? null
-                : _emailController.text.trim(),
-          );
+                : emailController.text.trim(),
+          ));
     }
   }
 
-  void _navigateToLogin() {
+  void _navigateToLogin(BuildContext context) {
     context.pop();
   }
 }
