@@ -1,0 +1,313 @@
+{
+  "@@locale": "vi",
+  
+  "appTitle": "Nước Mắm MGF",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "welcomeMessage": "Chào mừng bạn đến với Nước Mắm MGF",
+  "@welcomeMessage": {
+    "description": "Welcome message on app opening"
+  },
+  
+  "login": "Đăng nhập",
+  "@login": {
+    "description": "Login button text"
+  },
+  
+  "register": "Đăng ký",
+  "@register": {
+    "description": "Register button text"
+  },
+  
+  "email": "Email",
+  "@email": {
+    "description": "Email input label"
+  },
+  
+  "password": "Mật khẩu",
+  "@password": {
+    "description": "Password input label"
+  },
+  
+  "confirmPassword": "Xác nhận mật khẩu",
+  "@confirmPassword": {
+    "description": "Confirm password input label"
+  },
+  
+  "phoneNumber": "Số điện thoại",
+  "@phoneNumber": {
+    "description": "Phone number input label"
+  },
+  
+  "otpVerification": "Xác minh OTP",
+  "@otpVerification": {
+    "description": "OTP verification title"
+  },
+  
+  "sendOtpCode": "Gửi mã OTP",
+  "@sendOtpCode": {
+    "description": "Send OTP code button"
+  },
+  
+  "registerSuccess": "Đăng ký thành công",
+  "@registerSuccess": {
+    "description": "Registration success message"
+  },
+  
+  "home": "Trang chủ",
+  "@home": {
+    "description": "Home page title"
+  },
+  
+  "products": "Sản phẩm",
+  "@products": {
+    "description": "Products page title"
+  },
+  
+  "productPage": "Trang sản phẩm",
+  "@productPage": {
+    "description": "Product page title"
+  },
+  
+  "cart": "Giỏ hàng",
+  "@cart": {
+    "description": "Shopping cart title"
+  },
+  
+  "editCart": "Chỉnh sửa giỏ hàng",
+  "@editCart": {
+    "description": "Edit cart title"
+  },
+  
+  "selectAll": "Chọn tất cả",
+  "@selectAll": {
+    "description": "Select all items"
+  },
+  
+  "delete": "Xóa",
+  "@delete": {
+    "description": "Delete button"
+  },
+  
+  "payment": "Thanh toán",
+  "@payment": {
+    "description": "Payment title"
+  },
+  
+  "paymentStep1": "Thanh toán (bước 1)",
+  "@paymentStep1": {
+    "description": "Payment step 1"
+  },
+  
+  "paymentStep2": "Thanh toán (bước 2)",
+  "@paymentStep2": {
+    "description": "Payment step 2"
+  },
+  
+  "paymentStep3": "Thanh toán (bước 3)",
+  "@paymentStep3": {
+    "description": "Payment step 3"
+  },
+  
+  "orderTracking": "Theo dõi đơn hàng",
+  "@orderTracking": {
+    "description": "Order tracking title"
+  },
+  
+  "orders": "Đơn hàng",
+  "@orders": {
+    "description": "Orders title"
+  },
+  
+  "orderPending": "Chờ xác nhận",
+  "@orderPending": {
+    "description": "Order pending confirmation"
+  },
+  
+  "orderConfirmed": "Chờ lấy hàng",
+  "@orderConfirmed": {
+    "description": "Order confirmed, waiting for pickup"
+  },
+  
+  "orderShipping": "Đang giao",
+  "@orderShipping": {
+    "description": "Order is being shipped"
+  },
+  
+  "orderDelivered": "Đã giao",
+  "@orderDelivered": {
+    "description": "Order delivered"
+  },
+  
+  "orderCancelled": "Đã hủy",
+  "@orderCancelled": {
+    "description": "Order cancelled"
+  },
+  
+  "profile": "Trang cá nhân",
+  "@profile": {
+    "description": "Profile page title"
+  },
+  
+  "logout": "Đăng xuất",
+  "@logout": {
+    "description": "Logout button"
+  },
+  
+  "changePassword": "Đổi mật khẩu",
+  "@changePassword": {
+    "description": "Change password"
+  },
+  
+  "changePasswordSuccess": "Đổi MK thành công",
+  "@changePasswordSuccess": {
+    "description": "Password changed successfully"
+  },
+  
+  "contactHotline": "Liên hệ Hotline",
+  "@contactHotline": {
+    "description": "Contact hotline"
+  },
+  
+  "contactSupport": "Liên hệ trợ giúp tư vấn",
+  "@contactSupport": {
+    "description": "Contact support consultation"
+  },
+  
+  "chatWithStaff": "Trò chuyện với NV tư vấn",
+  "@chatWithStaff": {
+    "description": "Chat with consultation staff"
+  },
+  
+  "feedback": "Ý kiến phản hồi",
+  "@feedback": {
+    "description": "Feedback"
+  },
+  
+  "feedbackSuccess": "Ý kiến phản hồi (thành công)",
+  "@feedbackSuccess": {
+    "description": "Feedback submitted successfully"
+  },
+  
+  "deliveryPolicy": "Chính sách giao hàng",
+  "@deliveryPolicy": {
+    "description": "Delivery policy"
+  },
+  
+  "returnPolicy": "Chính sách đổi trả",
+  "@returnPolicy": {
+    "description": "Return policy"
+  },
+  
+  "companyInfo": "Thông tin MGF",
+  "@companyInfo": {
+    "description": "Company information"
+  },
+  
+  "fishSauceInfo": "Thông tin nước mắm MGF",
+  "@fishSauceInfo": {
+    "description": "MGF fish sauce information"
+  },
+  
+  "notifications": "Thông báo",
+  "@notifications": {
+    "description": "Notifications"
+  },
+  
+  "deleteNotification": "Thông báo (xóa)",
+  "@deleteNotification": {
+    "description": "Delete notification"
+  },
+  
+  "deleteAllNotifications": "Thông báo (xóa tất cả)",
+  "@deleteAllNotifications": {
+    "description": "Delete all notifications"
+  },
+  
+  "vinhThai": "Vĩnh Thái",
+  "@vinhThai": {
+    "description": "Vinh Thai brand"
+  },
+  
+  "xuanThinhMau": "Xuân Thịnh Mậu",
+  "@xuanThinhMau": {
+    "description": "Xuan Thinh Mau brand"
+  },
+  
+  "xuanThinhMau250ml": "Xuân Thịnh Mậu 250ml",
+  "@xuanThinhMau250ml": {
+    "description": "Xuan Thinh Mau 250ml"
+  },
+  
+  "xuanThinhMau330ml": "Xuân Thịnh Mậu 330ml",
+  "@xuanThinhMau330ml": {
+    "description": "Xuan Thinh Mau 330ml"
+  },
+  
+  "xuanThinhMau500ml": "Xuân Thịnh Mậu 500ml",
+  "@xuanThinhMau500ml": {
+    "description": "Xuan Thinh Mau 500ml"
+  },
+  
+  "category": "Danh mục",
+  "@category": {
+    "description": "Category"
+  },
+  
+  "filterProducts": "Lọc sản phẩm",
+  "@filterProducts": {
+    "description": "Filter products"
+  },
+  
+  "filterVT": "Lọc VT",
+  "@filterVT": {
+    "description": "Filter Vinh Thai products"
+  },
+  
+  "filterXTM": "Lọc XTM",
+  "@filterXTM": {
+    "description": "Filter Xuan Thinh Mau products"
+  },
+  
+  "addToCart": "Thêm vào giỏ hàng",
+  "@addToCart": {
+    "description": "Add to cart button"
+  },
+  
+  "buyNow": "Mua ngay",
+  "@buyNow": {
+    "description": "Buy now button"
+  },
+  
+  "quantity": "Số lượng",
+  "@quantity": {
+    "description": "Quantity label"
+  },
+  
+  "price": "Giá",
+  "@price": {
+    "description": "Price label"
+  },
+  
+  "total": "Tổng cộng",
+  "@total": {
+    "description": "Total amount"
+  },
+  
+  "search": "Tìm kiếm",
+  "@search": {
+    "description": "Search"
+  },
+  
+  "banner2": "Banner 2",
+  "@banner2": {
+    "description": "Banner 2 title"
+  },
+  
+  "banner3": "Banner 3",
+  "@banner3": {
+    "description": "Banner 3 title"
+  }
+}
