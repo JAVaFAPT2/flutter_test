@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../domain/entities/product.dart';
+import '../../domain/use_cases/product/get_products_use_case.dart';
 import '../../data/models/product_model.dart';
 
 /// Product state

@@ -17,6 +17,8 @@ class AuthTextField extends StatelessWidget {
     this.inputFormatters,
     this.maxLength,
     this.autofocus = false,
+    this.enabled = true,
+    this.maxLines,
   });
 
   final TextEditingController controller;
@@ -31,11 +33,14 @@ class AuthTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLength;
   final bool autofocus;
+  final bool enabled;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      enabled: enabled,
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
@@ -83,6 +88,7 @@ class AuthTextField extends StatelessWidget {
       onChanged: onChanged,
       inputFormatters: inputFormatters,
       maxLength: maxLength,
+      maxLines: maxLines,
       autofocus: autofocus,
       textInputAction: TextInputAction.next,
     );

@@ -20,6 +20,7 @@ class ProductCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onFavoriteToggle;
   final bool showFavoriteButton;
+  final bool showCartButton;
 
   @override
   Widget build(BuildContext context) {

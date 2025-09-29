@@ -29,7 +29,7 @@ class CartPage extends StatelessWidget {
               style: TextStyle(
                 color: context.read<CartProvider>().state.items.isNotEmpty
                     ? Colors.white
-                    : Colors.white.withOpacity(0.5),
+                    : Colors.white.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -40,13 +40,13 @@ class CartPage extends StatelessWidget {
           final cartState = cartProvider.state;
 
           if (cartState.items.isEmpty) {
-            return _buildEmptyCartView();
+            return _buildEmptyCartView(context);
           }
 
           return Column(
             children: [
               // Cart Summary
-              _buildCartSummary(cartProvider),
+              _buildCartSummary(context, cartProvider),
 
               // Cart Items
               Expanded(
@@ -64,7 +64,7 @@ class CartPage extends StatelessWidget {
               ),
 
               // Checkout Section
-              _buildCheckoutSection(cartProvider),
+              _buildCheckoutSection(context, cartProvider),
             ],
           );
         },
@@ -72,7 +72,7 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyCartView() {
+  Widget _buildEmptyCartView(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +106,7 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCartSummary(CartProvider cartProvider) {
+  Widget _buildCartSummary(BuildContext context, CartProvider cartProvider) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -151,7 +151,7 @@ class CartPage extends StatelessWidget {
     CartItem cartItem,
   ) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),  
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
@@ -305,14 +305,14 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCheckoutSection(CartProvider cartProvider) {
+  Widget _buildCheckoutSection(BuildContext context, CartProvider cartProvider) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -346,7 +346,7 @@ class CartPage extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: cartProvider.state.items.isNotEmpty
-                  ? () => _proceedToCheckout(context)
+                  ? () => _proceedToCheckout(context) 
                   : null,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),

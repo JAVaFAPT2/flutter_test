@@ -60,7 +60,7 @@ class OrderConfirmationPage extends StatelessWidget {
               const SizedBox(height: 40),
 
               // Order Summary
-              _buildOrderSummary(),
+              _buildOrderSummary(context),
 
               const SizedBox(height: 40),
 
@@ -84,7 +84,7 @@ class OrderConfirmationPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderSummary() {
+  Widget _buildOrderSummary(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -121,7 +121,7 @@ class OrderConfirmationPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(

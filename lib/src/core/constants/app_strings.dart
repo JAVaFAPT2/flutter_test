@@ -44,7 +44,7 @@ abstract class AppStrings {
   static const String emptyCart = 'Giỏ hàng trống';
   static const String totalPrice = 'Tổng tiền';
   static const String subtotal = 'Tạm tính';
-  static const String shipping = 'Phí vận chuyển';
+  static const String shippingFee = 'Phí vận chuyển';
   static const String tax = 'Thuế';
   static const String checkout = 'Thanh toán';
   static const String continueShopping = 'Tiếp tục mua sắm';
@@ -65,7 +65,7 @@ abstract class AppStrings {
   static const String pending = 'Chờ xác nhận';
   static const String confirmed = 'Đã xác nhận';
   static const String preparing = 'Đang chuẩn bị';
-  static const String shippingStatus = 'Đang giao';
+  static const String shipping = 'Đang giao';
   static const String delivered = 'Đã giao';
   static const String cancelled = 'Đã hủy';
   static const String returned = 'Đã trả hàng';
@@ -151,12 +151,8 @@ abstract class AppStrings {
   static const String paymentMethod = 'Phương thức thanh toán';
   static const String orderSummary = 'Tóm tắt đơn hàng';
   static const String orderNotes = 'Ghi chú đơn hàng';
-  static const String subtotal = 'Tiền hàng';
-  static const String shippingFee = 'Phí vận chuyển';
-  static const String tax = 'Thuế VAT';
   static const String total = 'Tổng cộng';
   static const String placeOrder = 'Đặt hàng';
-  static const String orderPlaced = 'Đặt hàng thành công';
   static const String orderConfirmation = 'Xác nhận đơn hàng';
 
   // Payment Methods
@@ -164,35 +160,10 @@ abstract class AppStrings {
   static const String bankTransfer = 'Chuyển khoản ngân hàng';
   static const String ewallet = 'Ví điện tử (Momo, ZaloPay)';
 
-  // Order Status
-  static const String pending = 'Chờ xác nhận';
-  static const String confirmed = 'Đã xác nhận';
-  static const String preparing = 'Đang chuẩn bị';
-  static const String shipping = 'Đang giao';
-  static const String delivered = 'Đã giao';
-  static const String cancelled = 'Đã hủy';
-  static const String returned = 'Đã trả hàng';
-
-  // Address Fields
-  static const String fullName = 'Họ và tên';
-  static const String phoneNumber = 'Số điện thoại';
-  static const String address = 'Địa chỉ';
+  // Additional Fields
   static const String city = 'Tỉnh/Thành phố';
   static const String district = 'Quận/Huyện';
   static const String ward = 'Phường/Xã';
-
-  // Order Information
-  static const String orderNumber = 'Mã đơn hàng';
-  static const String orderDate = 'Ngày đặt';
-  static const String orderStatus = 'Trạng thái';
-  static const String orderTotal = 'Tổng tiền';
-  static const String trackOrder = 'Theo dõi đơn hàng';
-  static const String cancelOrder = 'Hủy đơn hàng';
-  static const String reorder = 'Đặt lại';
-
-  // Order History
-  static const String orderHistory = 'Lịch sử đơn hàng';
-  static const String orderDetails = 'Chi tiết đơn hàng';
   static const String noOrders = 'Chưa có đơn hàng nào';
   static const String orderEmpty = 'Lịch sử đơn hàng trống';
 
@@ -201,6 +172,5 @@ abstract class AppStrings {
       'Bạn sẽ nhận được email xác nhận đơn hàng trong vòng 5 phút.';
   static const String thankYouForOrder =
       'Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ xử lý đơn hàng của bạn trong thời gian sớm nhất.';
-  static const String continueShopping = 'Tiếp tục mua sắm';
   static const String viewOrder = 'Xem đơn hàng';
 }

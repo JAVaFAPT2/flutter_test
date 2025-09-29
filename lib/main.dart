@@ -112,7 +112,7 @@ class VietnameseFishSauceApp extends StatelessWidget {
           vertical: 16,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(

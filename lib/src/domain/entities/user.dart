@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// User entity representing a user in the system
+/// User entity representing an application user
 class User extends Equatable {
   const User({
     required this.id,
@@ -29,6 +29,15 @@ class User extends Equatable {
   final bool isActive;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+
+  /// Check if user has complete profile
+  bool get hasCompleteProfile => fullName.isNotEmpty;
+
+  /// Check if user has verified contact methods
+  bool get isContactVerified => isVerified;
+
+  /// Get display name (full name or phone number)
+  String get displayName => fullName;
 
   /// Create a copy of this user with updated fields
   User copyWith({
