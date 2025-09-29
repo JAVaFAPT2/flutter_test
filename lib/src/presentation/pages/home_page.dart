@@ -91,7 +91,7 @@ class HomePage extends StatelessWidget {
                         title: 'Sản phẩm',
                         subtitle: 'Xem danh sách sản phẩm',
                         onTap: () {
-                          // Products page will be implemented in Phase 3
+                          Navigator.of(context).pushNamed('/products');
                         },
                       ),
                       _buildActionCard(

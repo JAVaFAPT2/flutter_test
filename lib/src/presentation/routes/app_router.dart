@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../pages/home_page.dart';
 import '../pages/login_page.dart';
+import '../pages/products_page.dart';
 import '../pages/register_page.dart';
 import '../providers/auth_provider.dart';
 
@@ -33,6 +34,11 @@ class AppRouter {
         path: home,
         name: 'home',
         builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: '/products',
+        name: 'products',
+        builder: (context, state) => const ProductsPage(),
       ),
       // Additional routes for authenticated users will be added in Phase 3
     ],

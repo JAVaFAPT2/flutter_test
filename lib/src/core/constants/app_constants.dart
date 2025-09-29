@@ -47,6 +47,98 @@ abstract class AppConstants {
     'Traditional',
   ];
 
+  // Sample Product Data for Development
+  static const List<Map<String, dynamic>> sampleProducts = [
+    {
+      'id': '1',
+      'name': 'Nước Mắm MGF Premium 500ml',
+      'description':
+          'Nước mắm cao cấp được sản xuất từ cá cơm tươi nguyên chất, ủ chượp theo phương pháp truyền thống Việt Nam.',
+      'price': 85000.0,
+      'originalPrice': 95000.0,
+      'imageUrl':
+          'https://via.placeholder.com/300x300/1976D2/FFFFFF?text=MGF+500ml',
+      'category': 'Nước Mắm Cao Đạm',
+      'brand': 'MGF Premium',
+      'volume': '500ml',
+      'ingredients': ['Cá cơm', 'Muối', 'Đường'],
+      'origin': 'Phú Quốc, Việt Nam',
+      'rating': 4.8,
+      'reviewCount': 125,
+      'isAvailable': true,
+      'isFeatured': true,
+      'isOnSale': true,
+      'discountPercentage': 11,
+      'stockQuantity': 50,
+    },
+    {
+      'id': '2',
+      'name': 'Nước Mắm Vĩnh Thái 330ml',
+      'description':
+          'Nước mắm truyền thống từ làng nghề Vĩnh Thái, được sản xuất theo công thức gia truyền.',
+      'price': 45000.0,
+      'originalPrice': 45000.0,
+      'imageUrl':
+          'https://via.placeholder.com/300x300/4CAF50/FFFFFF?text=Vinh+Thai+330ml',
+      'category': 'Nước Mắm Cốt',
+      'brand': 'Vĩnh Thái',
+      'volume': '330ml',
+      'ingredients': ['Cá cơm', 'Muối biển'],
+      'origin': 'Vĩnh Thái, Việt Nam',
+      'rating': 4.5,
+      'reviewCount': 89,
+      'isAvailable': true,
+      'isFeatured': false,
+      'isOnSale': false,
+      'discountPercentage': 0,
+      'stockQuantity': 100,
+    },
+    {
+      'id': '3',
+      'name': 'Nước Mắm Xuân Thịnh Mậu 250ml',
+      'description':
+          'Nước mắm đặc biệt từ vùng biển miền Trung, hương vị đậm đà và tự nhiên.',
+      'price': 65000.0,
+      'originalPrice': 65000.0,
+      'imageUrl':
+          'https://via.placeholder.com/300x300/FF9800/FFFFFF?text=Xuan+Thinh+Mau+250ml',
+      'category': 'Nước Mắm Đặc Biệt',
+      'brand': 'Xuân Thịnh Mậu',
+      'volume': '250ml',
+      'ingredients': ['Cá cơm than', 'Muối', 'Đường thốt nốt'],
+      'origin': 'Miền Trung, Việt Nam',
+      'rating': 4.7,
+      'reviewCount': 67,
+      'isAvailable': true,
+      'isFeatured': true,
+      'isOnSale': false,
+      'discountPercentage': 0,
+      'stockQuantity': 75,
+    },
+    {
+      'id': '4',
+      'name': 'Nước Mắm Traditional 1L',
+      'description':
+          'Nước mắm truyền thống Việt Nam, phù hợp cho gia đình và nhà hàng.',
+      'price': 120000.0,
+      'originalPrice': 120000.0,
+      'imageUrl':
+          'https://via.placeholder.com/300x300/9C27B0/FFFFFF?text=Traditional+1L',
+      'category': 'Nước Mắm Pha Sẵn',
+      'brand': 'Traditional',
+      'volume': '1L',
+      'ingredients': ['Cá cơm', 'Muối', 'Nước'],
+      'origin': 'Việt Nam',
+      'rating': 4.3,
+      'reviewCount': 156,
+      'isAvailable': true,
+      'isFeatured': false,
+      'isOnSale': false,
+      'discountPercentage': 0,
+      'stockQuantity': 30,
+    },
+  ];
+
   // Vietnamese Currency
   static const String currencySymbol = '₫';
   static const String currencyCode = 'VND';

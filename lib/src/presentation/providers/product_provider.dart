@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../domain/entities/product.dart';
-import '../../domain/use_cases/product/get_products_use_case.dart';
-import '../../domain/value_objects/result.dart';
+import '../../data/models/product_model.dart';
 
 /// Product state
 class ProductState {
@@ -65,41 +65,87 @@ class ProductProvider extends ChangeNotifier {
     }
     notifyListeners();
 
-    final result = await getProductsUseCase.execute(
-      page: page,
-      limit: limit,
-      category: category,
-      brand: brand,
-      search: search,
-      sortBy: sortBy,
-      sortOrder: sortOrder,
-    );
+    try {
+      // Use sample data for development
+      await Future.delayed(const Duration(seconds: 1)); // Simulate API delay
 
-    switch (result) {
-      case Success<List<Product>>(:final data):
-        if (page == 1) {
-          _state = _state.copyWith(
-            products: data,
-            isLoading: false,
-            error: null,
-            currentPage: page,
-            hasMore: data.length == limit,
-          );
-        } else {
-          _state = _state.copyWith(
-            products: [..._state.products, ...data],
-            isLoading: false,
-            error: null,
-            currentPage: page,
-            hasMore: data.length == limit,
-          );
-        }
+      // Convert sample data to Product entities
+      final allProducts = AppConstants.sampleProducts.map((json) {
+        final productModel = ProductModel.fromJson(json);
+        return productModel.toEntity();
+      }).toList();
 
-      case Failure<List<Product>>(:final message):
+      // Apply filters
+      List<Product> filteredProducts = allProducts;
+
+      if (category != null) {
+        filteredProducts =
+            filteredProducts.where((p) => p.category == category).toList();
+      }
+
+      if (brand != null) {
+        filteredProducts =
+            filteredProducts.where((p) => p.brand == brand).toList();
+      }
+
+      if (search != null && search.isNotEmpty) {
+        final searchLower = search.toLowerCase();
+        filteredProducts = filteredProducts
+            .where((p) =>
+                p.name.toLowerCase().contains(searchLower) ||
+                p.description.toLowerCase().contains(searchLower) ||
+                p.brand.toLowerCase().contains(searchLower))
+            .toList();
+      }
+
+      // Apply sorting
+      if (sortBy != null) {
+        filteredProducts.sort((a, b) {
+          switch (sortBy) {
+            case 'name':
+              return a.name.compareTo(b.name);
+            case 'price_asc':
+              return a.displayPrice.compareTo(b.displayPrice);
+            case 'price_desc':
+              return b.displayPrice.compareTo(a.displayPrice);
+            case 'rating':
+              return b.rating.compareTo(a.rating);
+            default:
+              return 0;
+          }
+        });
+      }
+
+      // Apply pagination
+      final startIndex = (page - 1) * limit;
+      final endIndex = startIndex + limit;
+      final paginatedProducts = filteredProducts.sublist(
+        startIndex,
+        endIndex > filteredProducts.length ? filteredProducts.length : endIndex,
+      );
+
+      if (page == 1) {
         _state = _state.copyWith(
+          products: paginatedProducts,
           isLoading: false,
-          error: message,
+          error: null,
+          currentPage: page,
+          hasMore: filteredProducts.length > endIndex,
         );
+      } else {
+        _state = _state.copyWith(
+          products: [..._state.products, ...paginatedProducts],
+          isLoading: false,
+          error: null,
+          currentPage: page,
+          hasMore: filteredProducts.length > endIndex,
+        );
+      }
+    } catch (e) {
+      _state = _state.copyWith(
+        isLoading: false,
+        error: 'Không thể tải sản phẩm: $e',
+      );
     }
 
     notifyListeners();
