@@ -27,29 +27,6 @@ class ProductModel {
     this.updatedAt,
   });
 
-  final String id;
-  final String name;
-  final String description;
-  final double price;
-  final double originalPrice;
-  final String imageUrl;
-  final String category;
-  final String brand;
-  final String volume;
-  final List<String> ingredients;
-  final String origin;
-  final double rating;
-  final int reviewCount;
-  final bool isAvailable;
-  final bool isFeatured;
-  final bool isOnSale;
-  final int discountPercentage;
-  final int stockQuantity;
-  final Map<String, String>? nutritionInfo;
-  final List<String>? certifications;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-
   /// Create from JSON
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
@@ -86,6 +63,57 @@ class ProductModel {
           : null,
     );
   }
+
+  /// Create from domain entity
+  factory ProductModel.fromEntity(Product product) {
+    return ProductModel(
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      imageUrl: product.imageUrl,
+      category: product.category,
+      brand: product.brand,
+      volume: product.volume,
+      ingredients: product.ingredients,
+      origin: product.origin,
+      rating: product.rating,
+      reviewCount: product.reviewCount,
+      isAvailable: product.isAvailable,
+      isFeatured: product.isFeatured,
+      isOnSale: product.isOnSale,
+      discountPercentage: product.discountPercentage,
+      stockQuantity: product.stockQuantity,
+      nutritionInfo: product.nutritionInfo,
+      certifications: product.certifications,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+    );
+  }
+
+  final String id;
+  final String name;
+  final String description;
+  final double price;
+  final double originalPrice;
+  final String imageUrl;
+  final String category;
+  final String brand;
+  final String volume;
+  final List<String> ingredients;
+  final String origin;
+  final double rating;
+  final int reviewCount;
+  final bool isAvailable;
+  final bool isFeatured;
+  final bool isOnSale;
+  final int discountPercentage;
+  final int stockQuantity;
+  final Map<String, String>? nutritionInfo;
+  final List<String>? certifications;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   /// Convert to JSON
   Map<String, dynamic> toJson() {
@@ -140,34 +168,6 @@ class ProductModel {
       certifications: certifications,
       createdAt: createdAt,
       updatedAt: updatedAt,
-    );
-  }
-
-  /// Create from domain entity
-  factory ProductModel.fromEntity(Product product) {
-    return ProductModel(
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      imageUrl: product.imageUrl,
-      category: product.category,
-      brand: product.brand,
-      volume: product.volume,
-      ingredients: product.ingredients,
-      origin: product.origin,
-      rating: product.rating,
-      reviewCount: product.reviewCount,
-      isAvailable: product.isAvailable,
-      isFeatured: product.isFeatured,
-      isOnSale: product.isOnSale,
-      discountPercentage: product.discountPercentage,
-      stockQuantity: product.stockQuantity,
-      nutritionInfo: product.nutritionInfo,
-      certifications: product.certifications,
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
     );
   }
 }

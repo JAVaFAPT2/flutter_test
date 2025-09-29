@@ -17,19 +17,6 @@ class UserModel {
     this.updatedAt,
   });
 
-  final String id;
-  final String phone;
-  final String fullName;
-  final String? email;
-  final String? address;
-  final String? avatar;
-  final DateTime? dateOfBirth;
-  final String? gender;
-  final bool isVerified;
-  final bool isActive;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-
   /// Create from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -53,6 +40,37 @@ class UserModel {
           : null,
     );
   }
+
+  /// Create from domain entity
+  factory UserModel.fromEntity(User user) {
+    return UserModel(
+      id: user.id,
+      phone: user.phone,
+      fullName: user.fullName,
+      email: user.email,
+      address: user.address,
+      avatar: user.avatar,
+      dateOfBirth: user.dateOfBirth,
+      gender: user.gender,
+      isVerified: user.isVerified,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    );
+  }
+
+  final String id;
+  final String phone;
+  final String fullName;
+  final String? email;
+  final String? address;
+  final String? avatar;
+  final DateTime? dateOfBirth;
+  final String? gender;
+  final bool isVerified;
+  final bool isActive;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   /// Convert to JSON
   Map<String, dynamic> toJson() {
@@ -87,24 +105,6 @@ class UserModel {
       isActive: isActive,
       createdAt: createdAt,
       updatedAt: updatedAt,
-    );
-  }
-
-  /// Create from domain entity
-  factory UserModel.fromEntity(User user) {
-    return UserModel(
-      id: user.id,
-      phone: user.phone,
-      fullName: user.fullName,
-      email: user.email,
-      address: user.address,
-      avatar: user.avatar,
-      dateOfBirth: user.dateOfBirth,
-      gender: user.gender,
-      isVerified: user.isVerified,
-      isActive: user.isActive,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
     );
   }
 }
