@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../pages/cart_page.dart';
+import '../pages/checkout_page.dart';
 import '../pages/home_page.dart';
 import '../pages/login_page.dart';
+import '../pages/order_confirmation_page.dart';
 import '../pages/product_detail_page.dart';
 import '../pages/products_page.dart';
 import '../pages/register_page.dart';
@@ -55,7 +57,17 @@ class AppRouter {
         name: 'cart',
         builder: (context, state) => const CartPage(),
       ),
-      // Additional routes for authenticated users will be added in Phase 4
+      GoRoute(
+        path: '/checkout',
+        name: 'checkout',
+        builder: (context, state) => const CheckoutPage(),
+      ),
+      GoRoute(
+        path: '/order-confirmation',
+        name: 'order-confirmation',
+        builder: (context, state) => const OrderConfirmationPage(),
+      ),
+      // Additional routes for authenticated users will be added in Phase 5
     ],
     redirect: _handleRedirect,
     refreshListenable: _AuthRefreshListenable(),

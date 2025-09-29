@@ -397,12 +397,6 @@ class CartPage extends StatelessWidget {
   }
 
   void _proceedToCheckout(BuildContext context) {
-    // Checkout functionality will be implemented in Phase 5
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Chức năng thanh toán đang được phát triển'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    Navigator.of(context).pushNamed('/checkout');
   }
 }
