@@ -1,0 +1,46 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
+  errors:
+    # CRITICAL ERRORS - BLOCK WORKFLOW
+    invalid_annotation_target: error
+    todo: error
+    deprecated_member_use: error
+    missing_required_param: error
+    wrong_number_of_parameters_for_override: error
+    missing_return: error
+
+    # PERFORMANCE ERRORS
+    avoid_function_literals_in_foreach_calls: error
+    avoid_web_libraries_in_flutter: error
+    avoid_slow_async_io: error
+    prefer_typing_uninitialized_variables: error
+
+    # CODE QUALITY ERRORS
+    avoid_print: error
+    avoid_unnecessary_type_casts: error
+    avoid_redundant_argument_values: error
+    avoid_void_async: error
+
+linter:
+  rules:
+    # ENFORCED CODING STANDARDS
+    always_declare_return_types: true
+    avoid_dynamic_calls: true
+    avoid_print: true
+    avoid_unused_constructor_parameters: true
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_final_fields: true
+    prefer_final_locals: true
+    prefer_single_quotes: true
+    sort_constructors_first: true
+    sort_pub_dependencies: true
+    sort_unnamed_constructors_first: true
