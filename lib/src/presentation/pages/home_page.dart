@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../features/home/presentation/cubit/home_cubit.dart';
 
 /// Home page for authenticated users with banners and categories
 class HomePage extends StatefulWidget {
@@ -16,7 +17,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final PageController _bannerController = PageController();
-  int _currentBanner = 0;
 
   final List<String> _bannerTitles = const [
     'Banner 1',
@@ -42,9 +42,13 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, authState) {
-          final user = authState.user;
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider<HomeCubit>(create: (_) => HomeCubit()),
+        ],
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            final user = authState.user;
 
           return CustomScrollView(
             slivers: [
@@ -216,7 +220,7 @@ class _HomePageState extends State<HomePage> {
           controller: _bannerController,
           itemCount: _bannerTitles.length,
           onPageChanged: (index) {
-            setState(() => _currentBanner = index);
+            context.read<HomeCubit>().updateBannerIndex(index);
           },
           itemBuilder: (context, index) {
             return Container(
@@ -242,20 +246,24 @@ class _HomePageState extends State<HomePage> {
   Widget _buildBannerIndicators() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        _bannerTitles.length,
-        (index) => AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: _currentBanner == index ? 20 : 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: _currentBanner == index
-                ? Theme.of(context).primaryColor
-                : Colors.grey.shade400,
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
+      children: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          return List.generate(
+            _bannerTitles.length,
+            (index) => AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: state.currentBannerIndex == index ? 20 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: state.currentBannerIndex == index
+                    ? Theme.of(context).primaryColor
+                    : Colors.grey.shade400,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -373,6 +381,9 @@ class _HomePageState extends State<HomePage> {
             child: const Text('Đăng xuất'),
           ),
         ],
+      ),
+          },
+        ),
       ),
     );
   }

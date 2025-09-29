@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../domain/entities/product.dart';
-import '../providers/cart_provider.dart';
+import '../../../features/cart/presentation/bloc/cart_bloc.dart';
 
 /// Grid card to display a product in catalog
 class ProductCard extends StatelessWidget {
@@ -126,7 +126,7 @@ class ProductListItem extends StatelessWidget {
                 IconButton(
                   tooltip: 'Thêm vào giỏ',
                   onPressed: () =>
-                      context.read<CartProvider>().addToCart(product),
+                      context.read<CartBloc>().add(AddToCart(product)),
                   icon: const Icon(Icons.add_shopping_cart),
                 ),
               ],
@@ -309,7 +309,7 @@ class _AddToCartButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: () => context.read<CartProvider>().addToCart(product),
+        onPressed: () => context.read<CartBloc>().add(AddToCart(product)),
         icon: const Icon(Icons.add_shopping_cart),
         label: const Text('Thêm vào giỏ'),
       ),
