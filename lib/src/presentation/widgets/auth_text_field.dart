@@ -88,7 +88,8 @@ class AuthTextField extends StatelessWidget {
       onChanged: onChanged,
       inputFormatters: inputFormatters,
       maxLength: maxLength,
-      maxLines: maxLines,
+      // Obscured fields cannot be multiline. If null, default to 1.
+      maxLines: obscureText ? 1 : (maxLines ?? 1),
       autofocus: autofocus,
       textInputAction: TextInputAction.next,
     );

@@ -115,6 +115,9 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.notifications,
             title: 'Thông báo',
             subtitle: 'Quản lý thông báo ứng dụng',
+            onTap: () {
+              _showSnackBar('Chức năng đang được phát triển');
+            },
             trailing: Switch(
               value: _notificationsEnabled,
               onChanged: (value) {
@@ -130,6 +133,9 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.fingerprint,
             title: 'Xác thực sinh trắc học',
             subtitle: 'Đăng nhập bằng vân tay/khuôn mặt',
+            onTap: () {
+              _showSnackBar('Chức năng đang được phát triển');
+            },
             trailing: Switch(
               value: _biometricEnabled,
               onChanged: (value) {
@@ -167,6 +173,9 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.dark_mode,
             title: 'Chế độ tối',
             subtitle: 'Giao diện tối cho ban đêm',
+            onTap: () {
+              _showSnackBar('Chức năng đang được phát triển');
+            },
             trailing: Switch(
               value: _darkModeEnabled,
               onChanged: (value) {

@@ -10,25 +10,33 @@ import '../pages/home_page.dart';
 import '../pages/login_page.dart';
 import '../pages/order_confirmation_page.dart';
 import '../pages/order_history_page.dart';
+import '../pages/otp_verification_page.dart';
 import '../pages/product_detail_page.dart';
 import '../pages/products_page.dart';
 import '../pages/profile_page.dart';
 import '../pages/register_page.dart';
 import '../pages/settings_page.dart';
+import '../pages/intro_page.dart';
 import '../providers/auth_provider.dart';
 
 /// Application router configuration using Go Router
 class AppRouter {
   static const String login = '/login';
   static const String register = '/register';
+  static const String intro = '/intro';
   static const String home = '/home';
 
   static GoRouter get router => _router;
 
   static final GoRouter _router = GoRouter(
-    initialLocation: login,
+    initialLocation: intro,
     debugLogDiagnostics: true,
     routes: [
+      GoRoute(
+        path: intro,
+        name: 'intro',
+        builder: (context, state) => const IntroPage(),
+      ),
       GoRoute(
         path: login,
         name: 'login',
@@ -38,6 +46,14 @@ class AppRouter {
         path: register,
         name: 'register',
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: '/otp-verification',
+        name: 'otp-verification',
+        builder: (context, state) {
+          final phone = state.extra as String;
+          return OtpVerificationPage(phone: phone);
+        },
       ),
       GoRoute(
         path: home,
@@ -97,15 +113,17 @@ class AppRouter {
   static String? _handleRedirect(BuildContext context, GoRouterState state) {
     final authProvider = context.read<AuthProvider>();
     final isAuthenticated = authProvider.state.isAuthenticated;
-    final isAuthRoute =
-        state.matchedLocation == login || state.matchedLocation == register;
+    final isPublicRoute = state.matchedLocation == intro;
+    final isAuthRoute = state.matchedLocation == login ||
+        state.matchedLocation == register ||
+        isPublicRoute;
 
-    // If not authenticated and not on auth routes, redirect to login
+    // If not authenticated and not on public/auth routes, redirect to intro
     if (!isAuthenticated && !isAuthRoute) {
-      return login;
+      return intro;
     }
 
-    // If authenticated and on auth routes, redirect to home
+    // If authenticated and on public/auth routes, redirect to home
     if (isAuthenticated && isAuthRoute) {
       return home;
     }

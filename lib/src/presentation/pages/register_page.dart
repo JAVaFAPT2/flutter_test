@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_strings.dart';
@@ -65,10 +66,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: const EdgeInsets.only(bottom: 32.0),
                       child: Column(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.person_add,
                             size: 80,
-                            color: Theme.of(context).primaryColor,
+                            color: Colors.white,
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -348,6 +349,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _navigateToLogin() {
-    Navigator.of(context).pop();
+    context.pop();
   }
 }

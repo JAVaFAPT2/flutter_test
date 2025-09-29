@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'src/core/constants/app_constants.dart';
 import 'src/core/di/injection_container.dart' as di;
@@ -49,7 +50,9 @@ class VietnameseFishSauceApp extends StatelessWidget {
         routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
         localizationsDelegates: const [
-          // Vietnamese localization delegates will be added in Phase 3
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: const [
           Locale('vi', 'VN'), // Vietnamese

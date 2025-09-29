@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/constants/app_strings.dart';
+import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
 import '../providers/cart_provider.dart';
 
 /// Shopping cart page

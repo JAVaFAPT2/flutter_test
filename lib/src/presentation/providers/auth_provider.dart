@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../../data/datasources/local/secure_storage.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/use_cases/auth/login_use_case.dart';
+import '../../domain/use_cases/auth/otp_verification_use_case.dart';
 import '../../domain/use_cases/auth/register_use_case.dart';
 import '../../domain/value_objects/result.dart';
 
@@ -40,11 +41,13 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider({
     required this.loginUseCase,
     required this.registerUseCase,
+    required this.otpVerificationUseCase,
     required this.secureStorage,
   });
 
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
+  final OtpVerificationUseCase otpVerificationUseCase;
   final SecureStorage secureStorage;
 
   /// Callback for successful authentication navigation
@@ -164,6 +167,72 @@ class AuthProvider extends ChangeNotifier {
   /// Handle successful authentication (call this after login/register success)
   void onAuthenticationSuccess() {
     _state = _state.copyWith(isAuthenticated: true);
+    notifyListeners();
+  }
+
+  /// Request OTP for phone verification
+  Future<void> requestOtp({
+    required String phone,
+  }) async {
+    _state = _state.copyWith(isLoading: true, error: null);
+    notifyListeners();
+
+    final result = await otpVerificationUseCase.requestOtp(phone: phone);
+
+    switch (result) {
+      case Success<void>():
+        _state = _state.copyWith(
+          isLoading: false,
+          error: null,
+        );
+
+      case Failure<void>(:final message):
+        _state = _state.copyWith(
+          isLoading: false,
+          error: message,
+          isAuthenticated: false,
+        );
+    }
+
+    notifyListeners();
+  }
+
+  /// Verify OTP code
+  Future<void> verifyOtp({
+    required String phone,
+    required String otp,
+  }) async {
+    _state = _state.copyWith(isLoading: true, error: null);
+    notifyListeners();
+
+    final result = await otpVerificationUseCase.execute(
+      phone: phone,
+      otp: otp,
+    );
+
+    switch (result) {
+      case Success<User>(:final data):
+        _state = _state.copyWith(
+          user: data,
+          isLoading: false,
+          isAuthenticated: true,
+          error: null,
+        );
+        // Save token to secure storage
+        await secureStorage.setSecureToken('mock_token_${data.id}');
+        await secureStorage.setUserSession(data.toString());
+
+        // Trigger success callback
+        _onAuthenticationSuccess?.call();
+
+      case Failure<User>(:final message):
+        _state = _state.copyWith(
+          isLoading: false,
+          error: message,
+          isAuthenticated: false,
+        );
+    }
+
     notifyListeners();
   }
 }

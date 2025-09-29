@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_strings.dart';
+import '../../core/errors/app_error.dart';
 import '../../domain/entities/product.dart';
 import '../providers/product_provider.dart';
 import '../widgets/product_card.dart';
@@ -104,14 +105,14 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
-  Widget _buildErrorView(String error) {
+  Widget _buildErrorView(AppError error) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ErrorMessage(message: error),
+            ErrorMessage(message: error.localizedMessage),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {

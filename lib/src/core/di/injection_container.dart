@@ -11,6 +11,7 @@ import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../domain/use_cases/auth/login_use_case.dart';
+import '../../domain/use_cases/auth/otp_verification_use_case.dart';
 import '../../domain/use_cases/auth/register_use_case.dart';
 import '../../domain/use_cases/product/get_products_use_case.dart';
 import '../../presentation/providers/auth_provider.dart';
@@ -117,6 +118,10 @@ void _initializeUseCases() {
     () => RegisterUseCase(getIt<AuthRepository>()),
   );
 
+  getIt.registerLazySingleton<OtpVerificationUseCase>(
+    () => OtpVerificationUseCase(getIt<AuthRepository>()),
+  );
+
   // Product use cases
   getIt.registerLazySingleton<GetProductsUseCase>(
     () => GetProductsUseCase(getIt<ProductRepository>()),
@@ -130,6 +135,7 @@ void _initializeProviders() {
     () => AuthProvider(
       loginUseCase: getIt<LoginUseCase>(),
       registerUseCase: getIt<RegisterUseCase>(),
+      otpVerificationUseCase: getIt<OtpVerificationUseCase>(),
       secureStorage: getIt<SecureStorage>(),
     ),
   );

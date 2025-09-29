@@ -84,7 +84,7 @@ class EnhancedErrorMessage extends StatelessWidget {
             Text(
               ErrorHandler.getSuggestedAction(error),
               style: TextStyle(
-                color: _getErrorTextColor(error.type).withOpacity(0.8),
+                color: _getErrorTextColor(error.type).withValues(alpha: 0.8),
                 fontSize: 12,
               ),
             ),

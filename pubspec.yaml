@@ -64,9 +64,17 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    # Leaf folders only (each contains actual files)
+    - assets/begin_login_register/main/
+    - assets/begin_login_register/login/
+    - assets/add_to_cart/
+    - assets/main_page/
+    - assets/product_page/
+    - assets/product_detail/
+    - assets/cart_page/
+    - assets/finalize_order/
+    - assets/profile_customer_service_announcement/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

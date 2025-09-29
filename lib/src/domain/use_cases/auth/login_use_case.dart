@@ -13,17 +13,17 @@ class LoginUseCase {
     required String phone,
     required String password,
   }) async {
-    // Basic validation
+    // Vietnamese validation messages
     if (phone.isEmpty || password.isEmpty) {
-      return const Failure('Phone and password are required');
+      return const Failure('Vui lòng nhập đầy đủ thông tin');
     }
 
     if (phone.length < 10 || phone.length > 11) {
-      return const Failure('Invalid phone number format');
+      return const Failure('Số điện thoại không hợp lệ');
     }
 
-    if (password.length < 8) {
-      return const Failure('Password must be at least 8 characters');
+    if (password.length < 6) {
+      return const Failure('Mật khẩu phải có ít nhất 6 ký tự');
     }
 
     return _authRepository.login(

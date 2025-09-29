@@ -17,11 +17,13 @@ abstract class AuthRepository {
     String? email,
   });
 
-  /// Send OTP for verification
-  Future<Result<void>> sendOTP(String phone);
+  /// Request OTP for phone verification
+  Future<Result<void>> requestOtp({
+    required String phone,
+  });
 
   /// Verify OTP code
-  Future<Result<User>> verifyOTP({
+  Future<Result<User>> verifyOtp({
     required String phone,
     required String otp,
   });

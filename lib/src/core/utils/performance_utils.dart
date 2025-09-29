@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 /// Performance optimization utilities for the Vietnamese fish sauce e-commerce app
 abstract class PerformanceUtils {
@@ -14,14 +17,15 @@ abstract class PerformanceUtils {
   }
 
   /// Throttle function to limit function calls
-  static Timer? _throttleTimer;
+  static Timer?
+      _throttleTimer; // Reserved for future use (timer-based throttle)
   static DateTime? _lastThrottleCall;
 
   static void throttle(
     VoidCallback action, {
     Duration delay = const Duration(milliseconds: 100),
   }) {
-    final now = DateTime.now();
+    final DateTime now = DateTime.now();
     if (_lastThrottleCall == null ||
         now.difference(_lastThrottleCall!) > delay) {
       _lastThrottleCall = now;
@@ -29,19 +33,19 @@ abstract class PerformanceUtils {
     }
   }
 
-  /// Memory-efficient list processing
-  static List<T> processListInBatches<T>(
+  /// Memory-efficient batch processing (sequential, to limit peak memory)
+  static Future<void> processListInBatches<T>(
     List<T> items,
     int batchSize,
     Future<void> Function(List<T> batch) processor,
-  ) {
-    final batches = <List<T>>[];
-    for (var i = 0; i < items.length; i += batchSize) {
-      final endIndex =
-          i + batchSize > items.length ? items.length : i + batchSize;
-      batches.add(items.sublist(i, endIndex));
+  ) async {
+    assert(batchSize > 0, 'batchSize must be greater than zero');
+    for (int i = 0; i < items.length; i += batchSize) {
+      final int endIndex =
+          (i + batchSize > items.length) ? items.length : i + batchSize;
+      final List<T> batch = items.sublist(i, endIndex);
+      await processor(batch);
     }
-    return batches as List<T>;
   }
 
   /// Optimized image loading with caching
@@ -67,6 +71,128 @@ abstract class PerformanceUtils {
     // Preload commonly used images, fonts, etc.
     // This would be implemented based on specific app needs
     await Future.delayed(const Duration(milliseconds: 100));
+  }
+
+  /// Optimize widget rebuilds using RepaintBoundary
+  static Widget wrapWithRepaintBoundary({
+    required Widget child,
+    String? key,
+  }) {
+    return RepaintBoundary(
+      key: key != null ? Key(key) : null,
+      child: child,
+    );
+  }
+
+  /// Create optimized scroll physics for smooth scrolling
+  static ScrollPhysics getOptimizedScrollPhysics() {
+    return const BouncingScrollPhysics(
+      decelerationRate: ScrollDecelerationRate.normal,
+    );
+  }
+
+  /// Check if animations can likely run at 60fps
+  static bool canRun60fpsAnimations() {
+    // Prefer platform dispatcher over deprecated window API
+    final double devicePixelRatio = PlatformDispatcher.instance.views.isNotEmpty
+        ? PlatformDispatcher.instance.views.first.devicePixelRatio
+        : 2.0; // Conservative default
+    return devicePixelRatio <= 2.0;
+  }
+
+  /// Schedule a one-off frame callback
+  static void scheduleFrameCallback(FrameCallback callback) {
+    WidgetsBinding.instance.scheduleFrameCallback(callback);
+  }
+
+  /// Monitor frame timings; returns a disposer to stop monitoring
+  static VoidCallback monitorFrameTimings(
+    void Function(List<FrameTiming> timings) onTimings,
+  ) {
+    void listener(List<FrameTiming> timings) => onTimings(timings);
+    SchedulerBinding.instance.addTimingsCallback(listener);
+    return () => SchedulerBinding.instance.removeTimingsCallback(listener);
+  }
+
+  /// Optimize list view performance with proper keys
+  static Key generateValueKey(String id) {
+    return ValueKey<String>(id);
+  }
+
+  /// Batch widget updates for better performance
+  static void batchUpdates(VoidCallback updates) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updates();
+    });
+  }
+
+  /// Pre-warm image cache for better performance
+  static Future<void> prewarmImageCache(
+      String imageUrl, BuildContext context) async {
+    try {
+      await precacheImage(NetworkImage(imageUrl), context);
+    } catch (_) {
+      // Image prewarming failed, continue silently
+    }
+  }
+
+  /// Check if widget should rebuild based on performance considerations
+  static bool shouldRebuild<T>(
+    T oldValue,
+    T newValue, {
+    bool forceRebuild = false,
+  }) {
+    if (forceRebuild) return true;
+    return oldValue != newValue;
+  }
+
+  /// Get optimal item extent for list views based on screen size (logical pixels)
+  static double getOptimalItemExtent(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    // Calculate optimal item height for smooth scrolling
+    // Aim for ~10-12 items visible on screen
+    final int optimalVisibleItems = screenHeight > 800 ? 12 : 10;
+    final double estimatedItemHeight = screenHeight / optimalVisibleItems;
+
+    return estimatedItemHeight; // Keep in logical pixels (do not multiply by DPR)
+  }
+}
+
+/// Widget performance mixins for better optimization
+mixin PerformanceMixin<T extends StatefulWidget> on State<T> {
+  /// Debounced state update to prevent excessive rebuilds
+  Timer? _debounceTimer;
+
+  void debouncedSetState(
+    VoidCallback fn, {
+    Duration delay = const Duration(milliseconds: 16), // ~60fps
+  }) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(delay, () {
+      if (mounted) {
+        setState(fn);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+}
+
+/// Automatic keep alive base State for list items
+abstract class AutoKeepAliveState<T extends StatefulWidget> extends State<T>
+    with AutomaticKeepAliveClientMixin<T> {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    updateKeepAlive();
   }
 }
 

@@ -1,313 +1,317 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../domain/entities/product.dart';
 import '../providers/cart_provider.dart';
 
-/// Product card widget for grid/list display
+/// Grid card to display a product in catalog
 class ProductCard extends StatelessWidget {
   const ProductCard({
     super.key,
     required this.product,
     this.onTap,
-    this.onFavoriteToggle,
-    this.showFavoriteButton = true,
-    this.showCartButton = true,
+    this.showCartButton = false,
   });
 
   final Product product;
   final VoidCallback? onTap;
-  final VoidCallback? onFavoriteToggle;
-  final bool showFavoriteButton;
   final bool showCartButton;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Product Image
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey.shade100,
-                  ),
-                  child: CachedNetworkImage(
+    final ThemeData theme = Theme.of(context);
+
+    return Semantics(
+      label: 'Sản phẩm ${product.name}, giá ${product.formattedPrice}',
+      button: true,
+      child: RepaintBoundary(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _ProductImage(
                     imageUrl: product.imageUrl,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(),
+                    isOnSale: product.isOnSale,
+                    discount: product.discountPercentage),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 6),
+                        _RatingRow(
+                            rating: product.rating,
+                            reviewCount: product.reviewCount),
+                        const Spacer(),
+                        _PriceRow(product: product),
+                        if (showCartButton) ...[
+                          const SizedBox(height: 8),
+                          _AddToCartButton(product: product),
+                        ],
+                      ],
                     ),
-                    errorWidget: (context, url, error) => const Icon(
-                      Icons.image_not_supported,
-                      size: 40,
-                      color: Colors.grey,
-                    ),
-                    fit: BoxFit.cover,
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 8),
-
-              // Product Name
-              Text(
-                product.name,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-
-              const SizedBox(height: 4),
-
-              // Brand
-              Text(
-                product.brand,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-              ),
-
-              const SizedBox(height: 4),
-
-              // Price
-              Row(
-                children: [
-                  Text(
-                    product.formattedPrice,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  if (product.isOnSale) ...[
-                    const SizedBox(width: 8),
-                    Text(
-                      product.formattedOriginalPrice,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            decoration: TextDecoration.lineThrough,
-                            color: Colors.grey,
-                          ),
-                    ),
-                  ],
-                ],
-              ),
-
-              const SizedBox(height: 4),
-
-              // Rating and Reviews
-              Row(
-                children: [
-                  Icon(
-                    Icons.star,
-                    size: 16,
-                    color: product.rating > 0 ? Colors.amber : Colors.grey,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    product.rating > 0
-                        ? product.rating.toStringAsFixed(1)
-                        : 'Chưa có đánh giá',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '(${product.reviewCount})',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 8),
-
-              // Bottom Row with Cart and Favorite buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Cart Button (if enabled)
-                  if (showCartButton)
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed:
-                            product.inStock ? () => _addToCart(context) : null,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          product.inStock ? 'Thêm' : 'Hết hàng',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ),
-
-                  if (showCartButton && showFavoriteButton)
-                    const SizedBox(width: 8),
-
-                  // Favorite Button (if enabled)
-                  if (showFavoriteButton)
-                    IconButton(
-                      onPressed: onFavoriteToggle,
-                      icon: Icon(
-                        Icons.favorite,
-                        color: Colors.red.shade400,
-                        size: 20,
-                      ),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  void _addToCart(BuildContext context) {
-    context.read<CartProvider>().addToCart(product);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Đã thêm ${product.name} vào giỏ hàng'),
-        action: SnackBarAction(
-          label: 'Xem giỏ hàng',
-          onPressed: () {
-            Navigator.of(context).pushNamed('/cart');
-          },
         ),
       ),
     );
   }
 }
 
-/// Product list item widget for list view
+/// List item layout for product rows
 class ProductListItem extends StatelessWidget {
   const ProductListItem({
     super.key,
     required this.product,
     this.onTap,
-    this.onFavoriteToggle,
   });
 
   final Product product;
   final VoidCallback? onTap;
-  final VoidCallback? onFavoriteToggle;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      leading: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.grey.shade100,
-        ),
-        child: CachedNetworkImage(
-          imageUrl: product.imageUrl,
-          placeholder: (context, url) => const Center(
-            child: CircularProgressIndicator(),
-          ),
-          errorWidget: (context, url, error) => const Icon(
-            Icons.image_not_supported,
-            color: Colors.grey,
-          ),
-          fit: BoxFit.cover,
-        ),
-      ),
-      title: Text(
-        product.name,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            product.brand,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Text(
-                product.formattedPrice,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              if (product.isOnSale) ...[
-                const SizedBox(width: 8),
-                Text(
-                  product.formattedOriginalPrice,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        decoration: TextDecoration.lineThrough,
-                        color: Colors.grey,
+    final ThemeData theme = Theme.of(context);
+
+    return Semantics(
+      label: 'Sản phẩm ${product.name}, giá ${product.formattedPrice}',
+      button: true,
+      child: RepaintBoundary(
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _ListThumbnail(
+                    imageUrl: product.imageUrl, isOnSale: product.isOnSale),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
+                      const SizedBox(height: 4),
+                      _RatingRow(
+                          rating: product.rating,
+                          reviewCount: product.reviewCount),
+                      const SizedBox(height: 8),
+                      _PriceRow(product: product),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: 'Thêm vào giỏ',
+                  onPressed: () =>
+                      context.read<CartProvider>().addToCart(product),
+                  icon: const Icon(Icons.add_shopping_cart),
                 ),
               ],
-            ],
-          ),
-        ],
-      ),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Rating
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.star,
-                size: 16,
-                color: product.rating > 0 ? Colors.amber : Colors.grey,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                product.rating > 0 ? product.rating.toStringAsFixed(1) : 'N/A',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          // Favorite Button
-          IconButton(
-            onPressed: onFavoriteToggle,
-            icon: Icon(
-              Icons.favorite,
-              color: Colors.red.shade400,
-              size: 20,
             ),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProductImage extends StatelessWidget {
+  const _ProductImage({
+    required this.imageUrl,
+    required this.isOnSale,
+    required this.discount,
+  });
+
+  final String imageUrl;
+  final bool isOnSale;
+  final int discount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        AspectRatio(
+          aspectRatio: 1,
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
+            fit: BoxFit.cover,
+            placeholder: (BuildContext context, String url) =>
+                const ColoredBox(color: Color(0xFFEAEAEA)),
+            errorWidget: (BuildContext context, String url, Object error) =>
+                const Center(child: Icon(Icons.broken_image)),
+          ),
+        ),
+        if (isOnSale)
+          Positioned(
+            top: 8,
+            left: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.redAccent,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '-$discount%',
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ListThumbnail extends StatelessWidget {
+  const _ListThumbnail({
+    required this.imageUrl,
+    required this.isOnSale,
+  });
+
+  final String imageUrl;
+  final bool isOnSale;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: SizedBox(
+            width: 96,
+            height: 96,
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              placeholder: (BuildContext context, String url) =>
+                  const ColoredBox(color: Color(0xFFEAEAEA)),
+              errorWidget: (BuildContext context, String url, Object error) =>
+                  const Center(child: Icon(Icons.broken_image)),
+            ),
+          ),
+        ),
+        if (isOnSale)
+          Positioned(
+            top: 6,
+            left: 6,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.redAccent,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Text(
+                'SALE',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _RatingRow extends StatelessWidget {
+  const _RatingRow({
+    required this.rating,
+    required this.reviewCount,
+  });
+
+  final double rating;
+  final int reviewCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextStyle? textStyle = Theme.of(context).textTheme.bodySmall;
+
+    return Row(
+      children: [
+        const Icon(Icons.star, color: Color(0xFFFFB300), size: 16),
+        const SizedBox(width: 4),
+        Text(rating.toStringAsFixed(1), style: textStyle),
+        const SizedBox(width: 4),
+        Text('($reviewCount)', style: textStyle?.copyWith(color: Colors.grey)),
+      ],
+    );
+  }
+}
+
+class _PriceRow extends StatelessWidget {
+  const _PriceRow({
+    required this.product,
+  });
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
+    return Row(
+      children: [
+        Text(
+          product.formattedPrice,
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: 8),
+        if (product.isOnSale)
+          Text(
+            product.formattedOriginalPrice,
+            style: textTheme.bodySmall?.copyWith(
+              color: Colors.grey,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _AddToCartButton extends StatelessWidget {
+  const _AddToCartButton({
+    required this.product,
+  });
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () => context.read<CartProvider>().addToCart(product),
+        icon: const Icon(Icons.add_shopping_cart),
+        label: const Text('Thêm vào giỏ'),
       ),
     );
   }

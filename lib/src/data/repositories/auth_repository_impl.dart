@@ -93,15 +93,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<void>> sendOTP(String phone) async {
+  Future<Result<void>> requestOtp({
+    required String phone,
+  }) async {
     try {
       final response =
-          await apiClient.post('/auth/send-otp', data: {'phone': phone});
+          await apiClient.post('/auth/request-otp', data: {'phone': phone});
 
       if (response.statusCode == 200) {
         return const Success(null);
       } else {
-        return Failure('Failed to send OTP: ${response.data['message']}');
+        return Failure('Failed to request OTP: ${response.data['message']}');
       }
     } catch (e) {
       return Failure('Network error: $e');
@@ -109,7 +111,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<User>> verifyOTP({
+  Future<Result<User>> verifyOtp({
     required String phone,
     required String otp,
   }) async {
