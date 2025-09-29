@@ -47,6 +47,9 @@ class AuthProvider extends ChangeNotifier {
   final RegisterUseCase registerUseCase;
   final SecureStorage secureStorage;
 
+  /// Callback for successful authentication navigation
+  VoidCallback? _onAuthenticationSuccess;
+
   AuthState _state = const AuthState();
   AuthState get state => _state;
 
@@ -74,6 +77,9 @@ class AuthProvider extends ChangeNotifier {
         // Save token to secure storage
         await secureStorage.setSecureToken('mock_token_${data.id}');
         await secureStorage.setUserSession(data.toString());
+
+        // Trigger success callback
+        _onAuthenticationSuccess?.call();
 
       case Failure<User>(:final message):
         _state = _state.copyWith(
@@ -115,6 +121,9 @@ class AuthProvider extends ChangeNotifier {
         await secureStorage.setSecureToken('mock_token_${data.id}');
         await secureStorage.setUserSession(data.toString());
 
+        // Trigger success callback
+        _onAuthenticationSuccess?.call();
+
       case Failure<User>(:final message):
         _state = _state.copyWith(
           isLoading: false,
@@ -145,5 +154,16 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+  /// Set callback for successful authentication navigation
+  void setAuthenticationSuccessCallback(VoidCallback callback) {
+    _onAuthenticationSuccess = callback;
+  }
+
+  /// Handle successful authentication (call this after login/register success)
+  void onAuthenticationSuccess() {
+    _state = _state.copyWith(isAuthenticated: true);
+    notifyListeners();
   }
 }

@@ -82,6 +82,10 @@ abstract class AppStrings {
   static const String newPassword = 'Mật khẩu mới';
   static const String confirmNewPassword = 'Xác nhận mật khẩu mới';
 
+  // App Info
+  static const String appDescription =
+      'Ứng dụng mua sắm nước mắm Việt Nam chất lượng cao';
+
   // Support
   static const String helpCenter = 'Trung tâm hỗ trợ';
   static const String contactUs = 'Liên hệ chúng tôi';
