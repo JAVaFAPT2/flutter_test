@@ -109,7 +109,7 @@ class HomePage extends StatelessWidget {
                         title: 'Giỏ hàng',
                         subtitle: 'Xem giỏ hàng của bạn',
                         onTap: () {
-                          // Cart page will be implemented in Phase 3
+                          Navigator.of(context).pushNamed('/cart');
                         },
                       ),
                       _buildActionCard(

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../pages/cart_page.dart';
 import '../pages/home_page.dart';
 import '../pages/login_page.dart';
+import '../pages/product_detail_page.dart';
 import '../pages/products_page.dart';
 import '../pages/register_page.dart';
 import '../providers/auth_provider.dart';
@@ -40,7 +42,20 @@ class AppRouter {
         name: 'products',
         builder: (context, state) => const ProductsPage(),
       ),
-      // Additional routes for authenticated users will be added in Phase 3
+      GoRoute(
+        path: '/product-detail',
+        name: 'product-detail',
+        builder: (context, state) {
+          final product = state.extra as Product;
+          return ProductDetailPage(product: product);
+        },
+      ),
+      GoRoute(
+        path: '/cart',
+        name: 'cart',
+        builder: (context, state) => const CartPage(),
+      ),
+      // Additional routes for authenticated users will be added in Phase 4
     ],
     redirect: _handleRedirect,
     refreshListenable: _AuthRefreshListenable(),

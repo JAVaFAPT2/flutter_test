@@ -220,6 +220,7 @@ class _ProductsPageState extends State<ProductsPage> {
         return ProductCard(
           product: products[index],
           onTap: () => _navigateToProductDetail(products[index]),
+          showCartButton: true,
         );
       },
     );
@@ -269,16 +270,7 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   void _navigateToProductDetail(Product product) {
-    // Product detail page will be implemented in Phase 4
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Xem chi tiết: ${product.name}'),
-        action: SnackBarAction(
-          label: 'Đóng',
-          onPressed: () {},
-        ),
-      ),
-    );
+    Navigator.of(context).pushNamed('/product-detail', arguments: product);
   }
 }
 

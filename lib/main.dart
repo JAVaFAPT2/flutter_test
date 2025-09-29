@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'src/core/constants/app_constants.dart';
 import 'src/core/di/injection_container.dart' as di;
 import 'src/presentation/providers/auth_provider.dart';
+import 'src/presentation/providers/cart_provider.dart';
 import 'src/presentation/routes/app_router.dart';
 
 void main() async {
@@ -36,7 +37,11 @@ class VietnameseFishSauceApp extends StatelessWidget {
             return authProvider;
           },
         ),
-        // Additional providers will be added in Phase 3 (ProductProvider, CartProvider, etc.)
+        // Cart provider
+        ChangeNotifierProvider<CartProvider>(
+          create: (_) => CartProvider(),
+        ),
+        // Additional providers will be added in Phase 4
       ],
       child: MaterialApp.router(
         title: AppConstants.appName,

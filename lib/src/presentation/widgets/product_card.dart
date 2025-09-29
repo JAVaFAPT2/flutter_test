@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../domain/entities/product.dart';
+import '../providers/cart_provider.dart';
 
 /// Product card widget for grid/list display
 class ProductCard extends StatelessWidget {
@@ -11,6 +13,7 @@ class ProductCard extends StatelessWidget {
     this.onTap,
     this.onFavoriteToggle,
     this.showFavoriteButton = true,
+    this.showCartButton = true,
   });
 
   final Product product;
@@ -133,23 +136,64 @@ class ProductCard extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              // Favorite Button (if enabled)
-              if (showFavoriteButton)
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: IconButton(
-                    onPressed: onFavoriteToggle,
-                    icon: Icon(
-                      Icons.favorite,
-                      color: Colors.red.shade400,
-                      size: 20,
+              // Bottom Row with Cart and Favorite buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Cart Button (if enabled)
+                  if (showCartButton)
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed:
+                            product.inStock ? () => _addToCart(context) : null,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          product.inStock ? 'Thêm' : 'Hết hàng',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
                     ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ),
+
+                  if (showCartButton && showFavoriteButton)
+                    const SizedBox(width: 8),
+
+                  // Favorite Button (if enabled)
+                  if (showFavoriteButton)
+                    IconButton(
+                      onPressed: onFavoriteToggle,
+                      icon: Icon(
+                        Icons.favorite,
+                        color: Colors.red.shade400,
+                        size: 20,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                ],
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _addToCart(BuildContext context) {
+    context.read<CartProvider>().addToCart(product);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Đã thêm ${product.name} vào giỏ hàng'),
+        action: SnackBarAction(
+          label: 'Xem giỏ hàng',
+          onPressed: () {
+            Navigator.of(context).pushNamed('/cart');
+          },
         ),
       ),
     );
