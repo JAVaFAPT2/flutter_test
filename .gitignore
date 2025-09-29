@@ -46,6 +46,10 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 
+# Local Flutter SDK installation (should not be committed)
+flutter/
+flutter_linux_*.tar.xz
+
 # Android related
 **/android/**/gradle-wrapper.jar
 .gradle/
