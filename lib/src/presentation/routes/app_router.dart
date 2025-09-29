@@ -7,8 +7,10 @@ import '../pages/checkout_page.dart';
 import '../pages/home_page.dart';
 import '../pages/login_page.dart';
 import '../pages/order_confirmation_page.dart';
+import '../pages/order_history_page.dart';
 import '../pages/product_detail_page.dart';
 import '../pages/products_page.dart';
+import '../pages/profile_page.dart';
 import '../pages/register_page.dart';
 import '../providers/auth_provider.dart';
 
@@ -67,7 +69,17 @@ class AppRouter {
         name: 'order-confirmation',
         builder: (context, state) => const OrderConfirmationPage(),
       ),
-      // Additional routes for authenticated users will be added in Phase 5
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: '/order-history',
+        name: 'order-history',
+        builder: (context, state) => const OrderHistoryPage(),
+      ),
+      // Additional routes for authenticated users will be added in Phase 6
     ],
     redirect: _handleRedirect,
     refreshListenable: _AuthRefreshListenable(),

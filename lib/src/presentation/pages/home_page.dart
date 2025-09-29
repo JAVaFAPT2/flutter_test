@@ -118,7 +118,7 @@ class HomePage extends StatelessWidget {
                         title: 'Hồ sơ',
                         subtitle: 'Quản lý thông tin cá nhân',
                         onTap: () {
-                          // Profile page will be implemented in Phase 3
+                          Navigator.of(context).pushNamed('/profile');
                         },
                       ),
                     ],
