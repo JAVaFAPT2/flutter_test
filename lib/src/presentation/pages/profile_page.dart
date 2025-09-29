@@ -475,10 +475,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _navigateToSettings() {
-    // Settings page will be implemented in Phase 7
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Chức năng đang được phát triển')),
-    );
+    Navigator.of(context).pushNamed('/settings');
   }
 
   void _showLogoutDialog() {

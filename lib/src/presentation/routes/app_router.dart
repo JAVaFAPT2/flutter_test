@@ -14,6 +14,7 @@ import '../pages/product_detail_page.dart';
 import '../pages/products_page.dart';
 import '../pages/profile_page.dart';
 import '../pages/register_page.dart';
+import '../pages/settings_page.dart';
 import '../providers/auth_provider.dart';
 
 /// Application router configuration using Go Router
@@ -81,7 +82,12 @@ class AppRouter {
         name: 'order-history',
         builder: (context, state) => const OrderHistoryPage(),
       ),
-      // Additional routes for authenticated users will be added in Phase 6
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsPage(),
+      ),
+      // Additional routes for authenticated users will be added in Phase 7
     ],
     redirect: _handleRedirect,
     refreshListenable: _AuthRefreshListenable(),

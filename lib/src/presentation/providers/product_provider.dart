@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../../core/constants/app_constants.dart';
+import '../../core/errors/app_error.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/use_cases/product/get_products_use_case.dart';
 import '../../data/models/product_model.dart';
@@ -17,14 +18,14 @@ class ProductState {
 
   final List<Product> products;
   final bool isLoading;
-  final String? error;
+  final AppError? error;
   final bool hasMore;
   final int currentPage;
 
   ProductState copyWith({
     List<Product>? products,
     bool? isLoading,
-    String? error,
+    AppError? error,
     bool? hasMore,
     int? currentPage,
   }) {
@@ -145,7 +146,7 @@ class ProductProvider extends ChangeNotifier {
     } catch (e) {
       _state = _state.copyWith(
         isLoading: false,
-        error: 'Không thể tải sản phẩm: $e',
+        error: ErrorHandler.handleError(e),
       );
     }
 
