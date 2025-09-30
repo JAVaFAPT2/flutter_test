@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_strings.dart';
 
@@ -13,7 +14,8 @@ class OrderHistoryPage extends StatefulWidget {
 }
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
-  String _selectedFilter = 'all'; // all, pending, completed, cancelled
+  final ValueNotifier<String> _selectedFilter =
+      ValueNotifier<String>('all'); // all, pending, completed, cancelled
 
   // Mock order data
   final List<Map<String, dynamic>> _orders = [
@@ -98,11 +100,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Widget _buildFilterChip(String value, String label) {
     return FilterChip(
       label: Text(label),
-      selected: _selectedFilter == value,
+      selected: _selectedFilter.value == value,
       onSelected: (selected) {
-        setState(() {
-          _selectedFilter = selected ? value : 'all';
-        });
+        _selectedFilter.value = selected ? value : 'all';
       },
     );
   }
@@ -132,7 +132,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/products');
+              context.pushReplacement('/products');
             },
             child: const Text(AppStrings.continueShopping),
           ),
@@ -330,11 +330,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               title: const Text('Tất cả đơn hàng'),
               leading: Radio<String>(
                 value: 'all',
-                groupValue: _selectedFilter,
+                groupValue: _selectedFilter.value,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedFilter = value!;
-                  });
+                  _selectedFilter.value = value!;
                   Navigator.of(context).pop();
                 },
               ),
@@ -343,11 +341,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               title: const Text('Chờ xác nhận'),
               leading: Radio<String>(
                 value: 'pending',
-                groupValue: _selectedFilter,
+                groupValue: _selectedFilter.value,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedFilter = value!;
-                  });
+                  _selectedFilter.value = value!;
                   Navigator.of(context).pop();
                 },
               ),
@@ -356,11 +352,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               title: const Text('Đã hoàn thành'),
               leading: Radio<String>(
                 value: 'completed',
-                groupValue: _selectedFilter,
+                groupValue: _selectedFilter.value,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedFilter = value!;
-                  });
+                  _selectedFilter.value = value!;
                   Navigator.of(context).pop();
                 },
               ),
@@ -369,11 +363,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               title: const Text('Đã hủy'),
               leading: Radio<String>(
                 value: 'cancelled',
-                groupValue: _selectedFilter,
+                groupValue: _selectedFilter.value,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedFilter = value!;
-                  });
+                  _selectedFilter.value = value!;
                   Navigator.of(context).pop();
                 },
               ),

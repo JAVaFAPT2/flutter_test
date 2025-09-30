@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_strings.dart';
-import '../providers/cart_provider.dart';
+import '../../../features/cart/presentation/bloc/cart_bloc.dart' as cart_bloc;
 
 /// Order confirmation page after successful order placement
 class OrderConfirmationPage extends StatelessWidget {
@@ -189,9 +190,10 @@ class OrderConfirmationPage extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () {
               // Clear cart and navigate to products
-              context.read<CartProvider>().clearCart();
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/products', (route) => false);
+              context
+                  .read<cart_bloc.CartBloc>()
+                  .add(const cart_bloc.CartCleared());
+              context.go('/products');
             },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),

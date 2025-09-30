@@ -1,13 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
+﻿import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_strings.dart';
 import '../../domain/entities/product.dart';
-import '../providers/cart_provider.dart';
+import '../../../features/cart/presentation/bloc/cart_bloc.dart';
+import '../../../features/product/presentation/cubit/product_detail_cubit.dart';
 
 /// Detailed product view page with image gallery and specifications
-class ProductDetailPage extends StatefulWidget {
+class ProductDetailPage extends StatelessWidget {
   const ProductDetailPage({
     super.key,
     required this.product,
@@ -18,75 +20,63 @@ class ProductDetailPage extends StatefulWidget {
   static const String routeName = '/product-detail';
 
   @override
-  State<ProductDetailPage> createState() => _ProductDetailPageState();
-}
-
-class _ProductDetailPageState extends State<ProductDetailPage> {
-  int _selectedImageIndex = 0;
-  int _quantity = 1;
-  bool _isFavorite = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkIfFavorite();
-  }
-
-  Future<void> _checkIfFavorite() async {
-    // Favorite functionality will be implemented in Phase 5
-    setState(() {
-      _isFavorite = false; // Mock implementation
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product.name),
+        title: Text(product.name),
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         actions: [
-          IconButton(
-            icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border),
-            onPressed: _toggleFavorite,
+          BlocProvider(
+            create: (_) => ProductDetailCubit(),
+            child: BlocBuilder<ProductDetailCubit, ProductDetailState>(
+              builder: (context, s) {
+                return IconButton(
+                  icon: Icon(s.isFavorite ? Icons.favorite : Icons.favorite_border),
+                  onPressed: () => context.read<ProductDetailCubit>().toggleFavorite(),
+                );
+              },
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.share),
-            onPressed: _shareProduct,
+            onPressed: () => _shareProduct(context),
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: BlocProvider(
+        create: (_) => ProductDetailCubit(),
+        child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image Gallery Section
-            _buildImageGallery(),
+            _buildImageGallery(context),
 
             // Product Information Section
-            _buildProductInfo(),
+            _buildProductInfo(context),
 
             // Specifications Section
-            _buildSpecifications(),
+            _buildSpecifications(context),
 
             // Reviews Section
-            _buildReviewsSection(),
+            _buildReviewsSection(context),
 
             // Related Products Section
-            _buildRelatedProducts(),
+            _buildRelatedProducts(context),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(),
+      ),
+      bottomNavigationBar: _buildBottomBar(context),
     );
   }
 
-  Widget _buildImageGallery() {
+  Widget _buildImageGallery(BuildContext context) {
     // Mock additional images for gallery
     final imageUrls = [
-      widget.product.imageUrl,
+      product.imageUrl,
       'https://via.placeholder.com/400x400/1976D2/FFFFFF?text=Ảnh+2',
       'https://via.placeholder.com/400x400/4CAF50/FFFFFF?text=Ảnh+3',
       'https://via.placeholder.com/400x400/FF9800/FFFFFF?text=Ảnh+4',
@@ -100,7 +90,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           // Main Image
           Positioned.fill(
             child: CachedNetworkImage(
-              imageUrl: imageUrls[_selectedImageIndex],
+              imageUrl: imageUrls[context.watch<ProductDetailCubit>().state.selectedImageIndex],
               placeholder: (context, url) => const Center(
                 child: CircularProgressIndicator(),
               ),
@@ -133,9 +123,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _selectedImageIndex = index;
-                      });
+                      context.read<ProductDetailCubit>().selectImage(index);
                     },
                     child: Container(
                       width: 64,
@@ -143,7 +131,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: _selectedImageIndex == index
+                          color: context.watch<ProductDetailCubit>().state.selectedImageIndex == index
                               ? Colors.white
                               : Colors.transparent,
                           width: 2,
@@ -175,7 +163,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                '${_selectedImageIndex + 1}/${imageUrls.length}',
+                '${context.watch<ProductDetailCubit>().state.selectedImageIndex + 1}/${imageUrls.length}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -189,7 +177,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildProductInfo() {
+  Widget _buildProductInfo(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -200,7 +188,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             children: [
               Expanded(
                 child: Text(
-                  widget.product.name,
+                  product.name,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -213,7 +201,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  widget.product.brand,
+                  product.brand,
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,
@@ -238,14 +226,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    widget.product.rating.toStringAsFixed(1),
+                    product.rating.toStringAsFixed(1),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '(${widget.product.reviewCount} đánh giá)',
+                    '(${product.reviewCount} đánh giá)',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -257,15 +245,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: widget.product.inStock
+                  color: product.inStock
                       ? Colors.green.shade100
                       : Colors.red.shade100,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  widget.product.inStock ? 'Còn hàng' : 'Hết hàng',
+                  product.inStock ? 'Còn hàng' : 'Hết hàng',
                   style: TextStyle(
-                    color: widget.product.inStock
+                    color: product.inStock
                         ? Colors.green.shade700
                         : Colors.red.shade700,
                     fontSize: 12,
@@ -284,23 +272,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                widget.product.formattedPrice,
+                product.formattedPrice,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Theme.of(context).primaryColor,
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(width: 12),
-              if (widget.product.isOnSale)
+              if (product.isOnSale)
                 Text(
-                  widget.product.formattedOriginalPrice,
+                  product.formattedOriginalPrice,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         decoration: TextDecoration.lineThrough,
                         color: Colors.grey,
                       ),
                 ),
               const Spacer(),
-              if (widget.product.isOnSale)
+              if (product.isOnSale)
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -309,7 +297,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    'GIẢM ${widget.product.discountPercentage}%',
+                    'GIẢM ${product.discountPercentage}%',
                     style: TextStyle(
                       color: Colors.red.shade700,
                       fontWeight: FontWeight.bold,
@@ -331,7 +319,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            widget.product.description,
+            product.description,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
 
@@ -347,7 +335,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
               const SizedBox(width: 4),
               Text(
-                'Xuất xứ: ${widget.product.origin}',
+                'Xuất xứ: ${product.origin}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey[600],
                     ),
@@ -359,7 +347,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildSpecifications() {
+  Widget _buildSpecifications(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.only(bottom: 16),
@@ -377,19 +365,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
           ),
           const SizedBox(height: 12),
-          _buildSpecRow('Dung tích', widget.product.volume),
-          _buildSpecRow('Thành phần', widget.product.ingredients.join(', ')),
-          _buildSpecRow('Xuất xứ', widget.product.origin),
-          if (widget.product.nutritionInfo != null)
-            ...widget.product.nutritionInfo!.entries.map(
-              (entry) => _buildSpecRow(entry.key, entry.value),
+          _buildSpecRow(context, 'Dung tích', product.volume),
+          _buildSpecRow(context, 'Thành phần', product.ingredients.join(', ')),
+          _buildSpecRow(context, 'Xuất xứ', product.origin),
+          if (product.nutritionInfo != null)
+            ...product.nutritionInfo!.entries.map(
+              (entry) => _buildSpecRow(context, entry.key, entry.value),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildSpecRow(String label, String value) {
+  Widget _buildSpecRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -417,7 +405,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildReviewsSection() {
+  Widget _buildReviewsSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -433,7 +421,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
               const Spacer(),
               TextButton(
-                onPressed: _showAllReviews,
+                onPressed: () => _showAllReviews(context),
                 child: const Text('Xem tất cả'),
               ),
             ],
@@ -445,7 +433,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           Row(
             children: [
               Text(
-                widget.product.rating.toStringAsFixed(1),
+                product.rating.toStringAsFixed(1),
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -457,7 +445,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   Row(
                     children: List.generate(5, (index) {
                       return Icon(
-                        index < widget.product.rating.round()
+                        index < product.rating.round()
                             ? Icons.star
                             : Icons.star_border,
                         color: Colors.amber,
@@ -466,7 +454,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     }),
                   ),
                   Text(
-                    '${widget.product.reviewCount} đánh giá',
+                    '${product.reviewCount} đánh giá',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -527,7 +515,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildRelatedProducts() {
+  Widget _buildRelatedProducts(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -611,8 +599,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildBottomBar() {
-    if (!widget.product.inStock) {
+  Widget _buildBottomBar(BuildContext context) {
+    if (!product.inStock) {
       return Container(
         padding: const EdgeInsets.all(16),
         color: Colors.grey.shade100,
@@ -651,8 +639,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             child: Row(
               children: [
                 IconButton(
-                  onPressed:
-                      _quantity > 1 ? () => setState(() => _quantity--) : null,
+                  onPressed: () => context.read<ProductDetailCubit>().decrementQuantity(),
                   icon: const Icon(Icons.remove),
                   padding: const EdgeInsets.all(8),
                 ),
@@ -660,16 +647,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   width: 40,
                   alignment: Alignment.center,
                   child: Text(
-                    _quantity.toString(),
+                    context.watch<ProductDetailCubit>().state.quantity.toString(),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                 ),
                 IconButton(
-                  onPressed: _quantity < widget.product.stockQuantity
-                      ? () => setState(() => _quantity++)
-                      : null,
+                  onPressed: () => context.read<ProductDetailCubit>().incrementQuantity(product.stockQuantity),
                   icon: const Icon(Icons.add),
                   padding: const EdgeInsets.all(8),
                 ),
@@ -682,7 +667,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           // Add to Cart Button
           Expanded(
             child: ElevatedButton(
-              onPressed: _addToCart,
+              onPressed: () => _addToCart(context),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -703,45 +688,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  void _toggleFavorite() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
-    // Favorite functionality will be implemented in Phase 5
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isFavorite ? 'Đã thêm vào yêu thích' : 'Đã xóa khỏi yêu thích',
-        ),
-      ),
-    );
-  }
-
-  void _shareProduct() {
+  void _shareProduct(BuildContext context) {
     // Share functionality will be implemented in Phase 5
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Chia sẻ sản phẩm')),
     );
   }
 
-  void _showAllReviews() {
+  void _showAllReviews(BuildContext context) {
     // All reviews page will be implemented in Phase 5
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Xem tất cả đánh giá')),
     );
   }
 
-  void _addToCart() {
-    // Add to cart functionality
-    context.read<CartProvider>().addToCart(widget.product, quantity: _quantity);
-
+  void _addToCart(BuildContext context) {
+    final qty = context.read<ProductDetailCubit>().state.quantity;
+    context.read<CartBloc>().add(CartItemAdded(product: product, quantity: qty));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Đã thêm $_quantity sản phẩm vào giỏ hàng'),
+        content: Text('Đã thêm $qty sản phẩm vào giỏ hàng'),
         action: SnackBarAction(
           label: 'Xem giỏ hàng',
           onPressed: () {
-            Navigator.of(context).pushNamed('/cart');
+            context.push('/cart');
           },
         ),
       ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/entities/product.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../pages/cart_page.dart';
 import '../pages/checkout_page.dart';
@@ -17,7 +17,7 @@ import '../pages/profile_page.dart';
 import '../pages/register_page.dart';
 import '../pages/settings_page.dart';
 import '../pages/intro_page.dart';
-import '../providers/auth_provider.dart';
+import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 
 /// Application router configuration using Go Router
 class AppRouter {
@@ -29,7 +29,7 @@ class AppRouter {
   static GoRouter get router => _router;
 
   static final GoRouter _router = GoRouter(
-    initialLocation: intro,
+    initialLocation: login,
     debugLogDiagnostics: true,
     routes: [
       GoRoute(
@@ -111,12 +111,18 @@ class AppRouter {
 
   /// Handle route redirection based on authentication state
   static String? _handleRedirect(BuildContext context, GoRouterState state) {
-    final authProvider = context.read<AuthProvider>();
-    final isAuthenticated = authProvider.state.isAuthenticated;
+    final authBloc = context.read<AuthBloc>();
+    final isAuthenticated = authBloc.state.isAuthenticated;
     final isPublicRoute = state.matchedLocation == intro;
     final isAuthRoute = state.matchedLocation == login ||
         state.matchedLocation == register ||
         isPublicRoute;
+    final isHomeRoute = state.matchedLocation == home;
+
+    // Allow access to home page regardless of auth state (no auth required)
+    if (isHomeRoute) {
+      return null;
+    }
 
     // If not authenticated and not on public/auth routes, redirect to intro
     if (!isAuthenticated && !isAuthRoute) {
@@ -136,7 +142,6 @@ class AppRouter {
 /// Listenable for Go Router to refresh when auth state changes
 class _AuthRefreshListenable extends ChangeNotifier {
   _AuthRefreshListenable() {
-    // Listen to auth provider changes
-    // This will be set up when the app initializes
+    // In Bloc, GoRouter refresh can be wired via router refresh stream; placeholder
   }
 }

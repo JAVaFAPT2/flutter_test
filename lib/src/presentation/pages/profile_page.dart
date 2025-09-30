@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_strings.dart';
 import '../../domain/entities/user.dart';
-import '../providers/auth_provider.dart';
+import '../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../widgets/auth_text_field.dart';
 
 /// User profile page for managing personal information
@@ -29,9 +31,6 @@ class _ProfilePageState extends State<ProfilePage> {
   final _districtController = TextEditingController();
   final _wardController = TextEditingController();
 
-  bool _isEditing = false;
-  bool _isLoading = false;
-
   @override
   void initState() {
     super.initState();
@@ -51,7 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _loadUserProfile() {
-    final user = context.read<AuthProvider>().state.user;
+    final user = context.read<AuthBloc>().state.user;
     if (user != null) {
       _fullNameController.text = user.fullName;
       _emailController.text = user.email ?? '';
@@ -70,57 +69,68 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         actions: [
-          TextButton(
-            onPressed: _isEditing ? _saveProfile : _toggleEditMode,
-            child: Text(
-              _isEditing ? AppStrings.save : AppStrings.edit,
-              style: const TextStyle(color: Colors.white),
-            ),
+          BlocBuilder<ProfileCubit, ProfileState>(
+            builder: (context, state) {
+              return TextButton(
+                onPressed: state.isEditing
+                    ? () => _saveProfile(context.read<ProfileCubit>())
+                    : () => _toggleEditMode(context.read<ProfileCubit>()),
+                child: Text(
+                  state.isEditing ? AppStrings.save : AppStrings.edit,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              );
+            },
           ),
         ],
       ),
-      body: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) {
-          final user = authProvider.state.user;
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider<ProfileCubit>(create: (_) => ProfileCubit()),
+        ],
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            final user = authState.user;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Profile Header
-                _buildProfileHeader(user),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Profile Header
+                  _buildProfileHeader(user),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // Profile Form
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Personal Information Section
-                      _buildSectionHeader('Thông tin cá nhân'),
-                      _buildPersonalInfoForm(),
+                  // Profile Form
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Personal Information Section
+                        _buildSectionHeader('Thông tin cá nhân'),
+                        _buildPersonalInfoForm(),
 
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                      // Address Information Section
-                      _buildSectionHeader('Địa chỉ giao hàng'),
-                      _buildAddressForm(),
+                        // Address Information Section
+                        _buildSectionHeader('Địa chỉ giao hàng'),
+                        _buildAddressForm(),
 
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                      // Account Actions Section
-                      _buildSectionHeader('Tài khoản'),
-                      _buildAccountActions(),
-                    ],
+                        // Account Actions Section
+                        _buildSectionHeader('Tài khoản'),
+                        _buildAccountActions(),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -240,7 +250,7 @@ class _ProfilePageState extends State<ProfilePage> {
             controller: _fullNameController,
             labelText: AppStrings.fullName,
             prefixIcon: const Icon(Icons.person),
-            enabled: _isEditing,
+            enabled: context.watch<ProfileCubit>().state.isEditing,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Vui lòng nhập họ và tên';
@@ -257,7 +267,7 @@ class _ProfilePageState extends State<ProfilePage> {
             labelText: AppStrings.email,
             keyboardType: TextInputType.emailAddress,
             prefixIcon: const Icon(Icons.email),
-            enabled: _isEditing,
+            enabled: context.watch<ProfileCubit>().state.isEditing,
             validator: (value) {
               if (value != null && value.isNotEmpty) {
                 final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
@@ -277,7 +287,7 @@ class _ProfilePageState extends State<ProfilePage> {
             labelText: AppStrings.phoneNumber,
             keyboardType: TextInputType.phone,
             prefixIcon: const Icon(Icons.phone),
-            enabled: _isEditing,
+            enabled: context.watch<ProfileCubit>().state.isEditing,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Vui lòng nhập số điện thoại';
@@ -308,7 +318,7 @@ class _ProfilePageState extends State<ProfilePage> {
             controller: _addressController,
             labelText: AppStrings.address,
             prefixIcon: const Icon(Icons.home),
-            enabled: _isEditing,
+            enabled: context.watch<ProfileCubit>().state.isEditing,
             maxLines: 2,
           ),
 
@@ -321,7 +331,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: AuthTextField(
                   controller: _cityController,
                   labelText: AppStrings.city,
-                  enabled: _isEditing,
+                  enabled: context.watch<ProfileCubit>().state.isEditing,
                 ),
               ),
               const SizedBox(width: 12),
@@ -329,7 +339,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: AuthTextField(
                   controller: _districtController,
                   labelText: AppStrings.district,
-                  enabled: _isEditing,
+                  enabled: context.watch<ProfileCubit>().state.isEditing,
                 ),
               ),
             ],
@@ -341,7 +351,7 @@ class _ProfilePageState extends State<ProfilePage> {
           AuthTextField(
             controller: _wardController,
             labelText: AppStrings.ward,
-            enabled: _isEditing,
+            enabled: context.watch<ProfileCubit>().state.isEditing,
           ),
         ],
       ),
@@ -437,24 +447,19 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _toggleEditMode() {
-    setState(() {
-      _isEditing = !_isEditing;
-    });
+  void _toggleEditMode(ProfileCubit cubit) {
+    cubit.toggleEditMode();
   }
 
-  void _saveProfile() {
+  void _saveProfile(ProfileCubit cubit) {
     if (_formKey.currentState?.validate() == true) {
-      setState(() {
-        _isEditing = false;
-        _isLoading = true;
-      });
+      cubit.stopLoading();
+      cubit.toggleEditMode();
+      cubit.startLoading();
 
       // Profile update will be implemented in Phase 7
       Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isLoading = false;
-        });
+        cubit.stopLoading();
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Cập nhật thông tin thành công')),
@@ -471,11 +476,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _navigateToOrderHistory() {
-    Navigator.of(context).pushNamed('/order-history');
+    context.push('/order-history');
   }
 
   void _navigateToSettings() {
-    Navigator.of(context).pushNamed('/settings');
+    context.push('/settings');
   }
 
   void _showLogoutDialog() {
@@ -492,7 +497,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              context.read<AuthProvider>().logout();
+              context.read<AuthBloc>().add(const AuthLogoutRequested());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

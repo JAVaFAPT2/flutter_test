@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-
-import '../providers/auth_provider.dart';
 
 /// Home page for authenticated users with banners and categories
 class HomePage extends StatefulWidget {
@@ -37,138 +34,131 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Trang chủ'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _handleLogout(context),
+            icon: const Icon(Icons.person),
+            onPressed: () => context.push('/profile'),
           ),
         ],
       ),
-      body: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) {
-          final user = authProvider.state.user;
-
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Welcome
-                      _buildWelcomeCard(user?.fullName),
-                      const SizedBox(height: 16),
-                      // Banner Carousel
-                      _buildBannerCarousel(),
-                      const SizedBox(height: 8),
-                      _buildBannerIndicators(),
-                      const SizedBox(height: 16),
-                      // Categories title
-                      Text(
-                        'Danh mục',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Welcome
+                  _buildWelcomeCard(),
+                  const SizedBox(height: 16),
+                  // Banner Carousel
+                  _buildBannerCarousel(),
+                  const SizedBox(height: 8),
+                  _buildBannerIndicators(),
+                  const SizedBox(height: 16),
+                  // Categories title
+                  Text(
+                    'Danh mục',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                ],
               ),
-              // Categories grid
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            ),
+          ),
+          // Categories grid
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.1,
+              ),
+              delegate: SliverChildListDelegate.fixed([
+                _buildCategoryTile(
+                  title: 'Vĩnh Thái',
+                  subtitle: 'Danh mục',
+                  color: const Color(0xFFE3F2FD),
+                  icon: Icons.local_mall,
+                  onTap: () => context.push('/products', extra: 'Vĩnh Thái'),
+                ),
+                _buildCategoryTile(
+                  title: 'Xuân Thịnh Mậu',
+                  subtitle: 'Danh mục',
+                  color: const Color(0xFFFFE0B2),
+                  icon: Icons.water_drop,
+                  onTap: () =>
+                      context.push('/products', extra: 'Xuân Thịnh Mậu'),
+                ),
+              ]),
+            ),
+          ),
+          // Quick actions
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Khám phá',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  GridView.count(
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: 1.1,
-                  ),
-                  delegate: SliverChildListDelegate.fixed([
-                    _buildCategoryTile(
-                      title: 'Vĩnh Thái',
-                      subtitle: 'Danh mục',
-                      color: const Color(0xFFE3F2FD),
-                      icon: Icons.local_mall,
-                      onTap: () =>
-                          context.push('/products', extra: 'Vĩnh Thái'),
-                    ),
-                    _buildCategoryTile(
-                      title: 'Xuân Thịnh Mậu',
-                      subtitle: 'Danh mục',
-                      color: const Color(0xFFFFE0B2),
-                      icon: Icons.water_drop,
-                      onTap: () =>
-                          context.push('/products', extra: 'Xuân Thịnh Mậu'),
-                    ),
-                  ]),
-                ),
-              ),
-              // Quick actions
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
-                      Text(
-                        'Khám phá',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                      _buildActionCard(
+                        context,
+                        icon: Icons.store,
+                        title: 'Sản phẩm',
+                        subtitle: 'Danh sách sản phẩm',
+                        onTap: () => context.push('/products'),
                       ),
-                      const SizedBox(height: 8),
-                      GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          _buildActionCard(
-                            context,
-                            icon: Icons.store,
-                            title: 'Sản phẩm',
-                            subtitle: 'Danh sách sản phẩm',
-                            onTap: () => context.push('/products'),
-                          ),
-                          _buildActionCard(
-                            context,
-                            icon: Icons.shopping_cart,
-                            title: 'Giỏ hàng',
-                            subtitle: 'Xem giỏ hàng',
-                            onTap: () => context.push('/cart'),
-                          ),
-                          _buildActionCard(
-                            context,
-                            icon: Icons.receipt_long,
-                            title: 'Đơn hàng',
-                            subtitle: 'Theo dõi đơn',
-                            onTap: () => context.push('/order-history'),
-                          ),
-                          _buildActionCard(
-                            context,
-                            icon: Icons.person,
-                            title: 'Cá nhân',
-                            subtitle: 'Thông tin của bạn',
-                            onTap: () => context.push('/profile'),
-                          ),
-                        ],
+                      _buildActionCard(
+                        context,
+                        icon: Icons.shopping_cart,
+                        title: 'Giỏ hàng',
+                        subtitle: 'Xem giỏ hàng',
+                        onTap: () => context.push('/cart'),
+                      ),
+                      _buildActionCard(
+                        context,
+                        icon: Icons.receipt_long,
+                        title: 'Đơn hàng',
+                        subtitle: 'Theo dõi đơn',
+                        onTap: () => context.push('/order-history'),
+                      ),
+                      _buildActionCard(
+                        context,
+                        icon: Icons.person,
+                        title: 'Cá nhân',
+                        subtitle: 'Thông tin của bạn',
+                        onTap: () => context.push('/profile'),
                       ),
                     ],
                   ),
-                ),
+                ],
               ),
-            ],
-          );
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildWelcomeCard(String? fullName) {
+  Widget _buildWelcomeCard() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -183,22 +173,22 @@ class _HomePageState extends State<HomePage> {
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Xin chào, ${fullName ?? 'Khách hàng'}!',
-            style: const TextStyle(
+            'Xin chào, Khách hàng!',
+            style: TextStyle(
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Chào mừng bạn đến MGF',
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.95),
+              color: Colors.white,
               fontSize: 16,
             ),
           ),
@@ -346,33 +336,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _handleLogout(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Đăng xuất'),
-        content: const Text('Bạn có chắc chắn muốn đăng xuất không?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Hủy'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              context.read<AuthProvider>().logout();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Đăng xuất'),
-          ),
-        ],
       ),
     );
   }

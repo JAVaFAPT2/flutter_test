@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_strings.dart';
-import '../providers/auth_provider.dart';
-import '../providers/cart_provider.dart';
+import '../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../features/cart/presentation/bloc/cart_bloc.dart';
 import '../widgets/loading_button.dart';
 
 /// Checkout page for order placement
@@ -28,7 +29,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   final _wardController = TextEditingController();
 
   // Payment method
-  String _selectedPaymentMethod = 'cod'; // cod, bank_transfer, ewallet
+  final ValueNotifier<String> _selectedPaymentMethod = ValueNotifier<String>('cod'); // cod, bank_transfer, ewallet
 
   // Order notes
   final _notesController = TextEditingController();
@@ -48,11 +49,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
     _districtController.dispose();
     _wardController.dispose();
     _notesController.dispose();
+    _selectedPaymentMethod.dispose();
     super.dispose();
   }
 
   void _initializeUserData() {
-    final user = context.read<AuthProvider>().state.user;
+    final user = context.read<AuthBloc>().state.user;
     if (user != null) {
       _fullNameController.text = user.fullName;
       _phoneController.text = user.phone;
@@ -71,9 +73,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
       ),
-      body: Consumer<CartProvider>(
-        builder: (context, cartProvider, child) {
-          if (cartProvider.state.items.isEmpty) {
+      body: BlocBuilder<CartBloc, CartState>(
+        builder: (context, cartState) {
+          if (cartState.items.isEmpty) {
             return _buildEmptyCartView();
           }
 
@@ -98,7 +100,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
                   // Order Summary Section
                   _buildSectionHeader(AppStrings.orderSummary),
-                  _buildOrderSummary(cartProvider),
+                  _buildOrderSummary(context),
 
                   const SizedBox(height: 24),
 
@@ -111,9 +113,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   // Place Order Button
                   LoadingButton(
                     isLoading: false, // Loading state will be added in Phase 6
-                    onPressed: _placeOrder,
+                    onPressed: () => _placeOrder(context),
                     child: Text(
-                      '${AppStrings.placeOrder} - ${cartProvider.state.formattedTotalPrice}',
+                      '${AppStrings.placeOrder} - ${context.read<CartBloc>().state.totalPrice.toStringAsFixed(0)}₫',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -154,7 +156,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/products');
+              context.pushReplacement('/products');
             },
             child: const Text(AppStrings.continueShopping),
           ),
@@ -348,25 +350,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
-          color: _selectedPaymentMethod == value
+          color: (_selectedPaymentMethod.value == value)
               ? Theme.of(context).primaryColor
               : Colors.grey.shade300,
-          width: _selectedPaymentMethod == value ? 2 : 1,
+          width: (_selectedPaymentMethod.value == value) ? 2 : 1,
         ),
         borderRadius: BorderRadius.circular(8),
       ),
       child: RadioListTile<String>(
         value: value,
-        groupValue: _selectedPaymentMethod,
+        groupValue: _selectedPaymentMethod.value,
         onChanged: (selectedValue) {
-          setState(() {
-            _selectedPaymentMethod = selectedValue!;
-          });
+          if (selectedValue != null) {
+            _selectedPaymentMethod.value = selectedValue;
+          }
         },
         title: Text(
           title,
           style: TextStyle(
-            fontWeight: _selectedPaymentMethod == value
+            fontWeight: (_selectedPaymentMethod.value == value)
                 ? FontWeight.bold
                 : FontWeight.normal,
           ),
@@ -374,7 +376,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         subtitle: Text(subtitle),
         secondary: Icon(
           icon,
-          color: _selectedPaymentMethod == value
+          color: (_selectedPaymentMethod.value == value)
               ? Theme.of(context).primaryColor
               : Colors.grey,
         ),
@@ -384,7 +386,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildOrderSummary(CartProvider cartProvider) {
+  Widget _buildOrderSummary(BuildContext context) {
+    final cartState = context.watch<CartBloc>().state;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -395,7 +398,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       child: Column(
         children: [
           // Cart Items Summary
-          ...cartProvider.state.items.map((item) {
+          ...cartState.items.map((item) {
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
@@ -471,7 +474,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                     const Spacer(),
                     Text(
-                      '${cartProvider.state.totalPrice.toStringAsFixed(0)}₫',
+                      '${cartState.totalPrice.toStringAsFixed(0)}₫',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -503,7 +506,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                     const Spacer(),
                     Text(
-                      '${(cartProvider.state.totalPrice * 0.1).toStringAsFixed(0)}₫',
+                      '${(cartState.totalPrice * 0.1).toStringAsFixed(0)}₫',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -522,7 +525,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                     const Spacer(),
                     Text(
-                      '${(cartProvider.state.totalPrice * 1.1 + 30000).toStringAsFixed(0)}₫',
+                      '${(cartState.totalPrice * 1.1 + 30000).toStringAsFixed(0)}₫',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).primaryColor,
@@ -557,7 +560,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  void _placeOrder() {
+  void _placeOrder(BuildContext context) {
     if (_formKey.currentState?.validate() == true) {
       // Order placement will be implemented in Phase 6
       ScaffoldMessenger.of(context).showSnackBar(
@@ -568,7 +571,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       );
 
       // Navigate to order confirmation
-      Navigator.of(context).pushNamed('/order-confirmation');
+      context.push('/order-confirmation');
     }
   }
 }
