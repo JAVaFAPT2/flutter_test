@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_strings.dart';
-import '../../../features/cart/presentation/bloc/cart_bloc.dart';
+import '../../../features/cart/presentation/bloc/cart_bloc.dart' as cart_bloc;
 
 /// Order confirmation page after successful order placement
 class OrderConfirmationPage extends StatelessWidget {
@@ -190,7 +190,9 @@ class OrderConfirmationPage extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () {
               // Clear cart and navigate to products
-              context.read<CartBloc>().add(ClearCart());
+              context
+                  .read<cart_bloc.CartBloc>()
+                  .add(const cart_bloc.CartCleared());
               context.go('/products');
             },
             style: ElevatedButton.styleFrom(

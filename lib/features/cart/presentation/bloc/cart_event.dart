@@ -1,4 +1,4 @@
-part of 'cart_bloc.dart';
+part of '../bloc/cart_bloc.dart';
 
 abstract class CartEvent extends Equatable {
   const CartEvent();
@@ -18,7 +18,8 @@ class CartItemRemoved extends CartEvent {
 }
 
 class CartItemQuantityUpdated extends CartEvent {
-  const CartItemQuantityUpdated({required this.productId, required this.quantity});
+  const CartItemQuantityUpdated(
+      {required this.productId, required this.quantity});
   final String productId;
   final int quantity;
 }
@@ -26,4 +27,3 @@ class CartItemQuantityUpdated extends CartEvent {
 class CartCleared extends CartEvent {
   const CartCleared();
 }
-

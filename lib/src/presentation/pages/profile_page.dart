@@ -31,7 +31,6 @@ class _ProfilePageState extends State<ProfilePage> {
   final _districtController = TextEditingController();
   final _wardController = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();
@@ -73,7 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
           BlocBuilder<ProfileCubit, ProfileState>(
             builder: (context, state) {
               return TextButton(
-                onPressed: state.isEditing 
+                onPressed: state.isEditing
                     ? () => _saveProfile(context.read<ProfileCubit>())
                     : () => _toggleEditMode(context.read<ProfileCubit>()),
                 child: Text(
@@ -93,44 +92,45 @@ class _ProfilePageState extends State<ProfilePage> {
           builder: (context, authState) {
             final user = authState.user;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Profile Header
-                _buildProfileHeader(user),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Profile Header
+                  _buildProfileHeader(user),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // Profile Form
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Personal Information Section
-                      _buildSectionHeader('Thông tin cá nhân'),
-                      _buildPersonalInfoForm(),
+                  // Profile Form
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Personal Information Section
+                        _buildSectionHeader('Thông tin cá nhân'),
+                        _buildPersonalInfoForm(),
 
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                      // Address Information Section
-                      _buildSectionHeader('Địa chỉ giao hàng'),
-                      _buildAddressForm(),
+                        // Address Information Section
+                        _buildSectionHeader('Địa chỉ giao hàng'),
+                        _buildAddressForm(),
 
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                      // Account Actions Section
-                      _buildSectionHeader('Tài khoản'),
-                      _buildAccountActions(),
-                    ],
+                        // Account Actions Section
+                        _buildSectionHeader('Tài khoản'),
+                        _buildAccountActions(),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -655,10 +655,6 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           child: const Text('Đổi mật khẩu'),
         ),
       ],
-    );
-          },
-        ),
-      ),
     );
   }
 }
