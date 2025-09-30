@@ -27,5 +27,34 @@ const String kSvgLoginTopRight =
     'assets/begin_login_register/login/Hình góc phải.svg';
 const String kSvgLoginAccent =
     'assets/begin_login_register/login/Graphic xanh.svg';
+// PNG fallbacks for login (exported/renamed under assets/login)
+const String kPngLoginBackground = 'assets/login/background.png';
+const String kPngLoginTopRight = 'assets/login/topRight.png';
+const String kPngLoginAccent = 'assets/login/graphicGreen.png';
 const String kSvgBackButton =
     'assets/begin_login_register/login/Back button.svg';
+
+// PNG fallback for Login back button (renamed asset under assets/login)
+const String kPngLoginBackButton = 'assets/login/backButton.png';
+
+/// Register screen assets
+const String kSvgBackgroundRegister =
+    'assets/begin_login_register/register/Nền.svg';
+const String kSvgRegisterTopRight =
+    'assets/begin_login_register/register/Hình góc phải.svg';
+const String kSvgRegisterAccent =
+    'assets/begin_login_register/register/Graphic xanh.svg';
+const String kSvgRegisterBackButton =
+    'assets/begin_login_register/register/Back button.svg';
+const String kSvgRegisterCheckIcon =
+    'assets/begin_login_register/register/Check icon.svg';
+
+/// Register PNG assets (for SmartAssetImage fallback)
+const String kPngRegisterBackground =
+    'assets/begin_login_register/register/Nền.png';
+const String kPngRegisterRightPic =
+    'assets/begin_login_register/register/rightpic.png';
+const String kPngRegisterLeftButton =
+    'assets/begin_login_register/register/leftbutton.png';
+const String kPngRegisterGraphicGreen =
+    'assets/begin_login_register/register/graphicGreen.png';

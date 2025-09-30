@@ -15,7 +15,7 @@ dependencies:
 
   # State Management - Bloc (replacing Provider for UI state)
   flutter_bloc: ^9.0.0
-  bloc_concurrency: ^0.2.5
+  bloc_concurrency: 0.3.0
 
   # Networking - Dio with interceptors and connection pooling
   dio: ^5.4.3+1
@@ -73,7 +73,8 @@ flutter:
   assets:
     # Leaf folders only (each contains actual files)
     - assets/begin_login_register/main/
-    - assets/begin_login_register/login/
+    - assets/begin_login_register/register/
+    - assets/login/
     - assets/add_to_cart/
     - assets/main_page/
     - assets/product_page/

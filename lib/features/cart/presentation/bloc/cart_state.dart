@@ -8,7 +8,10 @@ class CartItem extends Equatable {
 
   double get totalPrice => product.displayPrice * quantity;
 
-  CartItem copyWith({domain.Product? product, int? quantity, DateTime? addedAt}) {
+  String get formattedTotalPrice => '${totalPrice.toStringAsFixed(0)}đ';
+
+  CartItem copyWith(
+      {domain.Product? product, int? quantity, DateTime? addedAt}) {
     return CartItem(
       product: product ?? this.product,
       quantity: quantity ?? this.quantity,
@@ -21,7 +24,8 @@ class CartItem extends Equatable {
 }
 
 class CartState extends Equatable {
-  const CartState({this.items = const [], this.isLoading = false, this.errorMessage});
+  const CartState(
+      {this.items = const [], this.isLoading = false, this.errorMessage});
   final List<CartItem> items;
   final bool isLoading;
   final String? errorMessage;
@@ -29,7 +33,8 @@ class CartState extends Equatable {
   int get totalItems => items.fold(0, (s, i) => s + i.quantity);
   double get totalPrice => items.fold(0.0, (s, i) => s + i.totalPrice);
 
-  CartState copyWith({List<CartItem>? items, bool? isLoading, String? errorMessage}) {
+  CartState copyWith(
+      {List<CartItem>? items, bool? isLoading, String? errorMessage}) {
     return CartState(
       items: items ?? this.items,
       isLoading: isLoading ?? this.isLoading,
@@ -40,4 +45,3 @@ class CartState extends Equatable {
   @override
   List<Object?> get props => [items, isLoading, errorMessage];
 }
-

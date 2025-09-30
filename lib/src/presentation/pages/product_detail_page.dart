@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+﻿import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -41,7 +41,7 @@ class ProductDetailPage extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.share),
-            onPressed: _shareProduct,
+            onPressed: () => _shareProduct(context),
           ),
         ],
       ),
@@ -58,13 +58,13 @@ class ProductDetailPage extends StatelessWidget {
             _buildProductInfo(context),
 
             // Specifications Section
-            _buildSpecifications(),
+            _buildSpecifications(context),
 
             // Reviews Section
-            _buildReviewsSection(),
+            _buildReviewsSection(context),
 
             // Related Products Section
-            _buildRelatedProducts(),
+            _buildRelatedProducts(context),
           ],
         ),
       ),
@@ -347,7 +347,7 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSpecifications() {
+  Widget _buildSpecifications(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.only(bottom: 16),
@@ -365,19 +365,19 @@ class ProductDetailPage extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 12),
-          _buildSpecRow('Dung tích', widget.product.volume),
-          _buildSpecRow('Thành phần', product.ingredients.join(', ')),
-          _buildSpecRow('Xuất xứ', product.origin),
-          if (widget.product.nutritionInfo != null)
+          _buildSpecRow(context, 'Dung tích', product.volume),
+          _buildSpecRow(context, 'Thành phần', product.ingredients.join(', ')),
+          _buildSpecRow(context, 'Xuất xứ', product.origin),
+          if (product.nutritionInfo != null)
             ...product.nutritionInfo!.entries.map(
-              (entry) => _buildSpecRow(entry.key, entry.value),
+              (entry) => _buildSpecRow(context, entry.key, entry.value),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildSpecRow(String label, String value) {
+  Widget _buildSpecRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -405,7 +405,7 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildReviewsSection() {
+  Widget _buildReviewsSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -421,7 +421,7 @@ class ProductDetailPage extends StatelessWidget {
               ),
               const Spacer(),
               TextButton(
-                onPressed: _showAllReviews,
+                onPressed: () => _showAllReviews(context),
                 child: const Text('Xem tất cả'),
               ),
             ],
@@ -433,7 +433,7 @@ class ProductDetailPage extends StatelessWidget {
           Row(
             children: [
               Text(
-                widget.product.rating.toStringAsFixed(1),
+                product.rating.toStringAsFixed(1),
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -445,7 +445,7 @@ class ProductDetailPage extends StatelessWidget {
                   Row(
                     children: List.generate(5, (index) {
                       return Icon(
-                        index < widget.product.rating.round()
+                        index < product.rating.round()
                             ? Icons.star
                             : Icons.star_border,
                         color: Colors.amber,
@@ -454,7 +454,7 @@ class ProductDetailPage extends StatelessWidget {
                     }),
                   ),
                   Text(
-                    '${widget.product.reviewCount} đánh giá',
+                    '${product.reviewCount} đánh giá',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -515,7 +515,7 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRelatedProducts() {
+  Widget _buildRelatedProducts(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -688,14 +688,14 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  void _shareProduct() {
+  void _shareProduct(BuildContext context) {
     // Share functionality will be implemented in Phase 5
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Chia sẻ sản phẩm')),
     );
   }
 
-  void _showAllReviews() {
+  void _showAllReviews(BuildContext context) {
     // All reviews page will be implemented in Phase 5
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Xem tất cả đánh giá')),

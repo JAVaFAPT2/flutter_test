@@ -1,6 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,133 +43,137 @@ class OtpVerificationPage extends StatelessWidget {
               final formKey = GlobalKey<FormState>();
               final otpController = TextEditingController();
               return SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Logo/Brand Section
-                    Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.only(bottom: 32.0),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.sms,
-                            size: 80,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            AppConstants.appName,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Mã OTP đã được gửi đến',
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: Colors.grey[600],
-                                    ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            widget.phone,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // OTP Field
-                    AuthTextField(
-                      controller: otpController,
-                      labelText: AppStrings.enterOTP,
-                      hintText: '123456',
-                      keyboardType: TextInputType.number,
-                      maxLength: 6,
-                      prefixIcon: const Icon(Icons.sms),
-                      validator: _validateOTP,
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // Resend OTP Section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          context.watch<OtpCubit>().state.canResend
-                              ? 'Không nhận được mã? '
-                              : 'Gửi lại mã sau ${context.watch<OtpCubit>().state.countdown}s',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Logo/Brand Section
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.only(bottom: 32.0),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.sms,
+                              size: 80,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              AppConstants.appName,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Mã OTP đã được gửi đến',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              phone,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                        if (context.watch<OtpCubit>().state.canResend)
-                          TextButton(
-                            onPressed: () => _handleResendOTP(context),
-                            child: Text(
-                              AppStrings.sendOTP,
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.bold,
+                      ),
+
+                      // OTP Field
+                      AuthTextField(
+                        controller: otpController,
+                        labelText: AppStrings.enterOTP,
+                        hintText: '123456',
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
+                        prefixIcon: const Icon(Icons.sms),
+                        validator: _validateOTP,
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Resend OTP Section
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            context.watch<OtpCubit>().state.canResend
+                                ? 'Không nhận được mã? '
+                                : 'Gửi lại mã sau ${context.watch<OtpCubit>().state.countdown}s',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          if (context.watch<OtpCubit>().state.canResend)
+                            TextButton(
+                              onPressed: () => _handleResendOTP(context),
+                              child: Text(
+                                AppStrings.sendOTP,
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Error Message
+                      if (error != null) ErrorMessage(message: error),
+
+                      const SizedBox(height: 16),
+
+                      // Verify Button
+                      LoadingButton(
+                        isLoading: isLoading,
+                        onPressed: () =>
+                            _handleVerifyOTP(context, formKey, otpController),
+                        child: const Text(
+                          AppStrings.verifyOTP,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Error Message
-                    if (error != null) ErrorMessage(message: error),
-
-                    const SizedBox(height: 16),
-
-                    // Verify Button
-                    LoadingButton(
-                      isLoading: isLoading,
-                      onPressed: () => _handleVerifyOTP(context, formKey, otpController),
-                      child: const Text(
-                        AppStrings.verifyOTP,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                    // Change Phone Number
-                    TextButton(
-                      onPressed: () => _handleChangePhone(context),
-                      child: Text(
-                        'Thay đổi số điện thoại',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
+                      // Change Phone Number
+                      TextButton(
+                        onPressed: () => _handleChangePhone(context),
+                        child: Text(
+                          'Thay đổi số điện thoại',
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
+              );
             },
+          ),
         ),
       ),
     );
@@ -187,10 +189,12 @@ class OtpVerificationPage extends StatelessWidget {
     return null;
   }
 
-  void _handleVerifyOTP(BuildContext context, GlobalKey<FormState> formKey, TextEditingController otpController) {
+  void _handleVerifyOTP(BuildContext context, GlobalKey<FormState> formKey,
+      TextEditingController otpController) {
     if (formKey.currentState?.validate() == true) {
       FocusScope.of(context).unfocus();
-      context.read<AuthBloc>().add(AuthOtpVerifyRequested(phone: phone, otp: otpController.text.trim()));
+      context.read<AuthBloc>().add(
+          AuthOtpVerifyRequested(phone: phone, otp: otpController.text.trim()));
     }
   }
 

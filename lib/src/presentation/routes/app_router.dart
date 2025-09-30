@@ -29,7 +29,7 @@ class AppRouter {
   static GoRouter get router => _router;
 
   static final GoRouter _router = GoRouter(
-    initialLocation: intro,
+    initialLocation: login,
     debugLogDiagnostics: true,
     routes: [
       GoRoute(
@@ -117,6 +117,12 @@ class AppRouter {
     final isAuthRoute = state.matchedLocation == login ||
         state.matchedLocation == register ||
         isPublicRoute;
+    final isHomeRoute = state.matchedLocation == home;
+
+    // Allow access to home page regardless of auth state (no auth required)
+    if (isHomeRoute) {
+      return null;
+    }
 
     // If not authenticated and not on public/auth routes, redirect to intro
     if (!isAuthenticated && !isAuthRoute) {

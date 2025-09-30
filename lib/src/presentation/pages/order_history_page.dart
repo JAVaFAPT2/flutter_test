@@ -14,7 +14,8 @@ class OrderHistoryPage extends StatefulWidget {
 }
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
-  final ValueNotifier<String> _selectedFilter = ValueNotifier<String>('all'); // all, pending, completed, cancelled
+  final ValueNotifier<String> _selectedFilter =
+      ValueNotifier<String>('all'); // all, pending, completed, cancelled
 
   // Mock order data
   final List<Map<String, dynamic>> _orders = [
@@ -329,7 +330,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               title: const Text('Tất cả đơn hàng'),
               leading: Radio<String>(
                 value: 'all',
-                groupValue: _selectedFilter,
+                groupValue: _selectedFilter.value,
                 onChanged: (value) {
                   _selectedFilter.value = value!;
                   Navigator.of(context).pop();
@@ -340,7 +341,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               title: const Text('Chờ xác nhận'),
               leading: Radio<String>(
                 value: 'pending',
-                groupValue: _selectedFilter,
+                groupValue: _selectedFilter.value,
                 onChanged: (value) {
                   _selectedFilter.value = value!;
                   Navigator.of(context).pop();
@@ -351,7 +352,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               title: const Text('Đã hoàn thành'),
               leading: Radio<String>(
                 value: 'completed',
-                groupValue: _selectedFilter,
+                groupValue: _selectedFilter.value,
                 onChanged: (value) {
                   _selectedFilter.value = value!;
                   Navigator.of(context).pop();
@@ -362,7 +363,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               title: const Text('Đã hủy'),
               leading: Radio<String>(
                 value: 'cancelled',
-                groupValue: _selectedFilter,
+                groupValue: _selectedFilter.value,
                 onChanged: (value) {
                   _selectedFilter.value = value!;
                   Navigator.of(context).pop();

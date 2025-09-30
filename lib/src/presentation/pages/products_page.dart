@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,12 +38,12 @@ class ProductsPage extends StatelessWidget {
           // Search button
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: _showSearchDialog,
+            onPressed: () => _showSearchDialog(context),
           ),
           // Filter button
           IconButton(
             icon: const Icon(Icons.filter_list),
-            onPressed: _showFilterDialog,
+            onPressed: () => _showFilterDialog(context),
           ),
           // View toggle button
           BlocBuilder<ProductsViewCubit, ProductsViewState>(
@@ -72,7 +72,7 @@ class ProductsPage extends StatelessWidget {
           },
         ),
       ),
-      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButton: _buildFloatingActionButton(scrollController),
     );
   }
 
@@ -200,7 +200,7 @@ class ProductsPage extends StatelessWidget {
       itemBuilder: (context, index) {
         return ProductCard(
           product: products[index],
-          onTap: () => _navigateToProductDetail(products[index]),
+          onTap: () => _navigateToProductDetail(context, products[index]),
           showCartButton: true,
         );
       },
@@ -216,17 +216,17 @@ class ProductsPage extends StatelessWidget {
       itemBuilder: (context, index) {
         return ProductListItem(
           product: products[index],
-          onTap: () => _navigateToProductDetail(products[index]),
+          onTap: () => _navigateToProductDetail(context, products[index]),
         );
       },
     );
   }
 
-  Widget _buildFloatingActionButton() {
+  Widget _buildFloatingActionButton(ScrollController scrollController) {
     return FloatingActionButton(
       onPressed: () {
         // Scroll to top
-        _scrollController.animateTo(
+        scrollController.animateTo(
           0,
           duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
@@ -236,21 +236,21 @@ class ProductsPage extends StatelessWidget {
     );
   }
 
-  void _showSearchDialog() {
+  void _showSearchDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => const ProductSearchDialog(),
     );
   }
 
-  void _showFilterDialog() {
+  void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => const ProductFilterDialog(),
     );
   }
 
-  void _navigateToProductDetail(Product product) {
+  void _navigateToProductDetail(BuildContext context, Product product) {
     context.push('/product-detail', extra: product);
   }
 }
