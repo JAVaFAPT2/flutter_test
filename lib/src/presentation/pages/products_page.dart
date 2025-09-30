@@ -319,8 +319,6 @@ class ProductFilterDialog extends StatefulWidget {
 }
 
 class _ProductFilterDialogState extends State<ProductFilterDialog> {
-  String? _selectedCategory;
-  String? _selectedBrand;
   String? _sortBy = 'name';
 
   @override
@@ -341,13 +339,17 @@ class _ProductFilterDialogState extends State<ProductFilterDialog> {
             Wrap(
               spacing: 8,
               children: AppConstants.productCategories.map((category) {
-                return FilterChip(
-                  label: Text(category),
-                  selected: _selectedCategory == category,
-                  onSelected: (selected) {
-                    setState(() {
-                      _selectedCategory = selected ? category : null;
-                    });
+                return BlocBuilder<ProductsViewCubit, ProductsViewState>(
+                  builder: (context, state) {
+                    return FilterChip(
+                      label: Text(category),
+                      selected: state.selectedCategory == category,
+                      onSelected: (selected) {
+                        context.read<ProductsViewCubit>().updateCategoryFilter(
+                          selected ? category : null,
+                        );
+                      },
+                    );
                   },
                 );
               }).toList(),
@@ -364,13 +366,17 @@ class _ProductFilterDialogState extends State<ProductFilterDialog> {
             Wrap(
               spacing: 8,
               children: AppConstants.productBrands.map((brand) {
-                return FilterChip(
-                  label: Text(brand),
-                  selected: _selectedBrand == brand,
-                  onSelected: (selected) {
-                    setState(() {
-                      _selectedBrand = selected ? brand : null;
-                    });
+                return BlocBuilder<ProductsViewCubit, ProductsViewState>(
+                  builder: (context, state) {
+                    return FilterChip(
+                      label: Text(brand),
+                      selected: state.selectedBrand == brand,
+                      onSelected: (selected) {
+                        context.read<ProductsViewCubit>().updateBrandFilter(
+                          selected ? brand : null,
+                        );
+                      },
+                    );
                   },
                 );
               }).toList(),
@@ -426,17 +432,21 @@ class _ProductFilterDialogState extends State<ProductFilterDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text(AppStrings.cancel),
         ),
-        ElevatedButton(
-          onPressed: () {
-            // Apply filters
-            context.read<ProductBloc>().add(ProductFilterChanged(
-                  category: _selectedCategory,
-                  brand: _selectedBrand,
-                  sortBy: _sortBy,
-                ));
-            Navigator.of(context).pop();
+        BlocBuilder<ProductsViewCubit, ProductsViewState>(
+          builder: (context, state) {
+            return ElevatedButton(
+              onPressed: () {
+                // Apply filters
+                context.read<ProductBloc>().add(ProductFilterChanged(
+                      category: state.selectedCategory,
+                      brand: state.selectedBrand,
+                      sortBy: _sortBy,
+                    ));
+                Navigator.of(context).pop();
+              },
+              child: const Text(AppStrings.confirm),
+            );
           },
-          child: const Text(AppStrings.confirm),
         ),
       ],
     );
