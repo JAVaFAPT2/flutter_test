@@ -1,13 +1,13 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_strings.dart';
-import '../../core/errors/app_error.dart';
 import '../../domain/entities/product.dart';
 import '../../../features/product/presentation/bloc/product_bloc.dart';
 import '../../../features/product/presentation/cubit/products_view_cubit.dart';
+import '../../../features/product/presentation/views/product_detail_page.dart';
 import '../widgets/product_card.dart';
 import '../widgets/loading_shimmer.dart';
 import '../widgets/error_message.dart';
@@ -68,7 +68,8 @@ class ProductsPage extends StatelessWidget {
             if (state.errorMessage != null && state.products.isEmpty) {
               return _buildErrorView(context, state.errorMessage!);
             }
-            return _buildProductsView(context, state.products, scrollController);
+            return _buildProductsView(
+                context, state.products, scrollController);
           },
         ),
       ),
@@ -95,7 +96,9 @@ class ProductsPage extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                context.read<ProductBloc>().add(const ProductRefreshRequested());
+                context
+                    .read<ProductBloc>()
+                    .add(const ProductRefreshRequested());
               },
               child: const Text(AppStrings.retry),
             ),
@@ -105,7 +108,8 @@ class ProductsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildProductsView(BuildContext context, List<Product> products, ScrollController scrollController) {
+  Widget _buildProductsView(BuildContext context, List<Product> products,
+      ScrollController scrollController) {
     final isGridView = context.watch<ProductsViewCubit>().state.isGridView;
     if (products.isEmpty) {
       return _buildEmptyView(context);
@@ -138,8 +142,9 @@ class ProductsPage extends StatelessWidget {
 
         // Products List/Grid
         Expanded(
-          child:
-              isGridView ? _buildGridView(context, products, scrollController) : _buildListView(context, products, scrollController),
+          child: isGridView
+              ? _buildGridView(context, products, scrollController)
+              : _buildListView(context, products, scrollController),
         ),
 
         // Load More Indicator
@@ -186,7 +191,8 @@ class ProductsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildGridView(BuildContext context, List<Product> products, ScrollController scrollController) {
+  Widget _buildGridView(BuildContext context, List<Product> products,
+      ScrollController scrollController) {
     return GridView.builder(
       controller: scrollController,
       padding: const EdgeInsets.all(16),
@@ -207,7 +213,8 @@ class ProductsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildListView(BuildContext context, List<Product> products, ScrollController scrollController) {
+  Widget _buildListView(BuildContext context, List<Product> products,
+      ScrollController scrollController) {
     return ListView.separated(
       controller: scrollController,
       padding: const EdgeInsets.all(16),
@@ -251,7 +258,7 @@ class ProductsPage extends StatelessWidget {
   }
 
   void _navigateToProductDetail(BuildContext context, Product product) {
-    context.push('/product-detail', extra: product);
+    context.push(ProductDetailPage.routeName, extra: product);
   }
 }
 
@@ -319,6 +326,8 @@ class ProductFilterDialog extends StatefulWidget {
 }
 
 class _ProductFilterDialogState extends State<ProductFilterDialog> {
+  String? _selectedCategory;
+  String? _selectedBrand;
   String? _sortBy = 'name';
 
   @override
@@ -339,17 +348,13 @@ class _ProductFilterDialogState extends State<ProductFilterDialog> {
             Wrap(
               spacing: 8,
               children: AppConstants.productCategories.map((category) {
-                return BlocBuilder<ProductsViewCubit, ProductsViewState>(
-                  builder: (context, state) {
-                    return FilterChip(
-                      label: Text(category),
-                      selected: state.selectedCategory == category,
-                      onSelected: (selected) {
-                        context.read<ProductsViewCubit>().updateCategoryFilter(
-                          selected ? category : null,
-                        );
-                      },
-                    );
+                return FilterChip(
+                  label: Text(category),
+                  selected: _selectedCategory == category,
+                  onSelected: (selected) {
+                    setState(() {
+                      _selectedCategory = selected ? category : null;
+                    });
                   },
                 );
               }).toList(),
@@ -366,17 +371,13 @@ class _ProductFilterDialogState extends State<ProductFilterDialog> {
             Wrap(
               spacing: 8,
               children: AppConstants.productBrands.map((brand) {
-                return BlocBuilder<ProductsViewCubit, ProductsViewState>(
-                  builder: (context, state) {
-                    return FilterChip(
-                      label: Text(brand),
-                      selected: state.selectedBrand == brand,
-                      onSelected: (selected) {
-                        context.read<ProductsViewCubit>().updateBrandFilter(
-                          selected ? brand : null,
-                        );
-                      },
-                    );
+                return FilterChip(
+                  label: Text(brand),
+                  selected: _selectedBrand == brand,
+                  onSelected: (selected) {
+                    setState(() {
+                      _selectedBrand = selected ? brand : null;
+                    });
                   },
                 );
               }).toList(),
@@ -432,21 +433,17 @@ class _ProductFilterDialogState extends State<ProductFilterDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text(AppStrings.cancel),
         ),
-        BlocBuilder<ProductsViewCubit, ProductsViewState>(
-          builder: (context, state) {
-            return ElevatedButton(
-              onPressed: () {
-                // Apply filters
-                context.read<ProductBloc>().add(ProductFilterChanged(
-                      category: state.selectedCategory,
-                      brand: state.selectedBrand,
-                      sortBy: _sortBy,
-                    ));
-                Navigator.of(context).pop();
-              },
-              child: const Text(AppStrings.confirm),
-            );
+        ElevatedButton(
+          onPressed: () {
+            // Apply filters
+            context.read<ProductBloc>().add(ProductFilterChanged(
+                  category: _selectedCategory,
+                  brand: _selectedBrand,
+                  sortBy: _sortBy,
+                ));
+            Navigator.of(context).pop();
           },
+          child: const Text(AppStrings.confirm),
         ),
       ],
     );

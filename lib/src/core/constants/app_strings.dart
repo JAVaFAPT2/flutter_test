@@ -14,7 +14,10 @@ abstract class AppStrings {
   static const String verifyOTP = 'Xác minh mã OTP';
   static const String loginPrompt =
       'Vui lòng đăng nhập để tiếp tục quá trình mua hàng!';
+  static const String registerPrompt =
+      'Vui lòng điền đầy đủ thông tin để tạo tài khoản mới!';
   static const String noAccountPrompt = 'Bạn chưa có tài khoản?';
+  static const String hasAccountPrompt = 'Bạn có tài khoản rồi?';
 
   // Navigation
   static const String home = 'Trang chủ';

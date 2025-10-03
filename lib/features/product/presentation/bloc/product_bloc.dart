@@ -3,16 +3,18 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../../src/domain/entities/product.dart' as domain;
-import '../../../../src/domain/use_cases/product/get_products_use_case.dart';
-import '../../../../src/core/constants/app_constants.dart';
-import '../../../../src/data/models/product_model.dart';
+import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'
+    as domain;
+import 'package:vietnamese_fish_sauce_app/src/domain/use_cases/product/get_products_use_case.dart';
+import 'package:vietnamese_fish_sauce_app/src/core/constants/app_constants.dart';
+import 'package:vietnamese_fish_sauce_app/src/data/models/product_model.dart';
 
 part 'product_event.dart';
 part 'product_state.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
-  ProductBloc({required this.getProductsUseCase}) : super(const ProductState()) {
+  ProductBloc({required this.getProductsUseCase})
+      : super(const ProductState()) {
     on<ProductLoadRequested>(_onLoadRequested);
     on<ProductLoadMoreRequested>(_onLoadMoreRequested);
     on<ProductRefreshRequested>(_onRefreshRequested);
@@ -96,7 +98,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     ProductFilterChanged event,
     Emitter<ProductState> emit,
   ) async {
-    emit(state.copyWith(category: event.category, brand: event.brand, sortBy: event.sortBy));
+    emit(state.copyWith(
+        category: event.category, brand: event.brand, sortBy: event.sortBy));
     add(ProductLoadRequested(page: 1, limit: event.limit));
   }
 
@@ -117,7 +120,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     if (search != null && search.isNotEmpty) {
       final q = search.toLowerCase();
       result = result
-          .where((p) => p.name.toLowerCase().contains(q) ||
+          .where((p) =>
+              p.name.toLowerCase().contains(q) ||
               p.description.toLowerCase().contains(q) ||
               p.brand.toLowerCase().contains(q))
           .toList();
@@ -141,4 +145,3 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     return result;
   }
 }
-

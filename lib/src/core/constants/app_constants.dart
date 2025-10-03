@@ -56,8 +56,7 @@ abstract class AppConstants {
           'Nước mắm cao cấp được sản xuất từ cá cơm tươi nguyên chất, ủ chượp theo phương pháp truyền thống Việt Nam.',
       'price': 85000.0,
       'originalPrice': 95000.0,
-      'imageUrl':
-          'https://via.placeholder.com/300x300/1976D2/FFFFFF?text=MGF+500ml',
+      'imageUrl': 'assets/figma_exports/product_xtm_500ml.png',
       'category': 'Nước Mắm Cao Đạm',
       'brand': 'MGF Premium',
       'volume': '500ml',
@@ -78,8 +77,7 @@ abstract class AppConstants {
           'Nước mắm truyền thống từ làng nghề Vĩnh Thái, được sản xuất theo công thức gia truyền.',
       'price': 45000.0,
       'originalPrice': 45000.0,
-      'imageUrl':
-          'https://via.placeholder.com/300x300/4CAF50/FFFFFF?text=Vinh+Thai+330ml',
+      'imageUrl': 'assets/figma_exports/product_vinh_thai.png',
       'category': 'Nước Mắm Cốt',
       'brand': 'Vĩnh Thái',
       'volume': '330ml',
@@ -100,8 +98,7 @@ abstract class AppConstants {
           'Nước mắm đặc biệt từ vùng biển miền Trung, hương vị đậm đà và tự nhiên.',
       'price': 65000.0,
       'originalPrice': 65000.0,
-      'imageUrl':
-          'https://via.placeholder.com/300x300/FF9800/FFFFFF?text=Xuan+Thinh+Mau+250ml',
+      'imageUrl': 'assets/figma_exports/product_xtm_500ml.png',
       'category': 'Nước Mắm Đặc Biệt',
       'brand': 'Xuân Thịnh Mậu',
       'volume': '250ml',
@@ -122,8 +119,7 @@ abstract class AppConstants {
           'Nước mắm truyền thống Việt Nam, phù hợp cho gia đình và nhà hàng.',
       'price': 120000.0,
       'originalPrice': 120000.0,
-      'imageUrl':
-          'https://via.placeholder.com/300x300/9C27B0/FFFFFF?text=Traditional+1L',
+      'imageUrl': 'assets/figma_exports/mgf_logo.png',
       'category': 'Nước Mắm Pha Sẵn',
       'brand': 'Traditional',
       'volume': '1L',

@@ -39,12 +39,14 @@ dependencies:
 
   # UI Components
   flutter_svg: ^2.0.10+1
+  shimmer: ^3.0.0
 
   # Utilities
   intl: 0.20.2
   uuid: ^4.4.0
   equatable: ^2.0.5
   freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
 
   # Localization
   flutter_localizations:
@@ -57,6 +59,10 @@ dev_dependencies:
   build_runner: ^2.4.12
   freezed: ^2.5.7
   json_serializable: ^6.8.0
+  
+  # Testing
+  bloc_test: ^10.0.0
+  mockito: ^5.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -76,12 +82,7 @@ flutter:
     - assets/begin_login_register/register/
     - assets/login/
     - assets/add_to_cart/
-    - assets/main_page/
-    - assets/product_page/
-    - assets/product_detail/
-    - assets/cart_page/
-    - assets/finalize_order/
-    - assets/profile_customer_service_announcement/
+    - assets/figma_exports/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -108,3 +109,18 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  # Custom fonts - COMMENTED OUT until font files are downloaded
+  # To enable: Download fonts from Google Fonts and place in assets/fonts/
+  # See assets/fonts/README.md for instructions
+  # fonts:
+  #   - family: Poppins
+  #     fonts:
+  #       - asset: assets/fonts/Poppins-Regular.ttf
+  #         weight: 400
+  #       - asset: assets/fonts/Poppins-Bold.ttf
+  #         weight: 700
+  #   - family: Gayathri
+  #     fonts:
+  #       - asset: assets/fonts/Gayathri-Bold.ttf
+  #         weight: 700

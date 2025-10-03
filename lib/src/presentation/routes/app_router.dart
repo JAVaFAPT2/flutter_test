@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../domain/entities/product.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../pages/cart_page.dart';
-import '../pages/checkout_page.dart';
-import '../pages/home_page.dart';
-import '../pages/login_page.dart';
-import '../pages/order_confirmation_page.dart';
-import '../pages/order_history_page.dart';
-import '../pages/otp_verification_page.dart';
-import '../pages/product_detail_page.dart';
-import '../pages/products_page.dart';
-import '../pages/profile_page.dart';
-import '../pages/register_page.dart';
-import '../pages/settings_page.dart';
-import '../pages/intro_page.dart';
-import '../../../features/auth/presentation/bloc/auth_bloc.dart';
+// import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'; // Removed - using productId instead
+
+// Feature imports - Clean Architecture
+import 'package:vietnamese_fish_sauce_app/features/auth/presentation/views/login_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/auth/presentation/views/register_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/auth/presentation/views/otp_verification_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:vietnamese_fish_sauce_app/features/intro/presentation/views/intro_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/home/presentation/views/home_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/cart/presentation/views/cart_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/cart/presentation/views/checkout_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/presentation/views/products_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/presentation/views/product_detail_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/profile/presentation/views/profile_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/profile/presentation/views/settings_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_confirmation_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_history_page.dart';
 
 /// Application router configuration using Go Router
 class AppRouter {
@@ -29,7 +30,7 @@ class AppRouter {
   static GoRouter get router => _router;
 
   static final GoRouter _router = GoRouter(
-    initialLocation: login,
+    initialLocation: intro,
     debugLogDiagnostics: true,
     routes: [
       GoRoute(
@@ -66,11 +67,11 @@ class AppRouter {
         builder: (context, state) => const ProductsPage(),
       ),
       GoRoute(
-        path: '/product-detail',
+        path: '/product/:id',
         name: 'product-detail',
         builder: (context, state) {
-          final product = state.extra as Product;
-          return ProductDetailPage(product: product);
+          final productId = state.pathParameters['id']!;
+          return ProductDetailPage(productId: productId);
         },
       ),
       GoRoute(
@@ -118,9 +119,10 @@ class AppRouter {
         state.matchedLocation == register ||
         isPublicRoute;
     final isHomeRoute = state.matchedLocation == home;
-
-    // Allow access to home page regardless of auth state (no auth required)
-    if (isHomeRoute) {
+    final isProductRoute = state.matchedLocation.startsWith('/product/');
+    //TODO: Update back to using auth state instead of allowing access to home and product detail pages regardless of auth state
+    // Allow access to home and product detail pages regardless of auth state
+    if (isHomeRoute || isProductRoute) {
       return null;
     }
 

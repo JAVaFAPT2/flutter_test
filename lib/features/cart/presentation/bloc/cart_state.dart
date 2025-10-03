@@ -1,26 +1,52 @@
 part of 'cart_bloc.dart';
 
 class CartItem extends Equatable {
-  const CartItem({required this.product, required this.quantity, this.addedAt});
+  const CartItem({
+    required this.product,
+    required this.quantity,
+    this.addedAt,
+    this.volume,
+    this.unitPrice,
+  });
   final domain.Product product;
   final int quantity;
   final DateTime? addedAt;
+  final String? volume;
+  final int? unitPrice;
 
-  double get totalPrice => product.displayPrice * quantity;
+  /// Get the variant key for this cart item (productId + volume)
+  String get variantKey =>
+      volume != null ? '${product.id}_$volume' : product.id;
+
+  /// Get the effective unit price (from variant or product)
+  double get effectiveUnitPrice =>
+      unitPrice?.toDouble() ?? product.displayPrice;
+
+  double get totalPrice => effectiveUnitPrice * quantity;
 
   String get formattedTotalPrice => '${totalPrice.toStringAsFixed(0)}đ';
 
-  CartItem copyWith(
-      {domain.Product? product, int? quantity, DateTime? addedAt}) {
+  String get displayName =>
+      volume != null ? '${product.name} ($volume)' : product.name;
+
+  CartItem copyWith({
+    domain.Product? product,
+    int? quantity,
+    DateTime? addedAt,
+    String? volume,
+    int? unitPrice,
+  }) {
     return CartItem(
       product: product ?? this.product,
       quantity: quantity ?? this.quantity,
       addedAt: addedAt ?? this.addedAt,
+      volume: volume ?? this.volume,
+      unitPrice: unitPrice ?? this.unitPrice,
     );
   }
 
   @override
-  List<Object?> get props => [product, quantity, addedAt];
+  List<Object?> get props => [product, quantity, addedAt, volume, unitPrice];
 }
 
 class CartState extends Equatable {

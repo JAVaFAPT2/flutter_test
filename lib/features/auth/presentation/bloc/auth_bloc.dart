@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../../src/domain/entities/user.dart' as domain;
-import '../../../../src/domain/use_cases/auth/login_use_case.dart';
-import '../../../../src/domain/use_cases/auth/otp_verification_use_case.dart';
-import '../../../../src/domain/use_cases/auth/register_use_case.dart';
-import '../../../../src/domain/value_objects/result.dart';
-import '../../../../src/data/datasources/local/secure_storage.dart';
+import 'package:vietnamese_fish_sauce_app/src/domain/entities/user.dart'
+    as domain;
+import 'package:vietnamese_fish_sauce_app/src/domain/use_cases/auth/login_use_case.dart';
+import 'package:vietnamese_fish_sauce_app/src/domain/use_cases/auth/otp_verification_use_case.dart';
+import 'package:vietnamese_fish_sauce_app/src/domain/use_cases/auth/register_use_case.dart';
+import 'package:vietnamese_fish_sauce_app/src/domain/value_objects/result.dart';
+import 'package:vietnamese_fish_sauce_app/src/data/datasources/local/secure_storage.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -131,4 +132,3 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 }
-
