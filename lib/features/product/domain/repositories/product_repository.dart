@@ -11,6 +11,7 @@ abstract class ProductRepository {
   /// Get list of products with optional filters
   Future<List<ProductEntity>> list({
     String? category,
+    String? brand,
     int? limit,
     int? offset,
   });
@@ -18,6 +19,7 @@ abstract class ProductRepository {
   /// Watch list of products with optional filters (stream)
   Stream<List<ProductEntity>> watchList({
     String? category,
+    String? brand,
     int? limit,
   });
 

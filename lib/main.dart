@@ -5,11 +5,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'src/core/constants/app_constants.dart';
 import 'src/core/di/injection_container.dart' as di;
-import 'src/presentation/routes/app_router.dart';
+import 'app/routes/app_router.dart';
 import 'core/design_system/app_theme.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/cart/presentation/bloc/cart_bloc.dart';
+import 'shared/cubit/navigation_cubit.dart';
 import 'core/fake/fake_firestore.dart';
 
 void main() async {
@@ -17,9 +18,6 @@ void main() async {
 
   // Initialize dependency injection
   await di.initializeDependencies();
-
-  // Seed fake database for local development
-  await FakeFirestore.instance.seedProducts(AppConstants.sampleProducts);
 
   // Add sample products matching Figma designs with detailed data
   await FakeFirestore.instance.seedProducts([
@@ -44,7 +42,7 @@ void main() async {
       },
       'rating': 5.0,
       'reviewCount': 125,
-      'category': 'fish_sauce',
+      'category': 'premium',
       'origin': 'Phú Quốc, Việt Nam',
       'ingredients': ['Cá cơm', 'Muối biển', 'Nước'],
       'nutritionInfo': {
@@ -56,7 +54,7 @@ void main() async {
       'stockQuantity': 50,
       'isFeatured': true,
       'isOnSale': false,
-      'brand': 'MGF',
+      'brand': 'Xuân Thịnh Mậu',
     },
     {
       'id': 'figma-sample-2',
@@ -78,7 +76,7 @@ void main() async {
       },
       'rating': 4.8,
       'reviewCount': 89,
-      'category': 'fish_sauce',
+      'category': 'traditional',
       'origin': 'Nha Trang, Việt Nam',
       'ingredients': ['Cá cơm', 'Muối biển', 'Nước', 'Đường'],
       'nutritionInfo': {
@@ -92,7 +90,7 @@ void main() async {
       'isOnSale': true,
       'originalPrice': '180,000 VNĐ',
       'discountPercentage': 15,
-      'brand': 'MGF',
+      'brand': 'Vĩnh Thái',
     },
     {
       'id': 'sample-3',
@@ -110,7 +108,7 @@ void main() async {
       },
       'rating': 4.5,
       'reviewCount': 67,
-      'category': 'fish_sauce',
+      'category': 'premium',
       'origin': 'Phú Quốc, Việt Nam',
       'ingredients': ['Cá cơm', 'Muối biển'],
       'nutritionInfo': {
@@ -121,7 +119,7 @@ void main() async {
       'stockQuantity': 25,
       'isFeatured': false,
       'isOnSale': false,
-      'brand': 'MGF',
+      'brand': 'Phú Quốc',
     },
   ]);
 
@@ -139,6 +137,7 @@ class VietnameseFishSauceApp extends StatelessWidget {
         BlocProvider<AuthBloc>(create: (_) => di.getIt<AuthBloc>()),
         BlocProvider<ProductBloc>(create: (_) => di.getIt<ProductBloc>()),
         BlocProvider<CartBloc>(create: (_) => di.getIt<CartBloc>()),
+        BlocProvider<NavigationCubit>(create: (_) => NavigationCubit()),
       ],
       child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (prev, curr) =>

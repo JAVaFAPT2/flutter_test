@@ -7,7 +7,7 @@ class HomeAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double baseWidth = 375.0; // iPhone X-ish baseline
+    const double baseWidth = 375.0; // iPhone X-ish baseline
     final double scale = MediaQuery.of(context).size.width / baseWidth;
     return Padding(
       padding:

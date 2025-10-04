@@ -1,4 +1,4 @@
-/// Figma-exported assets for the intro screen (local files for production)
+// Figma-exported assets for the intro screen (local files for production)
 
 // Background (Intro - SVG)
 const String kSvgBackgroundIntro = 'assets/begin_login_register/main/Nền.svg';

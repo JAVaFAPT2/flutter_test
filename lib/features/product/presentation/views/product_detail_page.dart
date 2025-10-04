@@ -7,11 +7,11 @@ import 'package:vietnamese_fish_sauce_app/core/constants/app_colors.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'
     as domain;
-import 'package:vietnamese_fish_sauce_app/features/product/presentation/cubit/product_detail_cubit.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/application/bloc/product_detail_bloc.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/cubit/favorite_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/widgets/product_detail_shimmer.dart';
-import 'package:vietnamese_fish_sauce_app/features/product/data/repositories/product_repository_impl.dart';
-import 'package:vietnamese_fish_sauce_app/core/fake/fake_firestore.dart';
+import 'package:vietnamese_fish_sauce_app/src/core/di/injection_container.dart'
+    as di;
 
 /// Product detail page matching Figma design
 class ProductDetailPage extends StatefulWidget {
@@ -31,10 +31,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => ProductDetailCubit(
-            ProductRepositoryImpl(FakeFirestore.instance),
-          )..loadProduct(widget.productId),
+        BlocProvider<ProductDetailBloc>(
+          create: (context) => di.getIt<ProductDetailBloc>()
+            ..add(ProductDetailLoadRequested(widget.productId)),
         ),
         BlocProvider(
           create: (context) => FavoriteCubit()..loadFavorites(),
@@ -42,13 +41,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        body: BlocBuilder<ProductDetailCubit, ProductDetailState>(
+        body: BlocBuilder<ProductDetailBloc, ProductDetailState>(
           builder: (context, state) {
-            if (state is ProductDetailLoading) {
+            if (state.isLoading) {
               return const ProductDetailShimmer();
             }
 
-            if (state is ProductDetailError) {
+            if (state.errorMessage != null) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -60,14 +59,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Có lỗi: ${state.message}',
+                      'Có lỗi: ${state.errorMessage}',
                       style: const TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => context
-                          .read<ProductDetailCubit>()
-                          .loadProduct(widget.productId),
+                          .read<ProductDetailBloc>()
+                          .add(ProductDetailLoadRequested(widget.productId)),
                       child: const Text('Thử lại'),
                     ),
                   ],
@@ -75,7 +74,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               );
             }
 
-            if (state is ProductDetailLoaded) {
+            if (state.product != null) {
               return SafeArea(
                 child: Stack(
                   children: <Widget>[
@@ -88,7 +87,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       child: Container(
                         color: Colors.white,
                         child: Image.asset(
-                          state.product.imageUrl,
+                          state.product!.imageUrl,
                           fit: BoxFit.cover,
                           width: double.infinity,
                           errorBuilder: (context, error, stackTrace) {
@@ -148,14 +147,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           BlocBuilder<FavoriteCubit, FavoriteState>(
                             builder: (context, favoriteState) {
                               final isFavorite = favoriteState is FavoriteLoaded
-                                  ? favoriteState.isFavorite(state.product.id)
+                                  ? favoriteState.isFavorite(state.product!.id)
                                   : false;
 
                               return GestureDetector(
                                 onTap: () {
                                   context
                                       .read<FavoriteCubit>()
-                                      .toggleFavorite(state.product.id);
+                                      .toggleFavorite(state.product!.id);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
@@ -189,11 +188,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: const Color(AppColors.surfaceCream),
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(30),
                             topRight: Radius.circular(30),
                           ),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: Colors.black12,
                               blurRadius: 10,
@@ -201,7 +200,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             ),
                           ],
                         ),
-                        padding: EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                           left: 51, // Match Figma left padding
                           right: 20,
                           top:
@@ -215,7 +214,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             children: [
                               // Product Name
                               Text(
-                                state.product.name,
+                                state.product!.name,
                                 style: const TextStyle(
                                   fontSize: 36,
                                   fontWeight: FontWeight.bold,
@@ -226,7 +225,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                               // Product Subtitle
                               Text(
-                                state.product.subtitle,
+                                state.product!.subtitle,
                                 style: const TextStyle(
                                   fontSize: 19,
                                   fontWeight: FontWeight.normal,
@@ -236,26 +235,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               const SizedBox(height: 6),
 
                               // Price
-                              BlocBuilder<ProductDetailCubit,
-                                  ProductDetailState>(
-                                builder: (context, state) {
-                                  if (state is! ProductDetailLoaded) {
-                                    return const SizedBox.shrink();
-                                  }
-
-                                  final volumePrice = state.product
-                                      .getPriceForVolume(state.selectedVolume);
-
-                                  return Text(
-                                    '${volumePrice.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} VNĐ',
-                                    style: const TextStyle(
-                                      fontSize: 27,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(AppColors.price),
-                                    ),
-                                  );
-                                },
-                              ),
+                              Builder(builder: (context) {
+                                final volumePrice = state.product!
+                                    .getPriceForVolume(state.selectedVolume);
+                                return Text(
+                                  '${volumePrice.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} VNĐ',
+                                  style: const TextStyle(
+                                    fontSize: 27,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(AppColors.price),
+                                  ),
+                                );
+                              }),
                               const SizedBox(height: 12),
 
                               // Rating
@@ -264,10 +255,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   return Container(
                                     width: 32,
                                     height: 32,
-                                    margin: EdgeInsets.only(right: 3),
-                                    child: Icon(
+                                    margin: const EdgeInsets.only(right: 3),
+                                    child: const Icon(
                                       Icons.star,
-                                      color: const Color(AppColors.star),
+                                      color: Color(AppColors.star),
                                       size: 28,
                                     ),
                                   );
@@ -298,42 +289,29 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               const SizedBox(height: 8),
 
                               // Volume buttons
-                              BlocBuilder<ProductDetailCubit,
-                                  ProductDetailState>(
-                                builder: (context, state) {
-                                  if (state is! ProductDetailLoaded) {
-                                    return const SizedBox.shrink();
-                                  }
-
-                                  return Row(
-                                    children: [
-                                      // 500ml button
-                                      _buildVolumeButton(
-                                        '500 ML',
-                                        0,
-                                        state,
-                                        context.read<ProductDetailCubit>(),
-                                      ),
-                                      const SizedBox(width: 26), // 173-53-94=26
-                                      // 330ml button
-                                      _buildVolumeButton(
-                                        '330 ML',
-                                        1,
-                                        state,
-                                        context.read<ProductDetailCubit>(),
-                                      ),
-                                      const SizedBox(
-                                          width: 26), // 293-173-94=26
-                                      // 250ml button
-                                      _buildVolumeButton(
-                                        '250 ML',
-                                        2,
-                                        state,
-                                        context.read<ProductDetailCubit>(),
-                                      ),
-                                    ],
-                                  );
-                                },
+                              Row(
+                                children: [
+                                  _buildVolumeButton(
+                                    '500 ML',
+                                    0,
+                                    state,
+                                    context.read<ProductDetailBloc>(),
+                                  ),
+                                  const SizedBox(width: 26),
+                                  _buildVolumeButton(
+                                    '330 ML',
+                                    1,
+                                    state,
+                                    context.read<ProductDetailBloc>(),
+                                  ),
+                                  const SizedBox(width: 26),
+                                  _buildVolumeButton(
+                                    '250 ML',
+                                    2,
+                                    state,
+                                    context.read<ProductDetailBloc>(),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 16),
 
@@ -353,155 +331,139 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         ),
                                       ),
                                       const SizedBox(height: 8),
-                                      BlocBuilder<ProductDetailCubit,
-                                          ProductDetailState>(
-                                        builder: (context, state) {
-                                          if (state is! ProductDetailLoaded) {
-                                            return const SizedBox.shrink();
-                                          }
-
-                                          return Container(
-                                            height: 31,
-                                            width: 111,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              border: Border.all(
-                                                color: const Color(0xFFE0E0E0),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                GestureDetector(
-                                                  onTap: () => context
-                                                      .read<
-                                                          ProductDetailCubit>()
-                                                      .decrementQuantity(),
-                                                  child: Container(
-                                                    width: 25,
-                                                    height: 25,
-                                                    child: const Icon(
-                                                      Icons.remove,
-                                                      color: Color(0xFF333333),
-                                                      size: 16,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  width: 33,
-                                                  child: Text(
-                                                    state.quantity
-                                                        .toString()
-                                                        .padLeft(2, '0'),
-                                                    textAlign: TextAlign.center,
-                                                    style: const TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      color: Color(0xFF333333),
-                                                    ),
-                                                  ),
-                                                ),
-                                                GestureDetector(
-                                                  onTap: () => context
-                                                      .read<
-                                                          ProductDetailCubit>()
-                                                      .incrementQuantity(),
-                                                  child: Container(
-                                                    width: 25,
-                                                    height: 25,
-                                                    child: const Icon(
-                                                      Icons.add,
-                                                      color: Color(0xFF333333),
-                                                      size: 16,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 18),
-                                  // Total price box
-                                  Expanded(
-                                    child: BlocBuilder<ProductDetailCubit,
-                                        ProductDetailState>(
-                                      builder: (context, state) {
-                                        if (state is! ProductDetailLoaded) {
-                                          return const SizedBox.shrink();
-                                        }
-
-                                        final totalPrice = state.product
-                                            .getTotalPrice(state.selectedVolume,
-                                                state.quantity);
-
+                                      Builder(builder: (context) {
                                         return Container(
                                           height: 31,
+                                          width: 111,
                                           decoration: BoxDecoration(
-                                            color: const Color(
-                                                AppColors.accentOrange),
+                                            color: Colors.white,
                                             borderRadius:
                                                 BorderRadius.circular(6),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Color(
-                                                        AppColors.accentOrange)
-                                                    .withValues(alpha: 0.3),
-                                                blurRadius: 4,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ],
+                                            border: Border.all(
+                                              color: const Color(0xFFE0E0E0),
+                                              width: 1,
+                                            ),
                                           ),
                                           child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
                                             children: [
-                                              const Expanded(
+                                              GestureDetector(
+                                                onTap: () => context
+                                                    .read<ProductDetailBloc>()
+                                                    .add(
+                                                        const ProductDetailQuantityDecremented()),
+                                                child: const SizedBox(
+                                                  width: 25,
+                                                  height: 25,
+                                                  child: Icon(
+                                                    Icons.remove,
+                                                    color: Color(0xFF333333),
+                                                    size: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 33,
                                                 child: Text(
-                                                  'Thành tiền',
+                                                  state.quantity
+                                                      .toString()
+                                                      .padLeft(2, '0'),
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight:
                                                         FontWeight.normal,
-                                                    color: Colors.white,
+                                                    color: Color(0xFF333333),
                                                   ),
                                                 ),
                                               ),
-                                              Container(
-                                                width: 1,
-                                                height: 20,
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8),
-                                                color: Colors.white
-                                                    .withValues(alpha: 0.3),
+                                              GestureDetector(
+                                                onTap: () => context
+                                                    .read<ProductDetailBloc>()
+                                                    .add(
+                                                        const ProductDetailQuantityIncremented()),
+                                                child: const SizedBox(
+                                                  width: 25,
+                                                  height: 25,
+                                                  child: Icon(
+                                                    Icons.add,
+                                                    color: Color(0xFF333333),
+                                                    size: 16,
+                                                  ),
+                                                ),
                                               ),
-                                              Text(
-                                                totalPrice
-                                                    .toString()
-                                                    .replaceAllMapped(
-                                                        RegExp(
-                                                            r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                                                        (Match m) =>
-                                                            '${m[1]},'),
-                                                style: const TextStyle(
-                                                  fontSize: 16,
+                                            ],
+                                          ),
+                                        );
+                                      }),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 18),
+                                  // Total price box
+                                  Expanded(
+                                    child: Builder(builder: (context) {
+                                      final totalPrice = state.product!
+                                          .getTotalPrice(state.selectedVolume,
+                                              state.quantity);
+
+                                      return Container(
+                                        height: 31,
+                                        decoration: BoxDecoration(
+                                          color: const Color(
+                                              AppColors.accentOrange),
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: const Color(
+                                                      AppColors.accentOrange)
+                                                  .withValues(alpha: 0.3),
+                                              blurRadius: 4,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Expanded(
+                                              child: Text(
+                                                'Thành tiền',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 14,
                                                   fontWeight: FontWeight.normal,
                                                   color: Colors.white,
                                                 ),
                                               ),
-                                              const SizedBox(width: 8),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    ),
+                                            ),
+                                            Container(
+                                              width: 1,
+                                              height: 20,
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8),
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.3),
+                                            ),
+                                            Text(
+                                              totalPrice
+                                                  .toString()
+                                                  .replaceAllMapped(
+                                                      RegExp(
+                                                          r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+                                                      (Match m) => '${m[1]},'),
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                          ],
+                                        ),
+                                      );
+                                    }),
                                   ),
                                 ],
                               ),
@@ -510,98 +472,85 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               // Add to cart button
                               SizedBox(
                                 width: double.infinity,
-                                child: BlocBuilder<ProductDetailCubit,
-                                    ProductDetailState>(
-                                  builder: (context, state) {
-                                    if (state is! ProductDetailLoaded) {
-                                      return const SizedBox.shrink();
-                                    }
-
-                                    return ElevatedButton(
-                                      onPressed: () {
-                                        // Add to cart functionality
-                                        final cartBloc =
-                                            context.read<CartBloc>();
-                                        cartBloc.add(CartItemAdded(
-                                          product: domain.Product(
-                                            id: state.product.id,
-                                            name: state.product.name,
-                                            description:
-                                                state.product.description,
-                                            price: double.tryParse(state
-                                                    .product.price
-                                                    .replaceAll(
-                                                        RegExp(r'[^\d]'),
-                                                        '')) ??
-                                                0.0,
-                                            originalPrice: double.tryParse(state
-                                                    .product.originalPrice
-                                                    .replaceAll(
-                                                        RegExp(r'[^\d]'),
-                                                        '')) ??
-                                                0.0,
-                                            imageUrl: state.product.imageUrl,
-                                            category: state.product.category,
-                                            brand: state.product.brand,
-                                            volume: state.selectedVolume,
-                                            ingredients:
-                                                state.product.ingredients,
-                                            origin: state.product.origin,
-                                            rating: state.product.rating,
-                                            reviewCount:
-                                                state.product.reviewCount,
-                                            isAvailable: state.product.inStock,
-                                            isFeatured:
-                                                state.product.isFeatured,
-                                            isOnSale: state.product.isOnSale,
-                                            discountPercentage: state
-                                                .product.discountPercentage,
-                                            stockQuantity:
-                                                state.product.stockQuantity,
-                                            nutritionInfo:
-                                                state.product.nutritionInfo,
-                                          ),
+                                child: Builder(builder: (context) {
+                                  return ElevatedButton(
+                                    onPressed: () {
+                                      // Add to cart functionality
+                                      final cartBloc = context.read<CartBloc>();
+                                      cartBloc.add(CartItemAdded(
+                                        product: domain.Product(
+                                          id: state.product!.id,
+                                          name: state.product!.name,
+                                          description:
+                                              state.product!.description,
+                                          price: double.tryParse(state
+                                                  .product!.price
+                                                  .replaceAll(
+                                                      RegExp(r'[^\d]'), '')) ??
+                                              0.0,
+                                          originalPrice: double.tryParse(state
+                                                  .product!.originalPrice
+                                                  .replaceAll(
+                                                      RegExp(r'[^\d]'), '')) ??
+                                              0.0,
+                                          imageUrl: state.product!.imageUrl,
+                                          category: state.product!.category,
+                                          brand: state.product!.brand,
                                           volume: state.selectedVolume,
-                                          unitPrice: state.product
-                                              .getPriceForVolume(
-                                                  state.selectedVolume),
-                                          quantity: state.quantity,
-                                        ));
+                                          ingredients:
+                                              state.product!.ingredients,
+                                          origin: state.product!.origin,
+                                          rating: state.product!.rating,
+                                          reviewCount:
+                                              state.product!.reviewCount,
+                                          isAvailable: state.product!.inStock,
+                                          isFeatured: state.product!.isFeatured,
+                                          isOnSale: state.product!.isOnSale,
+                                          discountPercentage:
+                                              state.product!.discountPercentage,
+                                          stockQuantity:
+                                              state.product!.stockQuantity,
+                                          nutritionInfo:
+                                              state.product!.nutritionInfo,
+                                        ),
+                                        volume: state.selectedVolume,
+                                        unitPrice: state.product!
+                                            .getPriceForVolume(
+                                                state.selectedVolume),
+                                        quantity: state.quantity,
+                                      ));
 
-                                        // Show success message
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content:
-                                                Text('Đã thêm vào giỏ hàng'),
-                                            duration: Duration(seconds: 2),
-                                            backgroundColor:
-                                                const Color(0xFF4CAF50),
-                                          ),
-                                        );
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            const Color(AppColors.ctaBrown),
-                                        foregroundColor: Colors.white,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(6),
+                                      // Show success message
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Đã thêm vào giỏ hàng'),
+                                          duration: Duration(seconds: 2),
+                                          backgroundColor:
+                                              const Color(0xFF4CAF50),
                                         ),
-                                        elevation: 4,
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          const Color(AppColors.ctaBrown),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6),
                                       ),
-                                      child: const Text(
-                                        'Thêm vào giỏ hàng',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.normal,
-                                        ),
+                                      elevation: 4,
+                                    ),
+                                    child: const Text(
+                                      'Thêm vào giỏ hàng',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.normal,
                                       ),
-                                    );
-                                  },
-                                ),
+                                    ),
+                                  );
+                                }),
                               ),
                             ],
                           ),
@@ -629,12 +578,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildVolumeButton(String volume, int index, ProductDetailLoaded state,
-      ProductDetailCubit cubit) {
+  Widget _buildVolumeButton(String volume, int index, ProductDetailState state,
+      ProductDetailBloc bloc) {
     final isSelected = state.selectedVolumeIndex == index;
     return GestureDetector(
       onTap: () {
-        cubit.changeVolume(index);
+        bloc.add(ProductDetailVolumeChanged(index));
       },
       child: Container(
         width: 94,
@@ -651,7 +600,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Color(AppColors.selected).withValues(alpha: 0.3),
+                    color:
+                        const Color(AppColors.selected).withValues(alpha: 0.3),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),

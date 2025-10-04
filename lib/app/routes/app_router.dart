@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-// import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'; // Removed - using productId instead
-
 // Feature imports - Clean Architecture
 import 'package:vietnamese_fish_sauce_app/features/auth/presentation/views/login_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/auth/presentation/views/register_page.dart';
@@ -104,7 +102,7 @@ class AppRouter {
         name: 'settings',
         builder: (context, state) => const SettingsPage(),
       ),
-      // Additional routes for authenticated users will be added in Phase 7
+      // Additional routes for authenticated users will be added later
     ],
     redirect: _handleRedirect,
     refreshListenable: _AuthRefreshListenable(),
@@ -120,9 +118,9 @@ class AppRouter {
         isPublicRoute;
     final isHomeRoute = state.matchedLocation == home;
     final isProductRoute = state.matchedLocation.startsWith('/product/');
-    //TODO: Update back to using auth state instead of allowing access to home and product detail pages regardless of auth state
-    // Allow access to home and product detail pages regardless of auth state
-    if (isHomeRoute || isProductRoute) {
+    final isProductsRoute = state.matchedLocation == '/products';
+    // Allow access to home, products, and product detail pages regardless of auth state
+    if (isHomeRoute || isProductRoute || isProductsRoute) {
       return null;
     }
 

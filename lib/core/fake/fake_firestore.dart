@@ -46,17 +46,37 @@ class FakeFirestore {
   }
 
   // Product APIs
-  Future<List<Map<String, dynamic>>> getProducts({String? category}) async {
+  Future<List<Map<String, dynamic>>> getProducts(
+      {String? category, String? brand}) async {
     await Future<void>.delayed(const Duration(milliseconds: 120));
     final values = _products.values.toList();
-    if (category == null) return values;
-    return values.where((e) => e['category'] == category).toList();
+    var result = values;
+
+    if (category != null) {
+      result = result.where((e) => e['category'] == category).toList();
+    }
+
+    if (brand != null) {
+      result = result.where((e) => e['brand'] == brand).toList();
+    }
+
+    return result;
   }
 
-  Stream<List<Map<String, dynamic>>> watchProducts({String? category}) {
+  Stream<List<Map<String, dynamic>>> watchProducts(
+      {String? category, String? brand}) {
     return _productStream.stream.map((list) {
-      if (category == null) return list;
-      return list.where((e) => e['category'] == category).toList();
+      var result = list;
+
+      if (category != null) {
+        result = result.where((e) => e['category'] == category).toList();
+      }
+
+      if (brand != null) {
+        result = result.where((e) => e['brand'] == brand).toList();
+      }
+
+      return result;
     });
   }
 

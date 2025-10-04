@@ -2,11 +2,11 @@ class AppAssets {
   AppAssets._();
 
   // base
-  static final String assetBase = 'assets/figma_exports';
+  static const String assetBase = 'assets/figma_exports';
 
-  static final String logo = '$assetBase/logo.png';
+  static const String logo = '$assetBase/logo.png';
 
   // patterns
-  static final String productDetailPattern =
+  static const String productDetailPattern =
       '$assetBase/product_detail_pattern_large.svg';
 }

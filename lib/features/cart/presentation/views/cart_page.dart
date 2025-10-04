@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 
 /// Shopping cart page
 class CartPage extends StatelessWidget {
@@ -95,7 +95,7 @@ class CartPage extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/products');
+              context.read<NavigationCubit>().navigateToProducts(context);
             },
             child: const Text(AppStrings.continueShopping),
           ),
@@ -402,6 +402,6 @@ class CartPage extends StatelessWidget {
   }
 
   void _proceedToCheckout(BuildContext context) {
-    context.push('/checkout');
+    context.read<NavigationCubit>().navigateToCheckout(context);
   }
 }

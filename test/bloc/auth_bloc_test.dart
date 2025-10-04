@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vietnamese_fish_sauce_app/features/auth/presentation/bloc/auth_bloc.dart';
 
 void main() {
   group('AuthBloc', () {
@@ -11,4 +10,3 @@ void main() {
     });
   });
 }
-

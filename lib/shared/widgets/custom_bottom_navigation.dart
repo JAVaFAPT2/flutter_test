@@ -59,6 +59,7 @@ class CustomBottomNavigation extends StatelessWidget {
 
     return SafeArea(
       top: false,
+      bottom: true, // Ensure bottom safe area is respected
       child: Container(
         height: height,
         decoration: BoxDecoration(
@@ -93,8 +94,8 @@ class CustomBottomNavigation extends StatelessWidget {
             // Center button positioned within the navigation bar bounds
             Positioned(
               left: (MediaQuery.of(context).size.width - centerItem.size) / 2,
-              top: (height - centerItem.size) /
-                  2, // Center vertically within the bar
+              top: (height - centerItem.size) / 2 -
+                  8, // More upward offset to prevent clipping
               child: _buildCenterButton(),
             ),
           ],
@@ -112,7 +113,7 @@ class CustomBottomNavigation extends StatelessWidget {
       onTap: item.onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: displayWidth + 4, // tighter padding to avoid overflow
+        width: displayWidth + 8, // increased padding for better touch targets
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.center,
@@ -128,8 +129,8 @@ class CustomBottomNavigation extends StatelessWidget {
             // Badge
             if (item.badge != null && item.badge! > 0)
               Positioned(
-                right: 10,
-                top: 0,
+                right: 8,
+                top: -2,
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(

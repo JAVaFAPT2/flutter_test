@@ -6,26 +6,31 @@ class ProductsViewState extends Equatable {
     this.isGridView = true,
     this.selectedCategory,
     this.selectedBrand,
+    this.sortBy,
   });
 
   final bool isGridView;
   final String? selectedCategory;
   final String? selectedBrand;
+  final String? sortBy;
 
   ProductsViewState copyWith({
     bool? isGridView,
     String? selectedCategory,
     String? selectedBrand,
+    String? sortBy,
   }) {
     return ProductsViewState(
       isGridView: isGridView ?? this.isGridView,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       selectedBrand: selectedBrand ?? this.selectedBrand,
+      sortBy: sortBy ?? this.sortBy,
     );
   }
 
   @override
-  List<Object?> get props => [isGridView, selectedCategory, selectedBrand];
+  List<Object?> get props =>
+      [isGridView, selectedCategory, selectedBrand, sortBy];
 }
 
 class ProductsViewCubit extends Cubit<ProductsViewState> {
@@ -38,4 +43,6 @@ class ProductsViewCubit extends Cubit<ProductsViewState> {
 
   void updateBrandFilter(String? brand) =>
       emit(state.copyWith(selectedBrand: brand));
+
+  void updateSort(String? sortBy) => emit(state.copyWith(sortBy: sortBy));
 }

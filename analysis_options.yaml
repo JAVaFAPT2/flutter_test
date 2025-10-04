@@ -13,7 +13,7 @@ analyzer:
     todo: error
     deprecated_member_use: error
     missing_required_param: error
-    wrong_number_of_parameters_for_override: error
+    # wrong_number_of_parameters_for_override: error # Not a valid error code
     missing_return: error
 
     # PERFORMANCE ERRORS
@@ -24,7 +24,7 @@ analyzer:
 
     # CODE QUALITY ERRORS
     avoid_print: error
-    avoid_unnecessary_type_casts: error
+    # avoid_unnecessary_type_casts: error # Not a valid error code
     avoid_redundant_argument_values: error
     avoid_void_async: error
 

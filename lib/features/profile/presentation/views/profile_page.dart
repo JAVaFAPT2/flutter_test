@@ -7,6 +7,7 @@ import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
 import 'package:vietnamese_fish_sauce_app/src/domain/entities/user.dart';
 import 'package:vietnamese_fish_sauce_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:vietnamese_fish_sauce_app/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/auth_text_field.dart';
 
 /// User profile page for managing personal information
@@ -476,7 +477,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _navigateToOrderHistory() {
-    context.push('/order-history');
+    context.read<NavigationCubit>().navigateToOrders(context);
   }
 
   void _navigateToSettings() {

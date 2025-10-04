@@ -1,21 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_constants.dart';
 import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart';
+import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'
+    as domain;
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/bloc/product_bloc.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/application/bloc/product_list_bloc.dart'
+    as ddd;
+import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
+import 'package:vietnamese_fish_sauce_app/src/core/di/injection_container.dart'
+    as di;
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/cubit/products_view_cubit.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/product_card.dart';
 import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/loading_shimmer.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/error_message.dart';
+import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 
-/// Products listing page for Vietnamese fish sauce e-commerce app
+// Widget imports
+import '../widgets/figma_products_search.dart';
+import '../widgets/figma_product_card.dart';
+import '../widgets/figma_products_banner.dart';
+import '../widgets/products_bottom_navigation.dart';
+import '../widgets/figma_filter_dropdown.dart';
+import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/home_app_bar.dart';
+
+/// Products listing page following clean architecture principles
+///
+/// Matches Figma design while following established patterns from other screens
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
 
   static const String routeName = '/products';
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ProductsViewCubit>(create: (_) => ProductsViewCubit()),
+        BlocProvider<ddd.ProductListBloc>(
+          create: (_) => di.getIt<ddd.ProductListBloc>()
+            ..add(const ddd.ProductListLoadRequested(page: 1, limit: 20)),
+        ),
+      ],
+      child: const ProductsPageView(),
+    );
+  }
+}
+
+class ProductsPageView extends StatefulWidget {
+  const ProductsPageView({super.key});
+
+  @override
+  State<ProductsPageView> createState() => _ProductsPageViewState();
+}
+
+class _ProductsPageViewState extends State<ProductsPageView> {
+  bool _isFilterOpen = false;
+  String? _selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -28,51 +67,178 @@ class ProductsPage extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.products),
-        elevation: 0,
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.white,
-        actions: [
-          // Search button
+      body: Stack(
+        children: [
+          // Background
+          Positioned.fill(
+            child: Container(
+              color: Colors.white,
+            ),
+          ),
+
+          // Main content
+          Positioned.fill(
+            child: Column(
+              children: [
+                // Header (same as home page)
+                const HomeAppBar(),
+
+                // Content
+                Expanded(
+                  child: BlocBuilder<ddd.ProductListBloc, ddd.ProductListState>(
+                    builder: (context, state) {
+                      if (state.isLoading && state.products.isEmpty) {
+                        return _buildLoadingView(context);
+                      }
+                      if (state.errorMessage != null &&
+                          state.products.isEmpty) {
+                        return _buildErrorView(context, state.errorMessage!);
+                      }
+
+                      final uiProducts = _mapProducts(state.products);
+                      return _buildProductsView(
+                          context, uiProducts, scrollController);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Filter dropdown (overlay)
+          if (_isFilterOpen)
+            Positioned(
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+              child: FigmaFilterDropdown(
+                categories: [
+                  'Show All',
+                  'Xuân Thịnh Mậu',
+                  'Vĩnh Thái',
+                  'Phú Quốc'
+                ],
+                selectedCategory: _selectedCategory,
+                onCategorySelected: (brand) {
+                  setState(() {
+                    _selectedCategory = brand;
+                    _isFilterOpen = false;
+                  });
+
+                  // Apply filter to product list by brand
+                  context.read<ddd.ProductListBloc>().add(
+                        ddd.ProductListFilterChanged(
+                          brand: brand == 'Show All' ? null : brand,
+                          limit: 20,
+                        ),
+                      );
+                },
+              ),
+            ),
+
+          // Bottom navigation (fixed position)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              color: Colors.white,
+              child: _buildProductsBottomNavigation(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductsView(BuildContext context, List<domain.Product> products,
+      ScrollController scrollController) {
+    return SingleChildScrollView(
+      controller: scrollController,
+      child: Column(
+        children: [
+          // Back button and title
+          _buildProductsHeader(context),
+
+          // Search section
+          FigmaProductsSearch(
+            onFilterTap: () {
+              setState(() {
+                _isFilterOpen = !_isFilterOpen;
+              });
+            },
+            onSearchTap: () => _showSearchDialog(context),
+          ),
+
+          // Category title
+          _buildCategoryTitle(),
+
+          // Products list
+          ...products.map((product) => FigmaProductCard(
+                product: product,
+                onTap: () => _navigateToProductDetail(context, product),
+                onAddToCart: () => _addToCart(context, product),
+              )),
+
+          // Banner section
+          const FigmaProductsBanner(),
+
+          // Bottom spacing for navigation
+          const SizedBox(height: 100),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductsHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          const Expanded(
+            child: Text(
+              'Sản phẩm',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () => _showSearchDialog(context),
           ),
-          // Filter button
           IconButton(
             icon: const Icon(Icons.filter_list),
-            onPressed: () => _showFilterDialog(context),
-          ),
-          // View toggle button
-          BlocBuilder<ProductsViewCubit, ProductsViewState>(
-            builder: (context, viewState) {
-              return IconButton(
-                icon: Icon(viewState.isGridView ? Icons.list : Icons.grid_view),
-                onPressed: () => context.read<ProductsViewCubit>().toggleView(),
-              );
+            onPressed: () {
+              // Filter is now handled by FigmaFilterDropdown overlay
             },
           ),
         ],
       ),
-      body: MultiBlocProvider(
-        providers: [
-          BlocProvider<ProductsViewCubit>(create: (_) => ProductsViewCubit()),
-        ],
-        child: BlocBuilder<ProductBloc, ProductState>(
-          builder: (context, state) {
-            if (state.isLoading && state.products.isEmpty) {
-              return _buildLoadingView(context);
-            }
-            if (state.errorMessage != null && state.products.isEmpty) {
-              return _buildErrorView(context, state.errorMessage!);
-            }
-            return _buildProductsView(
-                context, state.products, scrollController);
-          },
+    );
+  }
+
+  Widget _buildCategoryTitle() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Text(
+        'NƯỚC MẮM NHĨ',
+        style: TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 13,
+          fontWeight: FontWeight.bold,
+          color: Colors.red[800],
         ),
       ),
-      floatingActionButton: _buildFloatingActionButton(scrollController),
     );
   }
 
@@ -86,160 +252,66 @@ class ProductsPage extends StatelessWidget {
 
   Widget _buildErrorView(BuildContext context, String message) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ErrorMessage(message: message),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                context
-                    .read<ProductBloc>()
-                    .add(const ProductRefreshRequested());
-              },
-              child: const Text(AppStrings.retry),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProductsView(BuildContext context, List<Product> products,
-      ScrollController scrollController) {
-    final isGridView = context.watch<ProductsViewCubit>().state.isGridView;
-    if (products.isEmpty) {
-      return _buildEmptyView(context);
-    }
-
-    return Column(
-      children: [
-        // Category/Filter Info Bar
-        Container(
-          padding: const EdgeInsets.all(16),
-          color: Colors.grey.shade50,
-          child: Row(
-            children: [
-              Text(
-                '${products.length} ${AppStrings.products}',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const Spacer(),
-              Text(
-                '${AppConstants.currencySymbol} ${AppConstants.productBrands.first}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).primaryColor,
-                    ),
-              ),
-            ],
-          ),
-        ),
-
-        // Products List/Grid
-        Expanded(
-          child: isGridView
-              ? _buildGridView(context, products, scrollController)
-              : _buildListView(context, products, scrollController),
-        ),
-
-        // Load More Indicator
-        if (context.watch<ProductBloc>().state.isLoading)
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: const CircularProgressIndicator(),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyView(BuildContext context) {
-    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(
-            Icons.inventory_2_outlined,
+            Icons.error_outline,
             size: 80,
             color: Colors.grey,
           ),
           const SizedBox(height: 16),
           Text(
-            AppStrings.noResults,
+            message,
             style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Chua c� s?n ph?m n�o du?c t?i',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey,
-                ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              context.read<ProductBloc>().add(const ProductRefreshRequested());
+              context.read<ddd.ProductListBloc>().add(
+                    const ddd.ProductListLoadRequested(page: 1, limit: 20),
+                  );
             },
-            child: const Text(AppStrings.tryAgain),
+            child: const Text('Thử lại'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildGridView(BuildContext context, List<Product> products,
-      ScrollController scrollController) {
-    return GridView.builder(
-      controller: scrollController,
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.75,
-      ),
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        return ProductCard(
-          product: products[index],
-          onTap: () => _navigateToProductDetail(context, products[index]),
-          showCartButton: true,
-        );
-      },
-    );
+  Widget _buildProductsBottomNavigation() {
+    return const ProductsBottomNavigation();
   }
 
-  Widget _buildListView(BuildContext context, List<Product> products,
-      ScrollController scrollController) {
-    return ListView.separated(
-      controller: scrollController,
-      padding: const EdgeInsets.all(16),
-      itemCount: products.length,
-      separatorBuilder: (context, index) => const Divider(height: 1),
-      itemBuilder: (context, index) {
-        return ProductListItem(
-          product: products[index],
-          onTap: () => _navigateToProductDetail(context, products[index]),
-        );
-      },
-    );
-  }
-
-  Widget _buildFloatingActionButton(ScrollController scrollController) {
-    return FloatingActionButton(
-      onPressed: () {
-        // Scroll to top
-        scrollController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      },
-      child: const Icon(Icons.arrow_upward),
-    );
+  List<domain.Product> _mapProducts(List<ProductEntity> domainProducts) {
+    return domainProducts
+        .map((e) => domain.Product(
+              id: e.id,
+              name: e.name,
+              description: e.description,
+              price:
+                  double.tryParse(e.price.replaceAll(RegExp(r'[^\d]'), '')) ??
+                      0,
+              originalPrice: double.tryParse(
+                      e.originalPrice.replaceAll(RegExp(r'[^\d]'), '')) ??
+                  0,
+              imageUrl: e.imageUrl,
+              category: e.category,
+              brand: e.brand,
+              volume: e.volumes.isNotEmpty ? e.volumes.first : '500ml',
+              ingredients: e.ingredients,
+              origin: e.origin,
+              rating: e.rating,
+              reviewCount: e.reviewCount,
+              isAvailable: e.inStock,
+              isFeatured: e.isFeatured,
+              isOnSale: e.isOnSale,
+              discountPercentage: e.discountPercentage,
+              stockQuantity: e.stockQuantity,
+              nutritionInfo: e.nutritionInfo,
+            ))
+        .toList();
   }
 
   void _showSearchDialog(BuildContext context) {
@@ -249,15 +321,18 @@ class ProductsPage extends StatelessWidget {
     );
   }
 
-  void _showFilterDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const ProductFilterDialog(),
-    );
+  void _navigateToProductDetail(BuildContext context, domain.Product product) {
+    context.read<NavigationCubit>().navigateToProductDetail(context, product);
   }
 
-  void _navigateToProductDetail(BuildContext context, Product product) {
-    context.push('/product-detail', extra: product);
+  void _addToCart(BuildContext context, domain.Product product) {
+    // Show confirmation message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Added ${product.name} to cart'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 }
 
@@ -291,7 +366,9 @@ class _ProductSearchDialogState extends State<ProductSearchDialog> {
         autofocus: true,
         onSubmitted: (value) {
           if (value.isNotEmpty) {
-            context.read<ProductBloc>().add(ProductSearchRequested(value));
+            context
+                .read<ddd.ProductListBloc>()
+                .add(ddd.ProductListSearchRequested(value));
             Navigator.of(context).pop();
           }
         },
@@ -305,154 +382,13 @@ class _ProductSearchDialogState extends State<ProductSearchDialog> {
           onPressed: () {
             final query = _searchController.text.trim();
             if (query.isNotEmpty) {
-              context.read<ProductBloc>().add(ProductSearchRequested(query));
+              context
+                  .read<ddd.ProductListBloc>()
+                  .add(ddd.ProductListSearchRequested(query));
               Navigator.of(context).pop();
             }
           },
           child: const Text(AppStrings.search),
-        ),
-      ],
-    );
-  }
-}
-
-/// Product filter dialog
-class ProductFilterDialog extends StatefulWidget {
-  const ProductFilterDialog({super.key});
-
-  @override
-  State<ProductFilterDialog> createState() => _ProductFilterDialogState();
-}
-
-class _ProductFilterDialogState extends State<ProductFilterDialog> {
-  String? _sortBy = 'name';
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text(AppStrings.filters),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Category Filter
-            Text(
-              'Danh m?c',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: AppConstants.productCategories.map((category) {
-                return BlocBuilder<ProductsViewCubit, ProductsViewState>(
-                  builder: (context, state) {
-                    return FilterChip(
-                      label: Text(category),
-                      selected: state.selectedCategory == category,
-                      onSelected: (selected) {
-                        context.read<ProductsViewCubit>().updateCategoryFilter(
-                              selected ? category : null,
-                            );
-                      },
-                    );
-                  },
-                );
-              }).toList(),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Brand Filter
-            Text(
-              'Thuong hi?u',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: AppConstants.productBrands.map((brand) {
-                return BlocBuilder<ProductsViewCubit, ProductsViewState>(
-                  builder: (context, state) {
-                    return FilterChip(
-                      label: Text(brand),
-                      selected: state.selectedBrand == brand,
-                      onSelected: (selected) {
-                        context.read<ProductsViewCubit>().updateBrandFilter(
-                              selected ? brand : null,
-                            );
-                      },
-                    );
-                  },
-                );
-              }).toList(),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Sort Options
-            Text(
-              AppStrings.sort,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Column(
-              children: [
-                RadioListTile<String>(
-                  title: const Text('T�n A-Z'),
-                  value: 'name',
-                  groupValue: _sortBy,
-                  onChanged: (value) {
-                    setState(() {
-                      _sortBy = value;
-                    });
-                  },
-                ),
-                RadioListTile<String>(
-                  title: const Text('Gi� th?p d?n cao'),
-                  value: 'price_asc',
-                  groupValue: _sortBy,
-                  onChanged: (value) {
-                    setState(() {
-                      _sortBy = value;
-                    });
-                  },
-                ),
-                RadioListTile<String>(
-                  title: const Text('Gi� cao d?n th?p'),
-                  value: 'price_desc',
-                  groupValue: _sortBy,
-                  onChanged: (value) {
-                    setState(() {
-                      _sortBy = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text(AppStrings.cancel),
-        ),
-        BlocBuilder<ProductsViewCubit, ProductsViewState>(
-          builder: (context, state) {
-            return ElevatedButton(
-              onPressed: () {
-                // Apply filters
-                context.read<ProductBloc>().add(ProductFilterChanged(
-                      category: state.selectedCategory,
-                      brand: state.selectedBrand,
-                      sortBy: _sortBy,
-                    ));
-                Navigator.of(context).pop();
-              },
-              child: const Text(AppStrings.confirm),
-            );
-          },
         ),
       ],
     );

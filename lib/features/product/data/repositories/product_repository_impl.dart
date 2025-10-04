@@ -32,10 +32,12 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<List<ProductEntity>> list({
     String? category,
+    String? brand,
     int? limit,
     int? offset,
   }) async {
-    final productsData = await _fakeFirestore.getProducts(category: category);
+    final productsData =
+        await _fakeFirestore.getProducts(category: category, brand: brand);
 
     // Apply offset and limit
     var result = productsData;
@@ -52,9 +54,12 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Stream<List<ProductEntity>> watchList({
     String? category,
+    String? brand,
     int? limit,
   }) {
-    return _fakeFirestore.watchProducts(category: category).map((productsData) {
+    return _fakeFirestore
+        .watchProducts(category: category, brand: brand)
+        .map((productsData) {
       var result = productsData;
       if (limit != null && limit > 0) {
         result = result.take(limit).toList();

@@ -17,6 +17,24 @@ import '../../domain/use_cases/product/get_products_use_case.dart';
 import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../features/product/presentation/bloc/product_bloc.dart';
 import '../../../features/cart/presentation/bloc/cart_bloc.dart';
+import '../../core/env/config.dart';
+import '../../core/network/http_client.dart';
+import '../../core/network/interceptors.dart';
+import '../../core/tenant/tenant_provider.dart';
+// import '../../core/logging/logger.dart';
+import '../../../core/fake/fake_firestore.dart';
+import '../../../features/product/application/bloc/product_detail_bloc.dart'
+    as newdetail;
+import '../../../features/product/domain/usecases/get_product_detail_query.dart'
+    as newusecase;
+import '../../../features/product/domain/repositories/product_repository.dart'
+    as newrepo;
+import '../../../features/product/data/repositories/product_repository_impl.dart'
+    as features_product_repo;
+import '../../../features/product/application/bloc/product_list_bloc.dart'
+    as newlist;
+import '../../../features/product/domain/usecases/get_products_query.dart'
+    as newlistusecase;
 
 /// Dependency injection container using GetIt
 /// Configured with Clean Architecture principles
@@ -50,24 +68,20 @@ Future<void> _initializeExternalDependencies() async {
   const secureStorage = FlutterSecureStorage();
   getIt.registerSingleton<FlutterSecureStorage>(secureStorage);
 
-  // Dio client
+  // Dio client with base options
   final dio = Dio(BaseOptions(
-    baseUrl: 'https://api.mgf-vietnam.com',
-    connectTimeout: const Duration(milliseconds: 30000),
-    receiveTimeout: const Duration(milliseconds: 30000),
-    headers: {
+    baseUrl: AppConfig.baseUrl,
+    connectTimeout: AppConfig.connectTimeout,
+    receiveTimeout: AppConfig.receiveTimeout,
+    headers: const {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
   ));
 
-  // Add interceptors for logging and authentication
-  dio.interceptors.addAll([
-    LogInterceptor(requestBody: true, responseBody: true),
-    // AuthInterceptor(), // Will be added when auth is implemented
-  ]);
-
+  // Register Dio and our HttpClient wrapper
   getIt.registerSingleton<Dio>(dio);
+  getIt.registerLazySingleton<HttpClient>(() => HttpClient(dio: dio));
 }
 
 /// Initialize data sources
@@ -81,6 +95,19 @@ void _initializeDataSources() {
   getIt.registerLazySingleton<SecureStorage>(
     () => SecureStorageImpl(getIt<FlutterSecureStorage>()),
   );
+
+  // Tenant provider (after SecureStorage is ready)
+  final tenantProvider = TenantProvider(getIt<SecureStorage>());
+  getIt.registerSingleton<TenantProvider>(tenantProvider);
+
+  // Attach auth/tenant/logging interceptors now that dependencies exist
+  final dio = getIt<Dio>();
+  dio.interceptors.addAll([
+    AuthInterceptor(() => getIt<SecureStorage>().getSecureToken()),
+    TenantInterceptor(() => tenantProvider.getTenantId()),
+    LoggingInterceptor(),
+    LogInterceptor(requestBody: true, responseBody: true),
+  ]);
 
   // API client data source
   getIt.registerLazySingleton<ApiClient>(
@@ -106,6 +133,11 @@ void _initializeRepositories() {
       localStorage: getIt<LocalStorage>(),
     ),
   );
+
+  // New feature-layer product repository (using FakeFirestore for now)
+  getIt.registerLazySingleton<newrepo.ProductRepository>(
+    () => features_product_repo.ProductRepositoryImpl(FakeFirestore.instance),
+  );
 }
 
 /// Initialize use cases
@@ -127,6 +159,16 @@ void _initializeUseCases() {
   getIt.registerLazySingleton<GetProductsUseCase>(
     () => GetProductsUseCase(getIt<ProductRepository>()),
   );
+
+  // New product detail query use case (DDD path)
+  getIt.registerLazySingleton<newusecase.GetProductDetailQuery>(
+    () => newusecase.GetProductDetailQuery(getIt<newrepo.ProductRepository>()),
+  );
+
+  // New product list query use case (DDD path)
+  getIt.registerLazySingleton<newlistusecase.GetProductsQuery>(
+    () => newlistusecase.GetProductsQuery(getIt<newrepo.ProductRepository>()),
+  );
 }
 
 /// Initialize blocs (State Management)
@@ -143,6 +185,20 @@ void _initializeBlocs() {
   getIt.registerFactory<ProductBloc>(
     () => ProductBloc(
       getProductsUseCase: getIt<GetProductsUseCase>(),
+    ),
+  );
+
+  // New ProductDetailBloc
+  getIt.registerFactory<newdetail.ProductDetailBloc>(
+    () => newdetail.ProductDetailBloc(
+      getDetail: getIt<newusecase.GetProductDetailQuery>(),
+    ),
+  );
+
+  // New ProductListBloc
+  getIt.registerFactory<newlist.ProductListBloc>(
+    () => newlist.ProductListBloc(
+      getProducts: getIt<newlistusecase.GetProductsQuery>(),
     ),
   );
 

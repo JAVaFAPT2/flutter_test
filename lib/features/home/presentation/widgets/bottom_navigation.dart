@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 // import removed: using direct SVG asset paths for consistent sizing
 import 'package:vietnamese_fish_sauce_app/shared/widgets/custom_bottom_navigation.dart';
+import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 
 /// Bottom navigation bar for the app using CustomBottomNavigation widget
 class HomeBottomNavigation extends StatelessWidget {
@@ -17,14 +18,15 @@ class HomeBottomNavigation extends StatelessWidget {
           width: 40,
           height: 40,
           scale: 1.0,
-          onTap: () => context.push('/cart'),
+          onTap: () => context.read<NavigationCubit>().navigateToCart(context),
         ),
         BottomNavItem(
           icon: 'assets/figma_exports/menu_box.png',
           width: 40,
           height: 40,
           scale: 1.0,
-          onTap: () => context.push('/order-history'),
+          onTap: () =>
+              context.read<NavigationCubit>().navigateToOrders(context),
         ),
         BottomNavItem(
           icon: 'assets/figma_exports/bell_menu.png',
@@ -41,20 +43,19 @@ class HomeBottomNavigation extends StatelessWidget {
           width: 40,
           height: 40,
           scale: 1.0,
-          onTap: () => context.push('/profile'),
+          onTap: () =>
+              context.read<NavigationCubit>().navigateToProfile(context),
         ),
       ],
       centerItem: CenterNavItem(
         icon: 'assets/figma_exports/home_menu.png',
-        size: 75,
-        innerSize: 55,
-        iconSize: 30,
-        onTap: () {
-          // Already on home - could scroll to top or refresh
-        },
+        size: 65,
+        innerSize: 45,
+        iconSize: 26,
+        onTap: () => context.read<NavigationCubit>().navigateToHome(context),
         backgroundColor: const Color(0xFF004917), // Dark green
       ),
-      height: 80.0, // Reduced height
+      height: 85.0, // Slightly increased height for better spacing
       selectedIndex: 2, // Home is selected
     );
   }

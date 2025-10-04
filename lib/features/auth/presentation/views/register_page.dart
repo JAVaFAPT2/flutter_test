@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:vietnamese_fish_sauce_app/src/shared/widgets/smart_asset_image.dart';
 import 'package:vietnamese_fish_sauce_app/src/presentation/assets/figma_assets.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/routes/app_router.dart';
+import 'package:vietnamese_fish_sauce_app/app/routes/app_router.dart';
 import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
 
 /// Register page for Vietnamese fish sauce e-commerce app

@@ -5,8 +5,8 @@ import 'package:vietnamese_fish_sauce_app/core/constants/figma_assets.dart';
 import 'package:vietnamese_fish_sauce_app/features/home/presentation/cubit/home_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/home_banner.dart';
-import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/product_card.dart';
-import 'package:go_router/go_router.dart';
+import 'package:vietnamese_fish_sauce_app/shared/widgets/product_card.dart';
+import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/bloc/product_bloc.dart'
     as pb;
 import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'
@@ -85,7 +85,9 @@ class HomePageView extends StatelessWidget {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  // Navigate to products page
+                                  context
+                                      .read<NavigationCubit>()
+                                      .navigateToProducts(context);
                                 },
                                 child: Row(
                                   children: [
@@ -389,7 +391,7 @@ class _SnappingProductPagerState extends State<_SnappingProductPager> {
             left: index == 0 ? 20 : 6,
             right: index == widget.products.length - 1 ? 20 : 6,
           ),
-          child: ProductCard(
+          child: ProductCard.simple(
             imageUrl: p.imageUrl,
             name: p.name,
             price: p.formattedPrice,
@@ -400,7 +402,9 @@ class _SnappingProductPagerState extends State<_SnappingProductPager> {
               if (p.id == '1') productId = 'figma-sample-1';
               if (p.id == '2') productId = 'figma-sample-2';
               if (p.id == '3') productId = 'sample-3';
-              GoRouter.of(context).push('/product/$productId');
+              context
+                  .read<NavigationCubit>()
+                  .navigateToProductDetailById(context, productId);
             },
           ),
         );

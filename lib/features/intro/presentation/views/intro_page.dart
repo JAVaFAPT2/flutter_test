@@ -6,7 +6,7 @@ import 'dart:typed_data' show Uint8List;
 import 'package:go_router/go_router.dart';
 
 import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/routes/app_router.dart';
+import 'package:vietnamese_fish_sauce_app/app/routes/app_router.dart';
 import 'package:vietnamese_fish_sauce_app/src/presentation/assets/figma_assets.dart';
 
 /// Intro screen matching Figma design (Mở đầu app)
