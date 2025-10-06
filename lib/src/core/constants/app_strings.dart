@@ -48,6 +48,7 @@ abstract class AppStrings {
   // Cart
   static const String shoppingCart = 'Giỏ hàng';
   static const String emptyCart = 'Giỏ hàng trống';
+  static const String emptyCartHint = 'Chưa có sản phẩm nào trong giỏ hàng';
   static const String totalPrice = 'Tổng tiền';
   static const String subtotal = 'Tạm tính';
   static const String shippingFee = 'Phí vận chuyển';

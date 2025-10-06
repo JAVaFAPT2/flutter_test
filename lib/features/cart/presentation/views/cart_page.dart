@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
 import 'package:vietnamese_fish_sauce_app/core/constants/figma_assets.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart';
-import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/bottom_navigation.dart';
-import '../widgets/cart_edit_toolbar.dart';
-import '../widgets/cart_item_widget.dart';
-import '../widgets/cart_checkout_section.dart';
+import 'package:vietnamese_fish_sauce_app/features/cart/presentation/widgets/cart_edit_toolbar.dart';
+import 'package:vietnamese_fish_sauce_app/features/cart/presentation/widgets/cart_item_widget.dart';
+import 'package:vietnamese_fish_sauce_app/features/cart/presentation/widgets/cart_checkout_section.dart';
+import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
 
 /// Shopping cart page - Matching Figma design with consistent styling
 class CartPage extends StatelessWidget {
@@ -19,6 +17,7 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const HomeBottomNavigation(),
       body: Stack(
         children: [
           // Background
@@ -33,11 +32,11 @@ class CartPage extends StatelessWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: -140, // small nudge higher
+            bottom: -200, // raise crest higher
             child: Image.asset(
               FigmaAssets.graphicGreen,
               width: double.infinity,
-              height: 600,
+              height: 700,
               fit: BoxFit.cover,
               alignment: Alignment.topCenter,
             ),
@@ -65,8 +64,6 @@ class CartPage extends StatelessWidget {
                     },
                   ),
                 ),
-                // Bottom navigation
-                const HomeBottomNavigation(),
               ],
             ),
           ),
@@ -146,7 +143,7 @@ class CartPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Chưa có sản phẩm nào trong giỏ hàng',
+                  AppStrings.emptyCartHint,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: const Color(0xFF9E9E9E),
                         fontStyle: FontStyle.italic,
