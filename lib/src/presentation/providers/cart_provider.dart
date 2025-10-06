@@ -64,6 +64,9 @@ class CartState {
 }
 
 /// Provider for shopping cart state management
+///
+/// @deprecated This provider is deprecated. Use CartBloc instead.
+/// This file will be removed in a future version.
 class CartProvider extends ChangeNotifier {
   CartProvider();
 

@@ -50,24 +50,48 @@ class CartItem extends Equatable {
 }
 
 class CartState extends Equatable {
-  const CartState(
-      {this.items = const [], this.isLoading = false, this.errorMessage});
+  const CartState({
+    this.items = const [],
+    this.isLoading = false,
+    this.errorMessage,
+    this.isEditing = false,
+    this.selectedVariantKeys = const {},
+  });
   final List<CartItem> items;
   final bool isLoading;
   final String? errorMessage;
+  final bool isEditing;
+  final Set<String> selectedVariantKeys;
 
   int get totalItems => items.fold(0, (s, i) => s + i.quantity);
   double get totalPrice => items.fold(0.0, (s, i) => s + i.totalPrice);
 
-  CartState copyWith(
-      {List<CartItem>? items, bool? isLoading, String? errorMessage}) {
+  // Selection-based getters
+  List<CartItem> get selectedItems =>
+      items.where((i) => selectedVariantKeys.contains(i.variantKey)).toList();
+  int get selectedCount => selectedItems.fold(0, (s, i) => s + i.quantity);
+  double get selectedTotal =>
+      selectedItems.fold(0.0, (s, i) => s + i.totalPrice);
+  bool get allSelected =>
+      items.isNotEmpty && selectedVariantKeys.length == items.length;
+
+  CartState copyWith({
+    List<CartItem>? items,
+    bool? isLoading,
+    String? errorMessage,
+    bool? isEditing,
+    Set<String>? selectedVariantKeys,
+  }) {
     return CartState(
       items: items ?? this.items,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
+      isEditing: isEditing ?? this.isEditing,
+      selectedVariantKeys: selectedVariantKeys ?? this.selectedVariantKeys,
     );
   }
 
   @override
-  List<Object?> get props => [items, isLoading, errorMessage];
+  List<Object?> get props =>
+      [items, isLoading, errorMessage, isEditing, selectedVariantKeys];
 }

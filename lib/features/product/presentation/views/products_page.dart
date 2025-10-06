@@ -13,6 +13,7 @@ import 'package:vietnamese_fish_sauce_app/src/core/di/injection_container.dart'
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/cubit/products_view_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/loading_shimmer.dart';
 import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
+import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart';
 
 // Widget imports
 import '../widgets/figma_products_search.dart';
@@ -309,7 +310,7 @@ class _ProductsPageViewState extends State<ProductsPageView> {
               isOnSale: e.isOnSale,
               discountPercentage: e.discountPercentage,
               stockQuantity: e.stockQuantity,
-              nutritionInfo: e.nutritionInfo,
+              nutritionInfo: e.nutritionInfo.isEmpty ? null : e.nutritionInfo,
             ))
         .toList();
   }
@@ -326,11 +327,21 @@ class _ProductsPageViewState extends State<ProductsPageView> {
   }
 
   void _addToCart(BuildContext context, domain.Product product) {
+    final cartBloc = context.read<CartBloc>();
+
+    cartBloc.add(CartItemAdded(
+      product: product,
+      quantity: 1,
+      volume: product.volume,
+      unitPrice: product.price.toInt(),
+    ));
+
     // Show confirmation message
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Added ${product.name} to cart'),
         duration: const Duration(seconds: 2),
+        backgroundColor: const Color(0xFF4CAF50),
       ),
     );
   }

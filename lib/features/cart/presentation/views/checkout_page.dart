@@ -116,7 +116,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     isLoading: false, // Loading state will be added in Phase 6
                     onPressed: () => _placeOrder(context),
                     child: Text(
-                      '${AppStrings.placeOrder} - ${context.read<CartBloc>().state.totalPrice.toStringAsFixed(0)}₫',
+                      '${AppStrings.placeOrder} - ${context.read<CartBloc>().state.selectedTotal.toStringAsFixed(0)}₫',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -389,6 +389,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   Widget _buildOrderSummary(BuildContext context) {
     final cartState = context.watch<CartBloc>().state;
+    // Use selected items if any, otherwise use all items
+    final itemsToShow = cartState.selectedItems.isNotEmpty
+        ? cartState.selectedItems
+        : cartState.items;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -399,7 +404,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       child: Column(
         children: [
           // Cart Items Summary
-          ...cartState.items.map((item) {
+          ...itemsToShow.map((item) {
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
@@ -475,7 +480,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                     const Spacer(),
                     Text(
-                      '${cartState.totalPrice.toStringAsFixed(0)}₫',
+                      '${cartState.selectedTotal.toStringAsFixed(0)}₫',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -507,7 +512,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                     const Spacer(),
                     Text(
-                      '${(cartState.totalPrice * 0.1).toStringAsFixed(0)}₫',
+                      '${(cartState.selectedTotal * 0.1).toStringAsFixed(0)}₫',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -526,7 +531,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                     const Spacer(),
                     Text(
-                      '${(cartState.totalPrice * 1.1 + 30000).toStringAsFixed(0)}₫',
+                      '${(cartState.selectedTotal * 1.1 + 30000).toStringAsFixed(0)}₫',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).primaryColor,

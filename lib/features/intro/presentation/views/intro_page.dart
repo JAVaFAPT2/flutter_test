@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
 import 'package:vietnamese_fish_sauce_app/app/routes/app_router.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/assets/figma_assets.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/auth_assets.dart';
 
 /// Intro screen matching Figma design (Mở đầu app)
 class IntroPage extends StatelessWidget {
@@ -25,7 +25,7 @@ class IntroPage extends StatelessWidget {
           // Background image (PNG to avoid SVG load issues on some devices)
           Positioned.fill(
             child: Image.asset(
-              kPngBackgroundIntro,
+              AuthAssets.backgroundIntro,
               alignment: Alignment.center,
               fit: BoxFit.cover,
             ),
@@ -46,7 +46,9 @@ class IntroPage extends StatelessWidget {
                 child: Opacity(
                   opacity: 0.49,
                   child: _EmbeddedPngFromSvg(
-                      assetPath: kSvgInfoCircle, width: 23, height: 23),
+                      assetPath: AuthAssets.svgInfoCircle,
+                      width: 23,
+                      height: 23),
                 ),
               ),
             ),
@@ -64,7 +66,7 @@ class IntroPage extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(6.0),
                 child: _EmbeddedPngFromSvg(
-                    assetPath: kSvgWebIcon, width: 26, height: 26),
+                    assetPath: AuthAssets.svgWebIcon, width: 26, height: 26),
               ),
             ),
           ),
@@ -91,7 +93,8 @@ class IntroPage extends StatelessWidget {
                     SizedBox(
                       width: 289,
                       height: 164,
-                      child: Image.asset(kPngLogoMgf, fit: BoxFit.contain),
+                      child:
+                          Image.asset(AuthAssets.logoMgf, fit: BoxFit.contain),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -106,7 +109,8 @@ class IntroPage extends StatelessWidget {
                     SizedBox(
                       width: 158,
                       height: 200,
-                      child: Image.asset(kPngProductPack, fit: BoxFit.contain),
+                      child: Image.asset(AuthAssets.productPack,
+                          fit: BoxFit.contain),
                     ),
                     const Spacer(),
                     Text(
@@ -120,9 +124,9 @@ class IntroPage extends StatelessWidget {
                     Stack(
                       alignment: Alignment.center,
                       children: [
-                        if (kSvgRegisterFrame.isNotEmpty)
+                        if (AuthAssets.svgRegisterFrame.isNotEmpty)
                           SvgPicture.asset(
-                            kSvgRegisterFrame,
+                            AuthAssets.svgRegisterFrame,
                             width: 306,
                             height: 54,
                           )

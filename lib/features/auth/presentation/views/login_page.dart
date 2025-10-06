@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vietnamese_fish_sauce_app/src/shared/widgets/smart_asset_image.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/assets/figma_assets.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/auth_assets.dart';
 
 /// Login page for Vietnamese fish sauce e-commerce app
 class LoginPage extends StatelessWidget {
@@ -18,7 +18,7 @@ class LoginPage extends StatelessWidget {
           // Background - Same as register page for consistency
           const Positioned.fill(
             child: SmartAssetImage(
-              assetPath: kPngRegisterBackground,
+              assetPath: AuthAssets.backgroundLogin,
               fit: BoxFit.cover,
               preferSvg: false, // Use PNG since SVG doesn't exist
             ),
@@ -29,7 +29,7 @@ class LoginPage extends StatelessWidget {
             top: 0,
             right: 0,
             child: SmartAssetImage(
-              assetPath: kPngLoginTopRight,
+              assetPath: AuthAssets.topRightLogin,
               width: 150,
               height: 220,
               fit: BoxFit.contain,
@@ -47,7 +47,7 @@ class LoginPage extends StatelessWidget {
                 context.go('/intro');
               },
               child: SmartAssetImage(
-                assetPath: kPngRegisterLeftButton,
+                assetPath: AuthAssets.backButtonLogin,
                 width: 92,
                 height: 55,
                 preferSvg: false, // Try PNG first
@@ -62,7 +62,7 @@ class LoginPage extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: SmartAssetImage(
-              assetPath: kPngRegisterGraphicGreen,
+              assetPath: AuthAssets.graphicGreenLogin,
               fit: BoxFit.cover,
               preferSvg: false, // Try PNG first for complex graphics
             ),

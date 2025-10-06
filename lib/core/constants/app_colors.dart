@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class AppColors {
   AppColors._();
 
@@ -30,4 +32,15 @@ class AppColors {
   static const int price = _green00C853;
   static const int selected = _green00C853;
   static const int starAlt = _green024023;
+  // Color-typed aliases (safe for direct use in widgets)
+  static const Color cTextTitle = Color(textTitle);
+  static const Color cTextBody = Color(textBody);
+  static const Color cTextMuted = Color(textMuted);
+  static const Color cSurfaceCream = Color(surfaceCream);
+  static const Color cAccentOrange = Color(accentOrange);
+  static const Color cCtaBrown = Color(ctaBrown);
+  static const Color cStar = Color(star);
+  static const Color cPrice = Color(price);
+  static const Color cSelected = Color(selected);
+  static const Color cStarAlt = Color(starAlt);
 }

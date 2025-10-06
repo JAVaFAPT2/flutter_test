@@ -59,7 +59,7 @@ class CustomBottomNavigation extends StatelessWidget {
 
     return SafeArea(
       top: false,
-      bottom: true, // Ensure bottom safe area is respected
+      bottom: false,
       child: Container(
         height: height,
         decoration: BoxDecoration(
@@ -94,8 +94,7 @@ class CustomBottomNavigation extends StatelessWidget {
             // Center button positioned within the navigation bar bounds
             Positioned(
               left: (MediaQuery.of(context).size.width - centerItem.size) / 2,
-              top: (height - centerItem.size) / 2 -
-                  8, // More upward offset to prevent clipping
+              top: (height - centerItem.size) / 2 - 8,
               child: _buildCenterButton(),
             ),
           ],

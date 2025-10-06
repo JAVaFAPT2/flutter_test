@@ -13,6 +13,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<CartItemRemoved>(_onItemRemoved);
     on<CartItemQuantityUpdated>(_onItemQuantityUpdated);
     on<CartCleared>(_onCleared);
+    on<CartEditModeToggled>(_onEditModeToggled);
+    on<CartItemSelectionToggled>(_onItemSelectionToggled);
+    on<CartSelectAllToggled>(_onSelectAllToggled);
+    on<CartDeleteSelectedRequested>(_onDeleteSelectedRequested);
   }
 
   void _onItemAdded(CartItemAdded event, Emitter<CartState> emit) {
@@ -29,7 +33,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       );
       emit(state.copyWith(items: updated));
     } else {
-      emit(state.copyWith(items: [
+      final newItems = [
         ...state.items,
         CartItem(
           product: event.product,
@@ -38,7 +42,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           unitPrice: event.unitPrice,
           addedAt: DateTime.now(),
         ),
-      ]));
+      ];
+      emit(state.copyWith(items: newItems));
     }
   }
 
@@ -47,8 +52,13 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         ? '${event.productId}_${event.volume}'
         : event.productId;
 
+    // Remove from selection if present
+    final updatedSelection = Set<String>.from(state.selectedVariantKeys);
+    updatedSelection.remove(variantKey);
+
     emit(state.copyWith(
       items: state.items.where((i) => i.variantKey != variantKey).toList(),
+      selectedVariantKeys: updatedSelection,
     ));
   }
 
@@ -79,5 +89,45 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   void _onCleared(CartCleared event, Emitter<CartState> emit) {
     emit(const CartState());
+  }
+
+  void _onEditModeToggled(CartEditModeToggled event, Emitter<CartState> emit) {
+    emit(state.copyWith(isEditing: event.isEditing));
+  }
+
+  void _onItemSelectionToggled(
+      CartItemSelectionToggled event, Emitter<CartState> emit) {
+    final variantKey = event.volume != null
+        ? '${event.productId}_${event.volume}'
+        : event.productId;
+
+    final updatedSelection = Set<String>.from(state.selectedVariantKeys);
+    if (event.isSelected) {
+      updatedSelection.add(variantKey);
+    } else {
+      updatedSelection.remove(variantKey);
+    }
+
+    emit(state.copyWith(selectedVariantKeys: updatedSelection));
+  }
+
+  void _onSelectAllToggled(
+      CartSelectAllToggled event, Emitter<CartState> emit) {
+    final allVariantKeys = state.items.map((i) => i.variantKey).toSet();
+    emit(state.copyWith(
+      selectedVariantKeys: event.isSelected ? allVariantKeys : <String>{},
+    ));
+  }
+
+  void _onDeleteSelectedRequested(
+      CartDeleteSelectedRequested event, Emitter<CartState> emit) {
+    final remainingItems = state.items
+        .where((i) => !state.selectedVariantKeys.contains(i.variantKey))
+        .toList();
+
+    emit(state.copyWith(
+      items: remainingItems,
+      selectedVariantKeys: <String>{},
+    ));
   }
 }

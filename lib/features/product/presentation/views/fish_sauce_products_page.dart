@@ -711,7 +711,7 @@ class _FishSauceProductsPageState extends State<FishSauceProductsPage> {
       originalPrice: double.tryParse(
             product.originalPrice.replaceAll(RegExp(r'[^\d]'), ''),
           )?.toDouble() ??
-          0.0,
+          product.getPriceForVolume(volume).toDouble(),
       imageUrl: product.imageUrl,
       category: product.category,
       brand: product.brand,
@@ -725,14 +725,15 @@ class _FishSauceProductsPageState extends State<FishSauceProductsPage> {
       isOnSale: product.isOnSale,
       discountPercentage: product.discountPercentage,
       stockQuantity: product.stockQuantity,
-      nutritionInfo: product.nutritionInfo,
+      nutritionInfo:
+          product.nutritionInfo.isEmpty ? null : product.nutritionInfo,
     );
 
     cartBloc.add(CartItemAdded(
       product: domainProduct,
+      quantity: 1,
       volume: volume,
       unitPrice: product.getPriceForVolume(volume),
-      quantity: 1,
     ));
 
     // Show success message

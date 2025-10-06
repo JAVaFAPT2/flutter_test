@@ -119,8 +119,15 @@ class AppRouter {
     final isHomeRoute = state.matchedLocation == home;
     final isProductRoute = state.matchedLocation.startsWith('/product/');
     final isProductsRoute = state.matchedLocation == '/products';
-    // Allow access to home, products, and product detail pages regardless of auth state
-    if (isHomeRoute || isProductRoute || isProductsRoute) {
+    // Allow access to home, products, product detail, and cart pages regardless of auth state
+    final isCartRoute = state.matchedLocation == '/cart';
+    final isCheckoutRoute = state.matchedLocation == '/checkout';
+
+    if (isHomeRoute ||
+        isProductRoute ||
+        isProductsRoute ||
+        isCartRoute ||
+        isCheckoutRoute) {
       return null;
     }
 

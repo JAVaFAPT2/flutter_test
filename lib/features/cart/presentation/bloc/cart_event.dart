@@ -42,3 +42,34 @@ class CartItemQuantityUpdated extends CartEvent {
 class CartCleared extends CartEvent {
   const CartCleared();
 }
+
+class CartEditModeToggled extends CartEvent {
+  const CartEditModeToggled({required this.isEditing});
+  final bool isEditing;
+  @override
+  List<Object?> get props => [isEditing];
+}
+
+class CartItemSelectionToggled extends CartEvent {
+  const CartItemSelectionToggled({
+    required this.productId,
+    this.volume,
+    required this.isSelected,
+  });
+  final String productId;
+  final String? volume;
+  final bool isSelected;
+  @override
+  List<Object?> get props => [productId, volume, isSelected];
+}
+
+class CartSelectAllToggled extends CartEvent {
+  const CartSelectAllToggled({required this.isSelected});
+  final bool isSelected;
+  @override
+  List<Object?> get props => [isSelected];
+}
+
+class CartDeleteSelectedRequested extends CartEvent {
+  const CartDeleteSelectedRequested();
+}

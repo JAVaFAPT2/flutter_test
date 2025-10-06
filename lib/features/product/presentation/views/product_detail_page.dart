@@ -187,7 +187,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       bottom: 0,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(AppColors.surfaceCream),
+                          color: Color(AppColors.surfaceCream),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(30),
                             topRight: Radius.circular(30),
@@ -410,15 +410,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       return Container(
                                         height: 31,
                                         decoration: BoxDecoration(
-                                          color: const Color(
-                                              AppColors.accentOrange),
+                                          color: Color(AppColors.accentOrange),
                                           borderRadius:
                                               BorderRadius.circular(6),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(
-                                                      AppColors.accentOrange)
-                                                  .withValues(alpha: 0.3),
+                                              color:
+                                                  Color(AppColors.accentOrange)
+                                                      .withValues(alpha: 0.3),
                                               blurRadius: 4,
                                               offset: const Offset(0, 2),
                                             ),
@@ -533,7 +532,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                          const Color(AppColors.ctaBrown),
+                                          Color(AppColors.ctaBrown),
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 16),
@@ -589,19 +588,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         width: 94,
         height: 33,
         decoration: BoxDecoration(
-          color: isSelected ? const Color(AppColors.selected) : Colors.white,
+          color: isSelected ? Color(AppColors.selected) : Colors.white,
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: isSelected
-                ? const Color(AppColors.selected)
+                ? Color(AppColors.selected)
                 : const Color(0xFFE0E0E0),
             width: 1,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color:
-                        const Color(AppColors.selected).withValues(alpha: 0.3),
+                    color: Color(AppColors.selected).withValues(alpha: 0.3),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
