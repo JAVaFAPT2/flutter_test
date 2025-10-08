@@ -497,11 +497,11 @@ class _FishSauceProductsPageState extends State<FishSauceProductsPage> {
       ),
       child: Row(
         children: [
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const 
+                Text(
                   'Đặt hàng ngay',
                   style: TextStyle(
                     fontSize: 24,
@@ -509,15 +509,15 @@ class _FishSauceProductsPageState extends State<FishSauceProductsPage> {
                     color: Colors.white,
                   ),
                 ),
-                const Text(
+                Text(
                   'hôm nay!',
                   style: TextStyle(
                     fontSize: 24,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text(
+                SizedBox(height: 8),
+                Text(
                   '"Món quà cho những người bạn"',
                   style: TextStyle(
                     fontSize: 10,
