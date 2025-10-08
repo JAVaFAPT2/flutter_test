@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vietnamese_fish_sauce_app/features/cart/domain/entities/cart_item.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart';
 
 class CartItemWidget extends StatelessWidget {

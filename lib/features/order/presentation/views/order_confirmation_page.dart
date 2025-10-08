@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_strings.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart'
     as cart_bloc;
 

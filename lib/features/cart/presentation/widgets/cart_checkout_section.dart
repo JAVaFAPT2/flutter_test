@@ -38,7 +38,7 @@ class CartCheckoutSection extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${state.totalPrice.toStringAsFixed(0)}₫',
+                          '${state.total}₫',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -61,7 +61,7 @@ class CartCheckoutSection extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          state.totalItems.toString(),
+                          state.totalQuantity.toString(),
                           style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,

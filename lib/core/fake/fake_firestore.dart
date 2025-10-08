@@ -11,6 +11,7 @@ class FakeFirestore {
   final Map<String, Map<String, dynamic>> _users = {};
   final Map<String, Map<String, dynamic>> _orders = {};
   final Map<String, Map<String, dynamic>> _notifications = {};
+  final Map<String, Map<String, dynamic>> _orderTracking = {};
 
   // Streams
   final StreamController<List<Map<String, dynamic>>> _productStream =
@@ -43,6 +44,18 @@ class FakeFirestore {
       _notifications[id] = {...item, 'id': id};
     }
     _emitNotifications();
+  }
+
+  Future<void> seedOrders(List<Map<String, dynamic>> orders) async {
+    for (final item in orders) {
+      final String id = item['id']?.toString() ?? _autoId();
+      _orders[id] = {
+        ...item,
+        'id': id,
+        'createdAt': item['createdAt'] ?? DateTime.now().toIso8601String(),
+      };
+    }
+    _emitOrders();
   }
 
   // Product APIs
@@ -100,7 +113,11 @@ class FakeFirestore {
   Future<List<Map<String, dynamic>>> getOrders({String? userId}) async {
     await Future<void>.delayed(const Duration(milliseconds: 120));
     final values = _orders.values.toList()
-      ..sort((a, b) => (b['createdAt'] ?? '').compareTo(a['createdAt'] ?? ''));
+      ..sort((Map<String, dynamic> a, Map<String, dynamic> b) {
+        final String aCreatedAt = a['createdAt'] as String? ?? '';
+        final String bCreatedAt = b['createdAt'] as String? ?? '';
+        return bCreatedAt.compareTo(aCreatedAt);
+      });
     if (userId == null) return values;
     return values.where((e) => e['userId'] == userId).toList();
   }
@@ -127,7 +144,11 @@ class FakeFirestore {
   Future<List<Map<String, dynamic>>> getNotifications({String? userId}) async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     final values = _notifications.values.toList()
-      ..sort((a, b) => (b['createdAt'] ?? '').compareTo(a['createdAt'] ?? ''));
+      ..sort((Map<String, dynamic> a, Map<String, dynamic> b) {
+        final String aCreatedAt = a['createdAt'] as String? ?? '';
+        final String bCreatedAt = b['createdAt'] as String? ?? '';
+        return bCreatedAt.compareTo(aCreatedAt);
+      });
     if (userId == null) return values;
     return values.where((e) => e['userId'] == userId).toList();
   }
@@ -145,6 +166,32 @@ class FakeFirestore {
       _notifications[id] = {...n, 'read': true};
       _emitNotifications();
     }
+  }
+
+  // Order Tracking APIs
+  Future<void> seedOrderTracking(
+      List<Map<String, dynamic>> trackingData) async {
+    for (final item in trackingData) {
+      final String id = item['id']?.toString() ?? _autoId();
+      _orderTracking[id] = {...item, 'id': id};
+    }
+  }
+
+  Future<Map<String, dynamic>?> getOrderTracking(String orderId) async {
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+
+    // Return mock tracking data if not found in store
+    if (!_orderTracking.containsKey(orderId)) {
+      return {
+        'id': 'tracking_$orderId',
+        'orderId': orderId,
+        'statuses': ['received', 'preparing', 'shipped', 'delivered'],
+        'currentStatusIndex': 0,
+        'createdAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    return _orderTracking[orderId];
   }
 
   // Private helpers

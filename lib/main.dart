@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'src/core/constants/app_constants.dart';
-import 'src/core/di/injection_container.dart' as di;
+import 'core/constants/app_constants.dart';
+import 'core/di/injection_container.dart' as di;
 import 'app/routes/app_router.dart';
 import 'core/design_system/app_theme.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';

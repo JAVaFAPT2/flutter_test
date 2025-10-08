@@ -1,38 +1,46 @@
 part of 'auth_bloc.dart';
 
+/// State for authentication
 class AuthState extends Equatable {
-  const AuthState._({
-    required this.isAuthenticated,
+  const AuthState({
     this.user,
+    this.isAuthenticated = false,
     this.isLoading = false,
     this.errorMessage,
   });
 
-  const AuthState.unauthenticated()
-      : this._(isAuthenticated: false, user: null);
-  const AuthState.authenticated({required domain.User user})
-      : this._(isAuthenticated: true, user: user);
-
+  final User? user;
   final bool isAuthenticated;
-  final domain.User? user;
   final bool isLoading;
   final String? errorMessage;
 
+  /// Factory for unauthenticated state
+  const AuthState.unauthenticated()
+      : user = null,
+        isAuthenticated = false,
+        isLoading = false,
+        errorMessage = null;
+
+  /// Factory for authenticated state
+  const AuthState.authenticated({required this.user})
+      : isAuthenticated = true,
+        isLoading = false,
+        errorMessage = null;
+
   AuthState copyWith({
+    User? user,
     bool? isAuthenticated,
-    domain.User? user,
     bool? isLoading,
     String? errorMessage,
   }) {
-    return AuthState._(
-      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+    return AuthState(
       user: user ?? this.user,
+      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [isAuthenticated, user, isLoading, errorMessage];
+  List<Object?> get props => [user, isAuthenticated, isLoading, errorMessage];
 }
-

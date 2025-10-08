@@ -6,10 +6,9 @@ import 'package:vietnamese_fish_sauce_app/features/product/application/bloc/prod
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/cubit/products_view_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart';
-import 'package:vietnamese_fish_sauce_app/src/core/di/injection_container.dart'
+import 'package:vietnamese_fish_sauce_app/core/di/injection_container.dart'
     as di;
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'
-    as domain;
+// Removed old domain import
 
 /// Vietnamese Fish Sauce Products Page - Matches Figma Design
 ///
@@ -502,7 +501,7 @@ class _FishSauceProductsPageState extends State<FishSauceProductsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                const 
                   'Đặt hàng ngay',
                   style: TextStyle(
                     fontSize: 24,
@@ -702,35 +701,10 @@ class _FishSauceProductsPageState extends State<FishSauceProductsPage> {
   void _addToCart(ProductEntity product, String volume) {
     final cartBloc = context.read<CartBloc>();
 
-    // Convert ProductEntity to domain.Product
-    final domainProduct = domain.Product(
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.getPriceForVolume(volume).toDouble(),
-      originalPrice: double.tryParse(
-            product.originalPrice.replaceAll(RegExp(r'[^\d]'), ''),
-          )?.toDouble() ??
-          product.getPriceForVolume(volume).toDouble(),
-      imageUrl: product.imageUrl,
-      category: product.category,
-      brand: product.brand,
-      volume: volume,
-      ingredients: product.ingredients,
-      origin: product.origin,
-      rating: product.rating,
-      reviewCount: product.reviewCount,
-      isAvailable: product.inStock,
-      isFeatured: product.isFeatured,
-      isOnSale: product.isOnSale,
-      discountPercentage: product.discountPercentage,
-      stockQuantity: product.stockQuantity,
-      nutritionInfo:
-          product.nutritionInfo.isEmpty ? null : product.nutritionInfo,
-    );
+    // Use ProductEntity directly
 
     cartBloc.add(CartItemAdded(
-      product: domainProduct,
+      product: product,
       quantity: 1,
       volume: volume,
       unitPrice: product.getPriceForVolume(volume),

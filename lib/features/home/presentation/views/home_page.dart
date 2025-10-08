@@ -9,8 +9,7 @@ import 'package:vietnamese_fish_sauce_app/shared/widgets/product_card.dart';
 import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/bloc/product_bloc.dart'
     as pb;
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'
-    as domain;
+import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
 import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/category_button.dart';
 import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/gallery_section.dart';
 import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/bottom_navigation.dart';
@@ -356,7 +355,7 @@ class _ProductShimmer extends StatelessWidget {
 
 class _SnappingProductPager extends StatefulWidget {
   const _SnappingProductPager({required this.products});
-  final List<domain.Product> products;
+  final List<ProductEntity> products;
 
   @override
   State<_SnappingProductPager> createState() => _SnappingProductPagerState();

@@ -27,6 +27,12 @@ class AppColors {
   static const int accentOrange = 0xFFE65100; // Total price background
   static const int ctaBrown = 0xFF2E0000; // CTA button
 
+  // Order Tracking Colors
+  static const int orderTrackingActive = 0xFFFF6B00; // Orange for active status
+  static const int orderTrackingInactive =
+      0xFF8A8A8A; // Gray for inactive status
+  static const int orderTrackingBorder = 0xFF00541A; // Green border color
+
   // Semantic aliases
   static const int star = _green00541A;
   static const int price = _green00C853;
@@ -43,4 +49,7 @@ class AppColors {
   static const Color cPrice = Color(price);
   static const Color cSelected = Color(selected);
   static const Color cStarAlt = Color(starAlt);
+  static const Color cOrderTrackingActive = Color(orderTrackingActive);
+  static const Color cOrderTrackingInactive = Color(orderTrackingInactive);
+  static const Color cOrderTrackingBorder = Color(orderTrackingBorder);
 }

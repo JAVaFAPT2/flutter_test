@@ -13,7 +13,7 @@ class ProductState extends Equatable {
     this.sortBy,
   });
 
-  final List<domain.Product> products;
+  final List<ProductEntity> products;
   final bool isLoading;
   final String? errorMessage;
   final bool hasMore;
@@ -24,7 +24,7 @@ class ProductState extends Equatable {
   final String? sortBy;
 
   ProductState copyWith({
-    List<domain.Product>? products,
+    List<ProductEntity>? products,
     bool? isLoading,
     String? errorMessage,
     bool? hasMore,
@@ -60,4 +60,3 @@ class ProductState extends Equatable {
         sortBy,
       ];
 }
-

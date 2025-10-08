@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
 
 /// Figma-style product card for products listing page
 ///
@@ -14,7 +14,7 @@ class FigmaProductCard extends StatelessWidget {
     this.onAddToCart,
   });
 
-  final Product product;
+  final ProductEntity product;
   final VoidCallback? onTap;
   final VoidCallback? onAddToCart;
 
@@ -144,7 +144,7 @@ class FigmaProductCard extends StatelessWidget {
 
           // Price info
           Text(
-            '${product.originalPrice.toInt()},000 (VNĐ)/Chai. Chiết khấu: ${product.discountPercentage.toInt()}(%)',
+            '${product.originalPrice},000 (VNĐ)/Chai. Chiết khấu: ${product.discountPercentage}(%)',
             style: const TextStyle(
               fontFamily: 'Inter',
               fontSize: 8,
@@ -156,7 +156,7 @@ class FigmaProductCard extends StatelessWidget {
 
           // Price
           Text(
-            '${product.price.toInt()},000 VNĐ',
+            '${product.price},000 VNĐ',
             style: const TextStyle(
               fontFamily: 'Inter',
               fontSize: 11,

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'
-    as domain;
+import 'package:vietnamese_fish_sauce_app/core/constants/app_strings.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/bloc/product_bloc.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/application/bloc/product_list_bloc.dart'
     as ddd;
-import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
-import 'package:vietnamese_fish_sauce_app/src/core/di/injection_container.dart'
+import 'package:vietnamese_fish_sauce_app/core/di/injection_container.dart'
     as di;
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/cubit/products_view_cubit.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/loading_shimmer.dart';
+import 'package:vietnamese_fish_sauce_app/shared/widgets/loading_shimmer.dart';
 import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart';
 
@@ -96,9 +94,8 @@ class _ProductsPageViewState extends State<ProductsPageView> {
                         return _buildErrorView(context, state.errorMessage!);
                       }
 
-                      final uiProducts = _mapProducts(state.products);
                       return _buildProductsView(
-                          context, uiProducts, scrollController);
+                          context, state.products, scrollController);
                     },
                   ),
                 ),
@@ -153,7 +150,7 @@ class _ProductsPageViewState extends State<ProductsPageView> {
     );
   }
 
-  Widget _buildProductsView(BuildContext context, List<domain.Product> products,
+  Widget _buildProductsView(BuildContext context, List<ProductEntity> products,
       ScrollController scrollController) {
     return SingleChildScrollView(
       controller: scrollController,
@@ -285,35 +282,7 @@ class _ProductsPageViewState extends State<ProductsPageView> {
     return const ProductsBottomNavigation();
   }
 
-  List<domain.Product> _mapProducts(List<ProductEntity> domainProducts) {
-    return domainProducts
-        .map((e) => domain.Product(
-              id: e.id,
-              name: e.name,
-              description: e.description,
-              price:
-                  double.tryParse(e.price.replaceAll(RegExp(r'[^\d]'), '')) ??
-                      0,
-              originalPrice: double.tryParse(
-                      e.originalPrice.replaceAll(RegExp(r'[^\d]'), '')) ??
-                  0,
-              imageUrl: e.imageUrl,
-              category: e.category,
-              brand: e.brand,
-              volume: e.volumes.isNotEmpty ? e.volumes.first : '500ml',
-              ingredients: e.ingredients,
-              origin: e.origin,
-              rating: e.rating,
-              reviewCount: e.reviewCount,
-              isAvailable: e.inStock,
-              isFeatured: e.isFeatured,
-              isOnSale: e.isOnSale,
-              discountPercentage: e.discountPercentage,
-              stockQuantity: e.stockQuantity,
-              nutritionInfo: e.nutritionInfo.isEmpty ? null : e.nutritionInfo,
-            ))
-        .toList();
-  }
+  // Removed _mapProducts method - using ProductEntity directly
 
   void _showSearchDialog(BuildContext context) {
     showDialog(
@@ -322,18 +291,20 @@ class _ProductsPageViewState extends State<ProductsPageView> {
     );
   }
 
-  void _navigateToProductDetail(BuildContext context, domain.Product product) {
+  void _navigateToProductDetail(BuildContext context, ProductEntity product) {
     context.read<NavigationCubit>().navigateToProductDetail(context, product);
   }
 
-  void _addToCart(BuildContext context, domain.Product product) {
+  void _addToCart(BuildContext context, ProductEntity product) {
     final cartBloc = context.read<CartBloc>();
 
     cartBloc.add(CartItemAdded(
       product: product,
       quantity: 1,
-      volume: product.volume,
-      unitPrice: product.price.toInt(),
+      volume: product.volumes.isNotEmpty ? product.volumes.first : null,
+      unitPrice: product.volumePrices.values.isNotEmpty
+          ? product.volumePrices.values.first
+          : 0,
     ));
 
     // Show confirmation message

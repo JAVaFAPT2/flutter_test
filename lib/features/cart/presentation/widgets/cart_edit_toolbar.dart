@@ -17,10 +17,10 @@ class CartEditToolbar extends StatelessWidget {
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => context.read<CartBloc>().add(
-                      CartEditModeToggled(isEditing: !state.isEditing),
+                      CartEditModeToggled(!state.isEditing),
                     ),
-                child: Row(
-                  children: const [
+                child: const Row(
+                  children: [
                     Icon(Icons.close, size: 18, color: Color(0xFF1E1E1E)),
                     SizedBox(width: 8),
                     Text(
@@ -45,7 +45,7 @@ class CartEditToolbar extends StatelessWidget {
                     GestureDetector(
                       onTap: () => context.read<CartBloc>().add(
                             CartSelectAllToggled(
-                              isSelected: state.selectedVariantKeys.length !=
+                              state.selectedVariantKeys.length !=
                                   state.items.length,
                             ),
                           ),
@@ -118,7 +118,7 @@ class CartEditToolbar extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: const Text('Xóa sản phẩm đã chọn'),
         content: Text(
-          'Bạn có chắc chắn muốn xóa ${state.selectedCount} sản phẩm đã chọn?',
+          'Bạn có chắc chắn muốn xóa ${state.selectedItemsCount} sản phẩm đã chọn?',
         ),
         actions: [
           TextButton(

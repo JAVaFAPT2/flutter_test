@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/shared/widgets/smart_asset_image.dart';
+import 'package:vietnamese_fish_sauce_app/shared/widgets/smart_asset_image.dart';
 import 'package:vietnamese_fish_sauce_app/core/constants/auth_assets.dart';
 
 /// Login page for Vietnamese fish sauce e-commerce app
@@ -46,7 +46,7 @@ class LoginPage extends StatelessWidget {
                 // Navigate back to intro page
                 context.go('/intro');
               },
-              child: SmartAssetImage(
+              child: const SmartAssetImage(
                 assetPath: AuthAssets.backButtonLogin,
                 width: 92,
                 height: 55,

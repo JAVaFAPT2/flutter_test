@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_constants.dart';
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_constants.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_strings.dart';
 
 /// Settings page for app preferences and configuration
 class SettingsPage extends StatefulWidget {

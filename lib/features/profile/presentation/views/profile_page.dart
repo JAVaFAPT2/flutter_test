@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_constants.dart';
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/user.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_constants.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_strings.dart';
+import 'package:vietnamese_fish_sauce_app/core/domain/entities/user.dart';
 import 'package:vietnamese_fish_sauce_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:vietnamese_fish_sauce_app/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/auth_text_field.dart';
+import 'package:vietnamese_fish_sauce_app/shared/widgets/auth_text_field.dart';
+import 'package:vietnamese_fish_sauce_app/features/profile/presentation/widgets/profile_overview.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/figma_assets.dart';
+import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/home_app_bar.dart';
+import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/bottom_navigation.dart';
 
 /// User profile page for managing personal information
 class ProfilePage extends StatefulWidget {
@@ -64,78 +68,62 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.myProfile),
-        elevation: 0,
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.white,
-        actions: [
-          BlocBuilder<ProfileCubit, ProfileState>(
-            builder: (context, state) {
-              return TextButton(
-                onPressed: state.isEditing
-                    ? () => _saveProfile(context.read<ProfileCubit>())
-                    : () => _toggleEditMode(context.read<ProfileCubit>()),
-                child: Text(
-                  state.isEditing ? AppStrings.save : AppStrings.edit,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              );
-            },
+      body: Stack(
+        children: [
+          // Background
+          Positioned.fill(
+            child: Image.asset(
+              FigmaAssets.background,
+              fit: BoxFit.cover,
+            ),
           ),
-        ],
-      ),
-      body: MultiBlocProvider(
-        providers: [
-          BlocProvider<ProfileCubit>(create: (_) => ProfileCubit()),
-        ],
-        child: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, authState) {
-            final user = authState.user;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Profile Header
-                  _buildProfileHeader(user),
+          // Content
+          SafeArea(
+            child: Column(
+              children: [
+                // Header reused from Home page
+                const HomeAppBar(),
 
-                  const SizedBox(height: 24),
-
-                  // Profile Form
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Personal Information Section
-                        _buildSectionHeader('Thông tin cá nhân'),
-                        _buildPersonalInfoForm(),
-
-                        const SizedBox(height: 24),
-
-                        // Address Information Section
-                        _buildSectionHeader('Địa chỉ giao hàng'),
-                        _buildAddressForm(),
-
-                        const SizedBox(height: 24),
-
-                        // Account Actions Section
-                        _buildSectionHeader('Tài khoản'),
-                        _buildAccountActions(),
-                      ],
+                // Scrollable profile content
+                Expanded(
+                  child: MultiBlocProvider(
+                    providers: [
+                      BlocProvider<ProfileCubit>(create: (_) => ProfileCubit()),
+                    ],
+                    child: BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        return SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ProfileOverview(),
+                              SizedBox(height: 100), // space for bottom nav
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom navigation reused from Home page
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: HomeBottomNavigation(),
+          ),
+        ],
       ),
     );
   }
 
+  // ignore: unused_element
   Widget _buildProfileHeader(User? user) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -166,20 +154,16 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             child: CircleAvatar(
               radius: 37,
-              backgroundImage:
-                  user?.avatar != null ? NetworkImage(user!.avatar!) : null,
-              child: user?.avatar == null
-                  ? Text(
-                      user?.fullName.isNotEmpty == true
-                          ? user!.fullName[0].toUpperCase()
-                          : 'U',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    )
-                  : null,
+              child: Text(
+                user?.fullName.isNotEmpty == true
+                    ? user!.fullName[0].toUpperCase()
+                    : 'U',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
             ),
           ),
 
@@ -223,6 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildSectionHeader(String title) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -236,6 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildPersonalInfoForm() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -304,6 +290,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildAddressForm() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -359,6 +346,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildAccountActions() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -448,10 +436,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // ignore: unused_element
   void _toggleEditMode(ProfileCubit cubit) {
     cubit.toggleEditMode();
   }
 
+  // ignore: unused_element
   void _saveProfile(ProfileCubit cubit) {
     if (_formKey.currentState?.validate() == true) {
       cubit.stopLoading();
@@ -459,13 +449,19 @@ class _ProfilePageState extends State<ProfilePage> {
       cubit.startLoading();
 
       // Profile update will be implemented in Phase 7
-      Future.delayed(const Duration(seconds: 2), () {
-        cubit.stopLoading();
+      _performProfileUpdate(cubit);
+    }
+  }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cập nhật thông tin thành công')),
-        );
-      });
+  Future<void> _performProfileUpdate(ProfileCubit cubit) async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    cubit.stopLoading();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cập nhật thông tin thành công')),
+      );
     }
   }
 

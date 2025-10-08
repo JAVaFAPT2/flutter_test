@@ -54,6 +54,7 @@ class MockProductRepository extends _i1.Mock implements _i2.ProductRepository {
   @override
   _i3.Future<List<_i4.ProductEntity>> list({
     String? category,
+    String? brand,
     int? limit,
     int? offset,
   }) =>
@@ -63,6 +64,7 @@ class MockProductRepository extends _i1.Mock implements _i2.ProductRepository {
           [],
           {
             #category: category,
+            #brand: brand,
             #limit: limit,
             #offset: offset,
           },
@@ -74,6 +76,7 @@ class MockProductRepository extends _i1.Mock implements _i2.ProductRepository {
   @override
   _i3.Stream<List<_i4.ProductEntity>> watchList({
     String? category,
+    String? brand,
     int? limit,
   }) =>
       (super.noSuchMethod(
@@ -82,6 +85,7 @@ class MockProductRepository extends _i1.Mock implements _i2.ProductRepository {
           [],
           {
             #category: category,
+            #brand: brand,
             #limit: limit,
           },
         ),

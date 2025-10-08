@@ -63,6 +63,13 @@ class FigmaAssets {
   // Green graphic overlay used on auth/cart screens
   static const String graphicGreen = '$_basePath/graphic_green.png';
 
+  // Checkout-specific assets exported directly from Figma (exact files)
+  // Background image for checkout screens
+  static const String checkoutBackground = '$_basePath/checkout_bg.png';
+  // Back button image from Figma
+  static const String checkoutBackButton =
+      '$_basePath/checkout_back_button.png';
+
   // Menu icons
   static const String bellMenu = '$_basePath/bell_menu.png';
   static const String homeMenu = '$_basePath/home_menu.png';
@@ -73,4 +80,28 @@ class FigmaAssets {
   static const String smallIcon1 = '$_basePath/small_icon_1.png';
   static const String smallIcon2 = '$_basePath/small_icon_2.png';
   static const String smallIcon3 = '$_basePath/small_icon_3.png';
+
+  // Payment/badge logos from checkout Step 2 (exported)
+  static const String logoZaloPay = '$_basePath/logo_zalopay.png';
+  static const String logoVnPay = '$_basePath/logo_vnpay.png';
+  static const String logoMoMo = '$_basePath/logo_momo.png';
+
+  // Delivery address map placeholder
+  static const String deliveryMapImage = '$_basePath/map_placeholder.png';
+
+  // Order tracking page assets from Figma
+  static const String orderTrackingBackground =
+      '$_basePath/041af4dde44636a72296c18ab68cbfa6892579c5.png';
+  static const String orderTrackingMap =
+      '$_basePath/b9eee963f132f8d20b01f1d5504beea992f23086.png';
+  static const String orderTrackingTimeline =
+      '$_basePath/ae4dadeed7d15f376bf3e422c3b1fd63c12422e5.svg';
+  static const String orderTrackingBackButton =
+      '$_basePath/7cce197f9a05ae313b091174c27d09903dc71f0c.png';
+  static const String orderTrackingOrderIcon =
+      '$_basePath/cb30dbcbd7c639bd2a7a4a79d27823ad92510a03.png';
+  static const String orderTrackingSupportIcon =
+      '$_basePath/388db152a4ce67138f7e1fdc4a25af1b0a3d53d2.png';
 }
+
+// Legacy: FigmaProfileAssets moved to AppAssets for better organization

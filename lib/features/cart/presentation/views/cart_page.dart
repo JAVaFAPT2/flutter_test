@@ -6,13 +6,25 @@ import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/bot
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/widgets/cart_edit_toolbar.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/widgets/cart_item_widget.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/widgets/cart_checkout_section.dart';
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_strings.dart';
 
 /// Shopping cart page - Matching Figma design with consistent styling
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   const CartPage({super.key});
 
   static const String routeName = '/cart';
+
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Load cart on page init
+    context.read<CartBloc>().add(const CartLoadRequested());
+  }
 
   @override
   Widget build(BuildContext context) {

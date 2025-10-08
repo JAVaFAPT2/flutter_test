@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_constants.dart';
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_constants.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_strings.dart';
 import 'package:vietnamese_fish_sauce_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:vietnamese_fish_sauce_app/features/auth/presentation/cubit/otp_cubit.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/auth_text_field.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/loading_button.dart';
-import 'package:vietnamese_fish_sauce_app/src/presentation/widgets/error_message.dart';
+import 'package:vietnamese_fish_sauce_app/shared/widgets/auth_text_field.dart';
+import 'package:vietnamese_fish_sauce_app/shared/widgets/loading_button.dart';
+import 'package:vietnamese_fish_sauce_app/shared/widgets/error_message.dart';
 
 /// OTP verification page for Vietnamese fish sauce e-commerce app
 class OtpVerificationPage extends StatelessWidget {

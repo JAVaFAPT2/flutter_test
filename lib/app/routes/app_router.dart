@@ -17,9 +17,19 @@ import 'package:vietnamese_fish_sauce_app/features/profile/presentation/views/pr
 import 'package:vietnamese_fish_sauce_app/features/profile/presentation/views/settings_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_confirmation_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_history_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_detail_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/cart/presentation/views/checkout_step2_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/cart/presentation/views/checkout_step3_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_tracking_page.dart';
 
 /// Application router configuration using Go Router
 class AppRouter {
+  // Dev-only flag to bypass auth redirects. Set via --dart-define=AUTH_BYPASS_DEV=false to disable
+  static const bool kAuthBypassDev = bool.fromEnvironment(
+    'AUTH_BYPASS_DEV',
+    defaultValue: true,
+  );
   static const String login = '/login';
   static const String register = '/register';
   static const String intro = '/intro';
@@ -78,6 +88,29 @@ class AppRouter {
         builder: (context, state) => const CartPage(),
       ),
       GoRoute(
+        path: '/orders',
+        name: 'orders',
+        builder: (context, state) => const OrderPage(),
+      ),
+      GoRoute(
+        path: '/checkout-step2',
+        name: 'checkout-step2',
+        builder: (context, state) => const CheckoutStep2Page(),
+      ),
+      GoRoute(
+        path: '/checkout-step3',
+        name: 'checkout-step3',
+        builder: (context, state) => const CheckoutStep3Page(),
+      ),
+      GoRoute(
+        path: '/order/:id',
+        name: 'order-detail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return OrderDetailPage(orderId: id);
+        },
+      ),
+      GoRoute(
         path: '/checkout',
         name: 'checkout',
         builder: (context, state) => const CheckoutPage(),
@@ -102,6 +135,14 @@ class AppRouter {
         name: 'settings',
         builder: (context, state) => const SettingsPage(),
       ),
+      GoRoute(
+        path: '/order-tracking/:orderId',
+        name: 'order-tracking',
+        builder: (context, state) {
+          final orderId = state.pathParameters['orderId']!;
+          return OrderTrackingPage(orderId: orderId);
+        },
+      ),
       // Additional routes for authenticated users will be added later
     ],
     redirect: _handleRedirect,
@@ -110,6 +151,10 @@ class AppRouter {
 
   /// Handle route redirection based on authentication state
   static String? _handleRedirect(BuildContext context, GoRouterState state) {
+    // In dev, allow navigation without auth
+    if (kAuthBypassDev) {
+      return null;
+    }
     final authBloc = context.read<AuthBloc>();
     final isAuthenticated = authBloc.state.isAuthenticated;
     final isPublicRoute = state.matchedLocation == intro;
@@ -122,11 +167,15 @@ class AppRouter {
     // Allow access to home, products, product detail, and cart pages regardless of auth state
     final isCartRoute = state.matchedLocation == '/cart';
     final isCheckoutRoute = state.matchedLocation == '/checkout';
+    final isCheckoutStep2Route = state.matchedLocation == '/checkout-step2';
+    final isOrdersRoute = state.matchedLocation == '/orders';
 
     if (isHomeRoute ||
         isProductRoute ||
         isProductsRoute ||
         isCartRoute ||
+        isOrdersRoute ||
+        isCheckoutStep2Route ||
         isCheckoutRoute) {
       return null;
     }

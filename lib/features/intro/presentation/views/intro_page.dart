@@ -5,7 +5,7 @@ import 'dart:convert' show base64Decode;
 import 'dart:typed_data' show Uint8List;
 import 'package:go_router/go_router.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_strings.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_strings.dart';
 import 'package:vietnamese_fish_sauce_app/app/routes/app_router.dart';
 import 'package:vietnamese_fish_sauce_app/core/constants/auth_assets.dart';
 
@@ -41,8 +41,8 @@ class IntroPage extends StatelessWidget {
                 color: Color(0x8CFEF9D9),
                 shape: BoxShape.circle,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
+              child: const Padding(
+                padding: EdgeInsets.all(6.0),
                 child: Opacity(
                   opacity: 0.49,
                   child: _EmbeddedPngFromSvg(
@@ -63,8 +63,8 @@ class IntroPage extends StatelessWidget {
                 color: Color(0x8CFEF9D9),
                 shape: BoxShape.circle,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
+              child: const Padding(
+                padding: EdgeInsets.all(6.0),
                 child: _EmbeddedPngFromSvg(
                     assetPath: AuthAssets.svgWebIcon, width: 26, height: 26),
               ),

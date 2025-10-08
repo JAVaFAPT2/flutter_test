@@ -3,18 +3,18 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'
-    as domain;
-import 'package:vietnamese_fish_sauce_app/src/domain/use_cases/product/get_products_use_case.dart';
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_constants.dart';
-import 'package:vietnamese_fish_sauce_app/src/data/models/product_model.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/domain/usecases/get_products_query.dart';
 
 part 'product_event.dart';
 part 'product_state.dart';
 
+/// ProductBloc - Clean DDD compliant
+/// Thin orchestration layer that delegates to use cases
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
-  ProductBloc({required this.getProductsUseCase})
-      : super(const ProductState()) {
+  ProductBloc({required GetProductsQuery getProductsUseCase})
+      : _getProductsUseCase = getProductsUseCase,
+        super(const ProductState()) {
     on<ProductLoadRequested>(_onLoadRequested);
     on<ProductLoadMoreRequested>(_onLoadMoreRequested);
     on<ProductRefreshRequested>(_onRefreshRequested);
@@ -22,39 +22,48 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<ProductFilterChanged>(_onFilterChanged);
   }
 
-  final GetProductsUseCase getProductsUseCase;
+  final GetProductsQuery _getProductsUseCase;
 
   Future<void> _onLoadRequested(
     ProductLoadRequested event,
     Emitter<ProductState> emit,
   ) async {
-    final page = event.page ?? 1;
-    emit(state.copyWith(isLoading: true, errorMessage: null));
-    await Future.delayed(const Duration(milliseconds: 500));
-    final allProducts = AppConstants.sampleProducts.map((json) {
-      final model = ProductModel.fromJson(json);
-      return model.toEntity();
-    }).toList();
+    try {
+      final page = event.page ?? 1;
+      emit(state.copyWith(isLoading: true, errorMessage: null));
 
-    final filtered = _applyFilters(allProducts,
+      // Get all products from use case
+      final allProducts = await _getProductsUseCase(
         category: event.category,
         brand: event.brand,
-        search: event.search,
-        sortBy: event.sortBy);
+      );
 
-    final startIndex = (page - 1) * event.limit;
-    final endIndex = startIndex + event.limit;
-    final pageItems = filtered.sublist(
-      startIndex,
-      endIndex > filtered.length ? filtered.length : endIndex,
-    );
+      // Apply search filter if needed
+      final filtered = _applySearchFilter(allProducts, event.search);
 
-    emit(state.copyWith(
-      products: page == 1 ? pageItems : [...state.products, ...pageItems],
-      isLoading: false,
-      hasMore: filtered.length > endIndex,
-      currentPage: page,
-    ));
+      // Apply sorting
+      final sorted = _applySorting(filtered, event.sortBy);
+
+      // Apply pagination
+      final startIndex = (page - 1) * event.limit;
+      final endIndex = startIndex + event.limit;
+      final pageItems = sorted.sublist(
+        startIndex,
+        endIndex > sorted.length ? sorted.length : endIndex,
+      );
+
+      emit(state.copyWith(
+        products: page == 1 ? pageItems : [...state.products, ...pageItems],
+        isLoading: false,
+        hasMore: sorted.length > endIndex,
+        currentPage: page,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: 'Failed to load products: ${e.toString()}',
+      ));
+    }
   }
 
   Future<void> _onLoadMoreRequested(
@@ -103,45 +112,49 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     add(ProductLoadRequested(page: 1, limit: event.limit));
   }
 
-  List<domain.Product> _applyFilters(
-    List<domain.Product> products, {
-    String? category,
-    String? brand,
+  /// Apply search filter
+  List<ProductEntity> _applySearchFilter(
+    List<ProductEntity> products,
     String? search,
+  ) {
+    if (search == null || search.isEmpty) return products;
+
+    final q = search.toLowerCase();
+    return products
+        .where((p) =>
+            p.name.toLowerCase().contains(q) ||
+            p.description.toLowerCase().contains(q) ||
+            p.brand.toLowerCase().contains(q))
+        .toList();
+  }
+
+  /// Apply sorting
+  List<ProductEntity> _applySorting(
+    List<ProductEntity> products,
     String? sortBy,
-  }) {
-    List<domain.Product> result = products;
-    if (category != null) {
-      result = result.where((p) => p.category == category).toList();
-    }
-    if (brand != null) {
-      result = result.where((p) => p.brand == brand).toList();
-    }
-    if (search != null && search.isNotEmpty) {
-      final q = search.toLowerCase();
-      result = result
-          .where((p) =>
-              p.name.toLowerCase().contains(q) ||
-              p.description.toLowerCase().contains(q) ||
-              p.brand.toLowerCase().contains(q))
-          .toList();
-    }
-    if (sortBy != null) {
-      result.sort((a, b) {
-        switch (sortBy) {
-          case 'name':
-            return a.name.compareTo(b.name);
-          case 'price_asc':
-            return a.displayPrice.compareTo(b.displayPrice);
-          case 'price_desc':
-            return b.displayPrice.compareTo(a.displayPrice);
-          case 'rating':
-            return b.rating.compareTo(a.rating);
-          default:
-            return 0;
-        }
-      });
-    }
-    return result;
+  ) {
+    if (sortBy == null) return products;
+
+    final sorted = List<ProductEntity>.from(products);
+    sorted.sort((a, b) {
+      switch (sortBy) {
+        case 'name':
+          return a.name.compareTo(b.name);
+        case 'price_asc':
+          final aPrice = a.volumePrices.values.first;
+          final bPrice = b.volumePrices.values.first;
+          return aPrice.compareTo(bPrice);
+        case 'price_desc':
+          final aPrice = a.volumePrices.values.first;
+          final bPrice = b.volumePrices.values.first;
+          return bPrice.compareTo(aPrice);
+        case 'rating':
+          return b.rating.compareTo(a.rating);
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
   }
 }

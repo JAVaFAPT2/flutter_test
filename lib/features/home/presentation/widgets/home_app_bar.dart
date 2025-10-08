@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vietnamese_fish_sauce_app/core/constants/figma_assets.dart';
+import 'package:vietnamese_fish_sauce_app/shared/widgets/profile_icon_button.dart';
 
 /// Home page app bar with logo, greeting, and avatar
 class HomeAppBar extends StatelessWidget {
@@ -89,21 +90,23 @@ class HomeAppBar extends StatelessWidget {
 
           SizedBox(width: 8 * scale),
 
-          // Avatar
-          Container(
-            width: 50 * scale,
-            height: 50 * scale,
-            decoration: BoxDecoration(
-              color: const Color(0xFF900407),
-              borderRadius: BorderRadius.circular(62 * scale),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(93 * scale),
-              child: Padding(
-                padding: EdgeInsets.all(3 * scale),
-                child: Image.asset(
-                  FigmaAssets.avatarDefault,
-                  fit: BoxFit.cover,
+          // Avatar (tappable → profile)
+          ProfileIconButton(
+            child: Container(
+              width: 50 * scale,
+              height: 50 * scale,
+              decoration: BoxDecoration(
+                color: const Color(0xFF900407),
+                borderRadius: BorderRadius.circular(62 * scale),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(93 * scale),
+                child: Padding(
+                  padding: EdgeInsets.all(3 * scale),
+                  child: Image.asset(
+                    FigmaAssets.avatarDefault,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:equatable/equatable.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
 
 /// Navigation cubit for handling app navigation
 ///
@@ -24,7 +24,7 @@ class NavigationCubit extends Cubit<NavigationState> {
   NavigationCubit() : super(const NavigationState());
 
   /// Navigate to product detail page
-  void navigateToProductDetail(BuildContext context, Product product) {
+  void navigateToProductDetail(BuildContext context, ProductEntity product) {
     context.push('/product-detail', extra: product);
     emit(state.copyWith(lastNavigation: NavigationType.productDetail));
   }

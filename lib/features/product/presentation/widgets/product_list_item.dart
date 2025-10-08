@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
 import 'package:vietnamese_fish_sauce_app/shared/widgets/product_card.dart'
     as shared;
 import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
@@ -26,7 +26,7 @@ class ProductListItem extends StatelessWidget {
     this.onTap,
   });
 
-  final Product product;
+  final ProductEntity product;
   final VoidCallback? onTap;
 
   @override

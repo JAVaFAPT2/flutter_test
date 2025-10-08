@@ -71,6 +71,19 @@ class ProductEntity {
         RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
   }
 
+  /// Get formatted price (default volume)
+  String get formattedPrice {
+    final price = volumePrices.values.firstOrNull ?? 0;
+    return '${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} VNĐ';
+  }
+
+  /// Get formatted original price
+  String get formattedOriginalPrice {
+    final price =
+        int.tryParse(originalPrice.replaceAll(RegExp(r'[^\d]'), '')) ?? 0;
+    return '${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} VNĐ';
+  }
+
   ProductEntity copyWith({
     String? id,
     String? name,

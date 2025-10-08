@@ -1,0 +1,64 @@
+﻿Analyzing flutter_test...                                       
+
+   info - Method invocation or property access on a 'dynamic' target - lib\core\fake\fake_firestore.dart:115:24 - avoid_dynamic_calls
+   info - Method invocation or property access on a 'dynamic' target - lib\core\fake\fake_firestore.dart:142:24 - avoid_dynamic_calls
+   info - Constructor declarations should be before non-constructor declarations - lib\features\auth\presentation\bloc\auth_state.dart:18:9 - sort_constructors_first
+   info - Constructor declarations should be before non-constructor declarations - lib\features\auth\presentation\bloc\auth_state.dart:25:9 - sort_constructors_first
+   info - Constructor declarations should be before non-constructor declarations - lib\features\auth\presentation\views\login_page.dart:219:9 - sort_constructors_first
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\presentation\views\register_page.dart:76:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\presentation\views\register_page.dart:80:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\presentation\views\register_page.dart:81:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\presentation\views\register_page.dart:83:24 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\presentation\views\register_page.dart:97:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\presentation\views\register_page.dart:173:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\presentation\views\register_page.dart:176:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\presentation\views\register_page.dart:178:22 - prefer_const_constructors
+  error - The name 'CartItem' isn't a type, so it can't be used as a type argument - lib\features\cart\presentation\bloc\cart_state.dart:32:8 - non_type_as_type_argument
+  error - The name 'CartItem' isn't a type, so it can't be used as a type argument - lib\features\cart\presentation\bloc\cart_state.dart:48:8 - non_type_as_type_argument
+  error - The returned type 'double' isn't returnable from a 'int' function, as required by the closure's context - lib\features\cart\presentation\bloc\cart_state.dart:54:49 - return_of_invalid_type_from_closure
+  error - The property 'totalPrice' can't be unconditionally accessed because the receiver can be 'null' - lib\features\cart\presentation\bloc\cart_state.dart:54:60 - unchecked_use_of_nullable_value
+  error - The property 'product' can't be unconditionally accessed because the receiver can be 'null' - lib\features\cart\presentation\views\checkout_page.dart:515:34 - unchecked_use_of_nullable_value
+  error - The property 'quantity' can't be unconditionally accessed because the receiver can be 'null' - lib\features\cart\presentation\views\checkout_page.dart:524:37 - unchecked_use_of_nullable_value
+  error - The property 'product' can't be unconditionally accessed because the receiver can be 'null' - lib\features\cart\presentation\views\checkout_page.dart:524:56 - unchecked_use_of_nullable_value
+  error - The property 'formattedTotalPrice' can't be unconditionally accessed because the receiver can be 'null' - lib\features\cart\presentation\views\checkout_page.dart:534:28 - unchecked_use_of_nullable_value
+   info - Method invocation or property access on a 'dynamic' target - lib\features\order\presentation\views\order_history_page.dart:234:33 - avoid_dynamic_calls
+   info - Use 'const' with the constructor to improve performance - lib\features\order\presentation\views\order_page.dart:60:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\fish_sauce_products_page.dart:500:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\fish_sauce_products_page.dart:501:20 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\features\product\presentation\views\fish_sauce_products_page.dart:503:25 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:187:37 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:188:34 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:268:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:279:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:323:39 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:371:58 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:375:60 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:411:50 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:417:51 - prefer_const_constructors
+   info - Unnecessary 'const' keyword - lib\features\product\presentation\views\product_detail_page.dart:493:47 - unnecessary_const
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:499:43 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:555:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:559:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\views\product_detail_page.dart:566:28 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\features\product\presentation\views\products_page.dart:114:29 - prefer_const_literals_to_create_immutables
+   info - Unnecessary use of 'toList' in a spread - lib\features\product\presentation\widgets\figma_filter_dropdown.dart:116:14 - unnecessary_to_list_in_spreads
+   info - Use 'const' with the constructor to improve performance - lib\features\product\presentation\widgets\figma_products_banner.dart:43:12 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\features\product\presentation\widgets\figma_products_banner.dart:47:17 - prefer_const_literals_to_create_immutables
+   info - Don't use 'BuildContext's across async gaps - lib\features\profile\presentation\views\profile_page.dart:461:30 - use_build_context_synchronously
+   info - Constructor declarations should be before non-constructor declarations - lib\shared\widgets\smart_asset_image.dart:12:9 - sort_constructors_first
+   info - Dependencies not sorted alphabetically - pubspec.yaml:14:3 - sort_pub_dependencies
+   info - Dependencies not sorted alphabetically - pubspec.yaml:42:3 - sort_pub_dependencies
+   info - Use 'const' with the constructor to improve performance - test\features\product\presentation\cubit\product_detail_cubit_test.dart:29:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - test\features\product\presentation\cubit\product_detail_cubit_test.dart:114:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - test\features\product\presentation\cubit\product_detail_cubit_test.dart:182:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - test\features\product\presentation\cubit\product_detail_cubit_test.dart:234:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - test\features\product\presentation\cubit\product_detail_cubit_test.dart:302:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - test\features\product\presentation\cubit\product_detail_cubit_test.dart:399:25 - prefer_const_constructors
+
+flutter : 54 issues found. (ran in 3.5s)
+At C:\Users\Admin\AppData\Local\Temp\ps-script-ad32eae9-ba61-4eba-a122-1af047d6e3ef.ps1:99 char:1
++ flutter analyze 2>&1 | Out-File -FilePath "analyzer_output_new.txt" - ...
++ ~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (54 issues found. (ran in 3.5s):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

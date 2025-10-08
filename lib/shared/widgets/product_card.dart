@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart';
+import 'package:vietnamese_fish_sauce_app/features/product/domain/entities/product_entity.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart'
     as cart_bloc;
 import 'package:vietnamese_fish_sauce_app/core/constants/figma_assets.dart';
@@ -44,32 +44,24 @@ class ProductCard extends StatelessWidget {
   /// Constructor for simple usage (home feature style)
   const ProductCard.simple({
     super.key,
-    required String imageUrl,
-    required String name,
-    required String price,
-    bool isLiked = false,
-    VoidCallback? onTap,
-  })  : imageUrl = imageUrl,
-        name = name,
-        price = price,
-        isLiked = isLiked,
-        onTap = onTap,
-        showCartButton = false,
+    required this.imageUrl,
+    required this.name,
+    required this.price,
+    this.isLiked = false,
+    this.onTap,
+  })  : showCartButton = false,
         product = null;
 
   /// Constructor for full product entity usage (product feature style)
   const ProductCard.fromProduct({
     super.key,
-    required Product product,
-    VoidCallback? onTap,
-    bool showCartButton = false,
+    required this.product,
+    this.onTap,
+    this.showCartButton = false,
   })  : imageUrl = '',
         name = '',
         price = '',
-        isLiked = false,
-        onTap = onTap,
-        showCartButton = showCartButton,
-        product = product;
+        isLiked = false;
 
   final String imageUrl;
   final String name;
@@ -77,7 +69,7 @@ class ProductCard extends StatelessWidget {
   final bool isLiked;
   final VoidCallback? onTap;
   final bool showCartButton;
-  final Product? product;
+  final ProductEntity? product;
 
   @override
   Widget build(BuildContext context) {
@@ -320,7 +312,7 @@ class _PriceRow extends StatelessWidget {
     required this.product,
   });
 
-  final Product product;
+  final ProductEntity product;
 
   @override
   Widget build(BuildContext context) {
@@ -354,16 +346,19 @@ class _AddToCartButton extends StatelessWidget {
     required this.product,
   });
 
-  final Product product;
+  final ProductEntity product;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: () => context
-            .read<cart_bloc.CartBloc>()
-            .add(cart_bloc.CartItemAdded(product: product)),
+        onPressed: () =>
+            context.read<cart_bloc.CartBloc>().add(cart_bloc.CartItemAdded(
+                  product: product,
+                  quantity: 1,
+                  unitPrice: product.volumePrices.values.firstOrNull ?? 0,
+                )),
         icon: const Icon(Icons.add_shopping_cart),
         label: const Text('Thêm vào giỏ'),
       ),
@@ -379,7 +374,7 @@ class ProductListItem extends StatelessWidget {
     this.onTap,
   });
 
-  final Product product;
+  final ProductEntity product;
   final VoidCallback? onTap;
 
   @override
@@ -426,7 +421,13 @@ class ProductListItem extends StatelessWidget {
                         child: ElevatedButton.icon(
                           onPressed: () => context
                               .read<cart_bloc.CartBloc>()
-                              .add(cart_bloc.CartItemAdded(product: product)),
+                              .add(cart_bloc.CartItemAdded(
+                                product: product,
+                                quantity: 1,
+                                unitPrice:
+                                    product.volumePrices.values.firstOrNull ??
+                                        0,
+                              )),
                           icon: const Icon(Icons.add_shopping_cart),
                           label: const Text('Thêm vào giỏ'),
                         ),
@@ -439,7 +440,11 @@ class ProductListItem extends StatelessWidget {
                   tooltip: 'Thêm vào giỏ',
                   onPressed: () => context
                       .read<cart_bloc.CartBloc>()
-                      .add(cart_bloc.CartItemAdded(product: product)),
+                      .add(cart_bloc.CartItemAdded(
+                        product: product,
+                        quantity: 1,
+                        unitPrice: product.volumePrices.values.firstOrNull ?? 0,
+                      )),
                   icon: const Icon(Icons.add_shopping_cart),
                 ),
               ],

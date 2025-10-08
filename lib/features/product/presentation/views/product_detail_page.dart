@@ -5,12 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/bottom_navigation.dart';
 import 'package:vietnamese_fish_sauce_app/core/constants/app_colors.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/bloc/cart_bloc.dart';
-import 'package:vietnamese_fish_sauce_app/src/domain/entities/product.dart'
-    as domain;
 import 'package:vietnamese_fish_sauce_app/features/product/application/bloc/product_detail_bloc.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/cubit/favorite_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/widgets/product_detail_shimmer.dart';
-import 'package:vietnamese_fish_sauce_app/src/core/di/injection_container.dart'
+import 'package:vietnamese_fish_sauce_app/core/di/injection_container.dart'
     as di;
 
 /// Product detail page matching Figma design
@@ -477,41 +475,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       // Add to cart functionality
                                       final cartBloc = context.read<CartBloc>();
                                       cartBloc.add(CartItemAdded(
-                                        product: domain.Product(
-                                          id: state.product!.id,
-                                          name: state.product!.name,
-                                          description:
-                                              state.product!.description,
-                                          price: double.tryParse(state
-                                                  .product!.price
-                                                  .replaceAll(
-                                                      RegExp(r'[^\d]'), '')) ??
-                                              0.0,
-                                          originalPrice: double.tryParse(state
-                                                  .product!.originalPrice
-                                                  .replaceAll(
-                                                      RegExp(r'[^\d]'), '')) ??
-                                              0.0,
-                                          imageUrl: state.product!.imageUrl,
-                                          category: state.product!.category,
-                                          brand: state.product!.brand,
-                                          volume: state.selectedVolume,
-                                          ingredients:
-                                              state.product!.ingredients,
-                                          origin: state.product!.origin,
-                                          rating: state.product!.rating,
-                                          reviewCount:
-                                              state.product!.reviewCount,
-                                          isAvailable: state.product!.inStock,
-                                          isFeatured: state.product!.isFeatured,
-                                          isOnSale: state.product!.isOnSale,
-                                          discountPercentage:
-                                              state.product!.discountPercentage,
-                                          stockQuantity:
-                                              state.product!.stockQuantity,
-                                          nutritionInfo:
-                                              state.product!.nutritionInfo,
-                                        ),
+                                        product: state.product!,
                                         volume: state.selectedVolume,
                                         unitPrice: state.product!
                                             .getPriceForVolume(

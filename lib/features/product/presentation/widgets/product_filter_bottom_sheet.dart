@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:vietnamese_fish_sauce_app/src/core/constants/app_constants.dart';
+import 'package:vietnamese_fish_sauce_app/core/constants/app_constants.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/cubit/products_view_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/features/product/application/bloc/product_list_bloc.dart'
     as ddd;
