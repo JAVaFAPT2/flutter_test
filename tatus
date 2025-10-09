@@ -1,0 +1,38 @@
+[1mdiff --git a/lib/core/constants/app_colors.dart b/lib/core/constants/app_colors.dart[m
+[1mindex 6eb7bcf..0baa724 100644[m
+[1m--- a/lib/core/constants/app_colors.dart[m
+[1m+++ b/lib/core/constants/app_colors.dart[m
+[36m@@ -33,6 +33,17 @@[m [mclass AppColors {[m
+       0xFF8A8A8A; // Gray for inactive status[m
+   static const int orderTrackingBorder = 0xFF00541A; // Green border color[m
+ [m
+[32m+[m[32m  // Profile/Auth Colors[m
+[32m+[m[32m  static const int profilePrimaryRed = 0xFF900407; // Deep red for buttons/accents[m
+[32m+[m[32m  static const int profileBrandRed = 0xFFC80000; // Brand red for "HEALTHY CHOICE"[m
+[32m+[m[32m  static const int profileUserNameRed = 0xFFC62D1B; // Red for user name[m
+[32m+[m[32m  static const int profileTitleRed = 0xFF8E0306; // Red for page title[m
+[32m+[m[32m  static const int profileTextGray = 0xFF8A8A8A; // Gray for labels/muted text[m
+[32m+[m[32m  static const int profileBorderGray = 0xFFD9D9D9; // Border color[m
+[32m+[m[32m  static const int profileSearchBg = 0xFFF3F1F2; // Search bar background[m
+[32m+[m[32m  static const int profileSearchBorder = 0xFF3C3C3C; // Search bar border[m
+[32m+[m[32m  static const int profilePlaceholder = 0xFFBBBBBB; // Placeholder text[m
+[32m+[m
+   // Semantic aliases[m
+   static const int star = _green00541A;[m
+   static const int price = _green00C853;[m
+[36m@@ -52,4 +63,15 @@[m [mclass AppColors {[m
+   static const Color cOrderTrackingActive = Color(orderTrackingActive);[m
+   static const Color cOrderTrackingInactive = Color(orderTrackingInactive);[m
+   static const Color cOrderTrackingBorder = Color(orderTrackingBorder);[m
+[32m+[m[41m  [m
+[32m+[m[32m  // Profile/Auth Color-typed aliases[m
+[32m+[m[32m  static const Color cProfilePrimaryRed = Color(profilePrimaryRed);[m
+[32m+[m[32m  static const Color cProfileBrandRed = Color(profileBrandRed);[m
+[32m+[m[32m  static const Color cProfileUserNameRed = Color(profileUserNameRed);[m
+[32m+[m[32m  static const Color cProfileTitleRed = Color(profileTitleRed);[m
+[32m+[m[32m  static const Color cProfileTextGray = Color(profileTextGray);[m
+[32m+[m[32m  static const Color cProfileBorderGray = Color(profileBorderGray);[m
+[32m+[m[32m  static const Color cProfileSearchBg = Color(profileSearchBg);[m
+[32m+[m[32m  static const Color cProfileSearchBorder = Color(profileSearchBorder);[m
+[32m+[m[32m  static const Color cProfilePlaceholder = Color(profilePlaceholder);[m
+ }[m

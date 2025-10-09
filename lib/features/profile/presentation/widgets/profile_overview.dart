@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:vietnamese_fish_sauce_app/core/constants/app_assets.dart';
 import 'package:vietnamese_fish_sauce_app/core/domain/entities/user.dart';
@@ -64,10 +65,12 @@ class ProfileOverview extends StatelessWidget {
                 ),
               ),
               const Divider(height: 1),
-              _ActionTile(
-                iconPath: AppAssets.profileLockRed,
-                text: 'Đổi mật khẩu',
-                onTap: () {},
+              Builder(
+                builder: (context) => _ActionTile(
+                  iconPath: AppAssets.profileLockRed,
+                  text: 'Đổi mật khẩu',
+                  onTap: () => context.push('/change-password'),
+                ),
               ),
               const Divider(height: 1),
               _ActionTile(
@@ -76,10 +79,40 @@ class ProfileOverview extends StatelessWidget {
                 onTap: () {},
               ),
               const Divider(height: 1),
-              _ActionTile(
-                iconPath: AppAssets.profileLogout,
-                text: 'Đăng xuất',
-                onTap: () {},
+              Builder(
+                builder: (context) => _ActionTile(
+                  iconPath: AppAssets.profileLogout,
+                  text: 'Đăng xuất',
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) => AlertDialog(
+                        title: const Text('Đăng xuất'),
+                        content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(dialogContext).pop(),
+                            child: const Text('Hủy'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop();
+                              context
+                                  .read<AuthBloc>()
+                                  .add(const AuthLogoutRequested());
+                              context.go('/intro');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Đăng xuất'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),

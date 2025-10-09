@@ -466,10 +466,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showChangePasswordDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => const ChangePasswordDialog(),
-    );
+    context.push('/change-password');
   }
 
   void _navigateToOrderHistory() {

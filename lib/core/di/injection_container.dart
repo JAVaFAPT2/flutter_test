@@ -64,6 +64,7 @@ import 'package:vietnamese_fish_sauce_app/features/profile/domain/usecases/updat
 import 'package:vietnamese_fish_sauce_app/features/profile/domain/usecases/change_password.dart';
 import 'package:vietnamese_fish_sauce_app/features/profile/domain/usecases/update_settings.dart';
 import 'package:vietnamese_fish_sauce_app/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:vietnamese_fish_sauce_app/features/profile/presentation/bloc/change_password_bloc.dart';
 
 // Shared
 import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
@@ -323,5 +324,12 @@ void _initializeBlocs() {
   // Navigation Cubit (shared)
   getIt.registerFactory<NavigationCubit>(
     () => NavigationCubit(),
+  );
+
+  // Change Password BLoC
+  getIt.registerFactory<ChangePasswordBloc>(
+    () => ChangePasswordBloc(
+      changePasswordUseCase: getIt<ChangePassword>(),
+    ),
   );
 }

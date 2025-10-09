@@ -15,6 +15,7 @@ import 'package:vietnamese_fish_sauce_app/features/product/presentation/views/pr
 import 'package:vietnamese_fish_sauce_app/features/product/presentation/views/product_detail_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/profile/presentation/views/profile_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/profile/presentation/views/settings_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/profile/presentation/views/change_password_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_confirmation_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_history_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_page.dart';
@@ -134,6 +135,11 @@ class AppRouter {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/change-password',
+        name: 'change-password',
+        builder: (context, state) => const ChangePasswordPage(),
       ),
       GoRoute(
         path: '/order-tracking/:orderId',

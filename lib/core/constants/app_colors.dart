@@ -33,6 +33,19 @@ class AppColors {
       0xFF8A8A8A; // Gray for inactive status
   static const int orderTrackingBorder = 0xFF00541A; // Green border color
 
+  // Profile/Auth Colors
+  static const int profilePrimaryRed =
+      0xFF900407; // Deep red for buttons/accents
+  static const int profileBrandRed =
+      0xFFC80000; // Brand red for "HEALTHY CHOICE"
+  static const int profileUserNameRed = 0xFFC62D1B; // Red for user name
+  static const int profileTitleRed = 0xFF8E0306; // Red for page title
+  static const int profileTextGray = 0xFF8A8A8A; // Gray for labels/muted text
+  static const int profileBorderGray = 0xFFD9D9D9; // Border color
+  static const int profileSearchBg = 0xFFF3F1F2; // Search bar background
+  static const int profileSearchBorder = 0xFF3C3C3C; // Search bar border
+  static const int profilePlaceholder = 0xFFBBBBBB; // Placeholder text
+
   // Semantic aliases
   static const int star = _green00541A;
   static const int price = _green00C853;
@@ -52,4 +65,15 @@ class AppColors {
   static const Color cOrderTrackingActive = Color(orderTrackingActive);
   static const Color cOrderTrackingInactive = Color(orderTrackingInactive);
   static const Color cOrderTrackingBorder = Color(orderTrackingBorder);
+
+  // Profile/Auth Color-typed aliases
+  static const Color cProfilePrimaryRed = Color(profilePrimaryRed);
+  static const Color cProfileBrandRed = Color(profileBrandRed);
+  static const Color cProfileUserNameRed = Color(profileUserNameRed);
+  static const Color cProfileTitleRed = Color(profileTitleRed);
+  static const Color cProfileTextGray = Color(profileTextGray);
+  static const Color cProfileBorderGray = Color(profileBorderGray);
+  static const Color cProfileSearchBg = Color(profileSearchBg);
+  static const Color cProfileSearchBorder = Color(profileSearchBorder);
+  static const Color cProfilePlaceholder = Color(profilePlaceholder);
 }
