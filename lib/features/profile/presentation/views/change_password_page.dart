@@ -149,45 +149,14 @@ class _ChangePasswordViewState extends State<_ChangePasswordView> {
   Future<void> _showSuccessDialog(BuildContext context) async {
     await showDialog(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: false,
       builder: (ctx) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D6A2E), // dark green backdrop
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.check_circle, color: Colors.white, size: 32),
-                SizedBox(width: 12),
-                Flexible(
-                  child: Text(
-                    'Đổi mật khẩu thành công',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        return _PasswordChangeSuccessDialog();
       },
     );
 
-    // Auto close after 1.2s then pop screen
-    await Future.delayed(const Duration(milliseconds: 1200));
+    // After dialog closes, follow Clean flow: reset BLoC state and navigate
     if (!mounted) return;
-    Navigator.of(context, rootNavigator: true).maybePop();
-    if (!mounted) return;
-    // After acknowledgement, follow Clean flow: reset BLoC state and navigate
     context.read<ChangePasswordBloc>().add(const ChangePasswordReset());
     context.pop();
   }
@@ -510,4 +479,139 @@ class _ChangePasswordViewState extends State<_ChangePasswordView> {
   }
 
   // Bottom nav is provided by HomeBottomNavigation above
+}
+
+/// Animated success dialog with flick-out animation matching Figma design
+class _PasswordChangeSuccessDialog extends StatefulWidget {
+  @override
+  State<_PasswordChangeSuccessDialog> createState() =>
+      _PasswordChangeSuccessDialogState();
+}
+
+class _PasswordChangeSuccessDialogState
+    extends State<_PasswordChangeSuccessDialog> with TickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late AnimationController _flickController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _flickAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Scale animation for initial appearance
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scaleController,
+      curve: Curves.elasticOut,
+    ));
+
+    // Flick animation for exit
+    _flickController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _flickAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _flickController,
+      curve: Curves.easeInBack,
+    ));
+
+    // Start scale animation
+    _scaleController.forward();
+
+    // Auto-start flick animation after showing for 1.5 seconds
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (mounted) {
+        _flickController.forward().then((_) {
+          Navigator.of(context).pop();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    _flickController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_scaleAnimation, _flickAnimation]),
+      builder: (context, child) {
+        // Calculate transform based on animations
+        final scale =
+            _scaleAnimation.value * (1.0 - _flickAnimation.value * 0.3);
+        final rotateZ = _flickAnimation.value * 0.1; // Slight rotation
+        final translateX = _flickAnimation.value * 100; // Slide to right
+        final opacity = 1.0 - _flickAnimation.value;
+
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..scale(scale)
+            ..rotateZ(rotateZ)
+            ..translate(translateX, 0),
+          child: Opacity(
+            opacity: opacity,
+            child: Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 83),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF004917), // Dark green from Figma
+                  borderRadius: BorderRadius.circular(11),
+                  border: Border.all(color: Colors.black, width: 1),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Check icon with white background circle (matching Figma)
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Color(0xFF004917),
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Success message
+                    const Text(
+                      'Đổi mật khẩu thành công',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
