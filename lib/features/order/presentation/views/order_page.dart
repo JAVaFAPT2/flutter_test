@@ -57,7 +57,7 @@ class OrderPage extends StatelessWidget {
               child: Column(
                 children: [
                   _buildHeader(context),
-                  _SeedOrdersOnce(),
+                  const _SeedOrdersOnce(),
                   const SizedBox(height: 8),
                   const OrderFilters(),
                   const SizedBox(height: 8),

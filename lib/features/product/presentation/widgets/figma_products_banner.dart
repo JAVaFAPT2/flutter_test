@@ -40,12 +40,12 @@ class FigmaProductsBanner extends StatelessWidget {
   }
 
   Widget _buildBannerContent() {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           'Đặt hàng ngay',
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -54,7 +54,7 @@ class FigmaProductsBanner extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        const Text(
+        Text(
           'hôm nay!',
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -62,8 +62,8 @@ class FigmaProductsBanner extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        const SizedBox(height: 4),
-        const Text(
+        SizedBox(height: 4),
+        Text(
           '"Món quà cho những người bạn"',
           style: TextStyle(
             fontFamily: 'Poppins',

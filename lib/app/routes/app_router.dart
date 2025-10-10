@@ -23,6 +23,8 @@ import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/orde
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/views/checkout_step2_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/cart/presentation/views/checkout_step3_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_tracking_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/support/presentation/views/customer_support_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/support/presentation/views/support_chat_page.dart';
 
 /// Application router configuration using Go Router
 class AppRouter {
@@ -147,6 +149,20 @@ class AppRouter {
         builder: (context, state) {
           final orderId = state.pathParameters['orderId']!;
           return OrderTrackingPage(orderId: orderId);
+        },
+      ),
+      GoRoute(
+        path: '/customer-support',
+        name: 'customer-support',
+        builder: (context, state) => const CustomerSupportPage(),
+      ),
+      GoRoute(
+        path: '/support-chat',
+        name: 'support-chat',
+        builder: (context, state) {
+          final topic =
+              (state.extra as String?) ?? 'Trò chuyện với nhân viên tư vấn';
+          return SupportChatPage(topic: topic);
         },
       ),
       // Additional routes for authenticated users will be added later

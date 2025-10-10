@@ -111,7 +111,7 @@ class _ProductsPageViewState extends State<ProductsPageView> {
               right: 0,
               bottom: 0,
               child: FigmaFilterDropdown(
-                categories: [
+                categories: const [
                   'Show All',
                   'Xuân Thịnh Mậu',
                   'Vĩnh Thái',

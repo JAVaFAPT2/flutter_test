@@ -9,11 +9,6 @@ class AuthState extends Equatable {
     this.errorMessage,
   });
 
-  final User? user;
-  final bool isAuthenticated;
-  final bool isLoading;
-  final String? errorMessage;
-
   /// Factory for unauthenticated state
   const AuthState.unauthenticated()
       : user = null,
@@ -26,6 +21,11 @@ class AuthState extends Equatable {
       : isAuthenticated = true,
         isLoading = false,
         errorMessage = null;
+
+  final User? user;
+  final bool isAuthenticated;
+  final bool isLoading;
+  final String? errorMessage;
 
   AuthState copyWith({
     User? user,

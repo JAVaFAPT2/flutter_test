@@ -113,7 +113,7 @@ class FigmaFilterDropdown extends StatelessWidget {
                   ),
               ],
             );
-          }).toList(),
+          }),
         ],
       ),
     );

@@ -211,17 +211,17 @@ class LoginPage extends StatelessWidget {
 
 // Simplified text field widget for login form
 class _LoginTextField extends StatelessWidget {
-  final String label;
-  final String hint;
-  final bool obscureText;
-  final TextInputType keyboardType;
-
   const _LoginTextField({
     required this.label,
     required this.hint,
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
   });
+
+  final String label;
+  final String hint;
+  final bool obscureText;
+  final TextInputType keyboardType;
 
   @override
   Widget build(BuildContext context) {

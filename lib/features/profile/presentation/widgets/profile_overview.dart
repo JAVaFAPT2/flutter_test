@@ -186,9 +186,19 @@ class ProfileOverview extends StatelessWidget {
                 ),
               ),
               const Divider(height: 1),
-              const _SupportTile(text: 'Liên hệ trợ giúp tư vấn'),
+              Builder(
+                builder: (context) => _SupportTile(
+                  text: 'Liên hệ trợ giúp tư vấn',
+                  onTap: () => context.push('/customer-support'),
+                ),
+              ),
               const Divider(height: 1),
-              const _SupportTile(text: 'Thông tin về MGF'),
+              Builder(
+                builder: (context) => _SupportTile(
+                  text: 'Thông tin về MGF',
+                  onTap: () => context.push('/customer-support'),
+                ),
+              ),
             ],
           ),
         ),
@@ -381,29 +391,33 @@ class _OrderIcon extends StatelessWidget {
 }
 
 class _SupportTile extends StatelessWidget {
-  const _SupportTile({required this.text});
+  const _SupportTile({required this.text, this.onTap});
   final String text;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      child: Row(
-        children: [
-          // Keeping layout consistent with Figma, use default icons here
-          const SizedBox(width: 15, height: 15),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 10,
-                color: Colors.black,
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            // Keeping layout consistent with Figma, use default icons here
+            const SizedBox(width: 15, height: 15),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: Colors.black,
+                ),
               ),
             ),
-          ),
-          const Icon(Icons.chevron_right, size: 16, color: Color(0xFF8A8A8A)),
-        ],
+            const Icon(Icons.chevron_right, size: 16, color: Color(0xFF8A8A8A)),
+          ],
+        ),
       ),
     );
   }

@@ -99,7 +99,7 @@ class RegisterPage extends StatelessWidget {
             left: 0,
             right: 0,
             bottom: 0,
-            child: const SmartAssetImage(
+            child: SmartAssetImage(
               assetPath: AuthAssets.graphicGreenRegister,
               fit: BoxFit.cover,
               preferSvg: false, // Try PNG first for complex graphics

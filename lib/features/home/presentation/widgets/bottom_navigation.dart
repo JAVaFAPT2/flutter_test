@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-// import removed: using direct SVG asset paths for consistent sizing
 import 'package:vietnamese_fish_sauce_app/shared/widgets/custom_bottom_navigation.dart';
 import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 
-/// Bottom navigation bar for the app using CustomBottomNavigation widget
 class HomeBottomNavigation extends StatelessWidget {
   const HomeBottomNavigation({super.key});
 

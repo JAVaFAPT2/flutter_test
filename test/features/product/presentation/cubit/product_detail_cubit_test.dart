@@ -26,7 +26,7 @@ void main() {
 
     group('ProductDetailLoadRequested', () {
       const productId = 'test-product-id';
-      final testProduct = ProductEntity(
+      const testProduct = ProductEntity(
         id: productId,
         name: 'Test Product',
         subtitle: 'Test Subtitle',
@@ -64,7 +64,7 @@ void main() {
         act: (cubit) => cubit.loadProduct(productId),
         expect: () => [
           const ProductDetailLoading(),
-          ProductDetailLoaded(
+          const ProductDetailLoaded(
             product: testProduct,
             selectedVolumeIndex: 0,
             quantity: 1,
@@ -111,7 +111,7 @@ void main() {
     });
 
     group('ProductDetailVolumeChanged', () {
-      final testProduct = ProductEntity(
+      const testProduct = ProductEntity(
         id: 'test-id',
         name: 'Test Product',
         subtitle: 'Test Subtitle',
@@ -146,14 +146,14 @@ void main() {
               .thenAnswer((_) async => testProduct);
           return cubit;
         },
-        seed: () => ProductDetailLoaded(
+        seed: () => const ProductDetailLoaded(
           product: testProduct,
           selectedVolumeIndex: 0,
           quantity: 1,
         ),
         act: (cubit) => cubit.changeVolume(1),
         expect: () => [
-          ProductDetailLoaded(
+          const ProductDetailLoaded(
             product: testProduct,
             selectedVolumeIndex: 1,
             quantity: 1,
@@ -168,7 +168,7 @@ void main() {
               .thenAnswer((_) async => testProduct);
           return cubit;
         },
-        seed: () => ProductDetailLoaded(
+        seed: () => const ProductDetailLoaded(
           product: testProduct,
           selectedVolumeIndex: 0,
           quantity: 1,
@@ -179,7 +179,7 @@ void main() {
     });
 
     group('ProductDetailQuantityIncremented', () {
-      final testProduct = ProductEntity(
+      const testProduct = ProductEntity(
         id: 'test-id',
         name: 'Test Product',
         subtitle: 'Test Subtitle',
@@ -214,14 +214,14 @@ void main() {
               .thenAnswer((_) async => testProduct);
           return cubit;
         },
-        seed: () => ProductDetailLoaded(
+        seed: () => const ProductDetailLoaded(
           product: testProduct,
           selectedVolumeIndex: 0,
           quantity: 1,
         ),
         act: (cubit) => cubit.incrementQuantity(),
         expect: () => [
-          ProductDetailLoaded(
+          const ProductDetailLoaded(
             product: testProduct,
             selectedVolumeIndex: 0,
             quantity: 2,
@@ -231,7 +231,7 @@ void main() {
     });
 
     group('ProductDetailQuantityDecremented', () {
-      final testProduct = ProductEntity(
+      const testProduct = ProductEntity(
         id: 'test-id',
         name: 'Test Product',
         subtitle: 'Test Subtitle',
@@ -266,14 +266,14 @@ void main() {
               .thenAnswer((_) async => testProduct);
           return cubit;
         },
-        seed: () => ProductDetailLoaded(
+        seed: () => const ProductDetailLoaded(
           product: testProduct,
           selectedVolumeIndex: 0,
           quantity: 2,
         ),
         act: (cubit) => cubit.decrementQuantity(),
         expect: () => [
-          ProductDetailLoaded(
+          const ProductDetailLoaded(
             product: testProduct,
             selectedVolumeIndex: 0,
             quantity: 1,
@@ -288,7 +288,7 @@ void main() {
               .thenAnswer((_) async => testProduct);
           return cubit;
         },
-        seed: () => ProductDetailLoaded(
+        seed: () => const ProductDetailLoaded(
           product: testProduct,
           selectedVolumeIndex: 0,
           quantity: 1,
@@ -299,7 +299,7 @@ void main() {
     });
 
     group('ProductDetailQuantitySet', () {
-      final testProduct = ProductEntity(
+      const testProduct = ProductEntity(
         id: 'test-id',
         name: 'Test Product',
         subtitle: 'Test Subtitle',
@@ -334,14 +334,14 @@ void main() {
               .thenAnswer((_) async => testProduct);
           return cubit;
         },
-        seed: () => ProductDetailLoaded(
+        seed: () => const ProductDetailLoaded(
           product: testProduct,
           selectedVolumeIndex: 0,
           quantity: 1,
         ),
         act: (cubit) => cubit.setQuantity(5),
         expect: () => [
-          ProductDetailLoaded(
+          const ProductDetailLoaded(
             product: testProduct,
             selectedVolumeIndex: 0,
             quantity: 5,
@@ -356,14 +356,14 @@ void main() {
               .thenAnswer((_) async => testProduct);
           return cubit;
         },
-        seed: () => ProductDetailLoaded(
+        seed: () => const ProductDetailLoaded(
           product: testProduct,
           selectedVolumeIndex: 0,
           quantity: 1,
         ),
         act: (cubit) => cubit.setQuantity(0),
         expect: () => [
-          ProductDetailLoaded(
+          const ProductDetailLoaded(
             product: testProduct,
             selectedVolumeIndex: 0,
             quantity: 1,
@@ -378,14 +378,14 @@ void main() {
               .thenAnswer((_) async => testProduct);
           return cubit;
         },
-        seed: () => ProductDetailLoaded(
+        seed: () => const ProductDetailLoaded(
           product: testProduct,
           selectedVolumeIndex: 0,
           quantity: 1,
         ),
         act: (cubit) => cubit.setQuantity(1000),
         expect: () => [
-          ProductDetailLoaded(
+          const ProductDetailLoaded(
             product: testProduct,
             selectedVolumeIndex: 0,
             quantity: 999,
@@ -396,7 +396,7 @@ void main() {
   });
 
   group('ProductDetailLoaded pricing calculations', () {
-    final testProduct = ProductEntity(
+    const testProduct = ProductEntity(
       id: 'test-id',
       name: 'Test Product',
       subtitle: 'Test Subtitle',
@@ -425,7 +425,7 @@ void main() {
     );
 
     test('calculates correct selected volume', () {
-      final state = ProductDetailLoaded(
+      const state = ProductDetailLoaded(
         product: testProduct,
         selectedVolumeIndex: 1,
         quantity: 2,
@@ -435,7 +435,7 @@ void main() {
     });
 
     test('calculates correct unit price for selected volume', () {
-      final state = ProductDetailLoaded(
+      const state = ProductDetailLoaded(
         product: testProduct,
         selectedVolumeIndex: 1,
         quantity: 2,
@@ -445,7 +445,7 @@ void main() {
     });
 
     test('calculates correct total price', () {
-      final state = ProductDetailLoaded(
+      const state = ProductDetailLoaded(
         product: testProduct,
         selectedVolumeIndex: 1,
         quantity: 2,
@@ -455,7 +455,7 @@ void main() {
     });
 
     test('formats total price correctly', () {
-      final state = ProductDetailLoaded(
+      const state = ProductDetailLoaded(
         product: testProduct,
         selectedVolumeIndex: 1,
         quantity: 2,

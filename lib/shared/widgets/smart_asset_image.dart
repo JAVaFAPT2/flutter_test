@@ -3,12 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /// Custom widget that intelligently handles both SVG and PNG assets with automatic fallback
 class SmartAssetImage extends StatelessWidget {
-  final String assetPath;
-  final BoxFit fit;
-  final double? width;
-  final double? height;
-  final bool preferSvg;
-
   const SmartAssetImage({
     super.key,
     required this.assetPath,
@@ -17,6 +11,12 @@ class SmartAssetImage extends StatelessWidget {
     this.height,
     this.preferSvg = true, // Try SVG first by default
   });
+
+  final String assetPath;
+  final BoxFit fit;
+  final double? width;
+  final double? height;
+  final bool preferSvg;
 
   @override
   Widget build(BuildContext context) {

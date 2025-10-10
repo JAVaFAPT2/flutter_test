@@ -230,12 +230,17 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             // Total and Actions
             Row(
               children: [
-                Text(
-                  'Tổng tiền: ${order['total'].toStringAsFixed(0)}₫',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
+                Builder(
+                  builder: (context) {
+                    final num total = order['total'] as num;
+                    return Text(
+                      'Tổng tiền: ${total.toStringAsFixed(0)}₫',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    );
+                  },
                 ),
                 const Spacer(),
                 TextButton(

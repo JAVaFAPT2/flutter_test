@@ -404,74 +404,80 @@ class _ChangePasswordViewState extends State<_ChangePasswordView> {
           const SizedBox(height: 13),
           const Divider(height: 1, color: AppColors.cProfileBorderGray),
           const SizedBox(height: 7),
-          Row(
-            children: [
-              Image.asset(
-                AppAssets.orderTrackingSupportIcon,
-                width: 11,
-                height: 16,
-              ),
-              const SizedBox(width: 9),
-              const Expanded(
-                child: Text(
-                  'Liên hệ trợ giúp tư vấn',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: AppColors.cProfileTextGray,
-                    fontFamily: 'Poppins',
-                  ),
+          InkWell(
+            onTap: () => context.push('/customer-support'),
+            child: Row(
+              children: [
+                Image.asset(
+                  AppAssets.orderTrackingSupportIcon,
+                  width: 11,
+                  height: 16,
                 ),
-              ),
-              const Text(
-                '>',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: AppColors.cProfileTextGray,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.black),
-                ),
-                child: const Center(
+                const SizedBox(width: 9),
+                const Expanded(
                   child: Text(
-                    'i',
+                    'Liên hệ trợ giúp tư vấn',
                     style: TextStyle(
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      fontSize: 10,
+                      color: AppColors.cProfileTextGray,
                       fontFamily: 'Poppins',
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 9),
-              const Expanded(
-                child: Text(
-                  'Thông tin về MGF',
+                const Text(
+                  '>',
                   style: TextStyle(
                     fontSize: 10,
                     color: AppColors.cProfileTextGray,
-                    fontFamily: 'Poppins',
                   ),
                 ),
-              ),
-              const Text(
-                '>',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: AppColors.cProfileTextGray,
+              ],
+            ),
+          ),
+          const SizedBox(height: 6),
+          InkWell(
+            onTap: () => context.push('/customer-support'),
+            child: Row(
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'i',
+                      style: TextStyle(
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 9),
+                const Expanded(
+                  child: Text(
+                    'Thông tin về MGF',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.cProfileTextGray,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ),
+                const Text(
+                  '>',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: AppColors.cProfileTextGray,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

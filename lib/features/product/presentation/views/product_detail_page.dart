@@ -184,13 +184,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       right: 0,
                       bottom: 0,
                       child: Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Color(AppColors.surfaceCream),
-                          borderRadius: const BorderRadius.only(
+                          borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(30),
                             topRight: Radius.circular(30),
                           ),
-                          boxShadow: const [
+                          boxShadow: [
                             BoxShadow(
                               color: Colors.black12,
                               blurRadius: 10,
@@ -265,9 +265,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               const SizedBox(height: 12),
 
                               // Description
-                              Text(
+                              const Text(
                                 'Nước mắm nhĩ cá cơm than là loại món ăn bổ dưỡng bậc nhất, với 13 loại enzyme mà cơ thể con người không thể tự tổng hợp được, rất cần thiết cho hệ thần kinh của ch如果我们 ta.',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   color: Color(AppColors.textBody),
                                   height: 1.5,
@@ -276,9 +276,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               const SizedBox(height: 16),
 
                               // Volume selector
-                              Text(
+                              const Text(
                                 'Dung tích chai',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.normal,
                                   color: Color(AppColors.textTitle),
@@ -320,9 +320,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      const Text(
                                         'Số lượng',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.normal,
                                           color: Color(AppColors.textTitle),
@@ -368,7 +368,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                       .toString()
                                                       .padLeft(2, '0'),
                                                   textAlign: TextAlign.center,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     fontSize: 14,
                                                     fontWeight:
                                                         FontWeight.normal,
@@ -407,17 +407,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                                       return Container(
                                         height: 31,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           color: Color(AppColors.accentOrange),
                                           borderRadius:
-                                              BorderRadius.circular(6),
+                                              BorderRadius.all(Radius.circular(6)),
                                           boxShadow: [
                                             BoxShadow(
                                               color:
-                                                  Color(AppColors.accentOrange)
-                                                      .withValues(alpha: 0.3),
+                                                  Color(AppColors.accentOrange),
                                               blurRadius: 4,
-                                              offset: const Offset(0, 2),
+                                              offset: Offset(0, 2),
                                             ),
                                           ],
                                         ),
@@ -490,18 +489,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                           content: Text('Đã thêm vào giỏ hàng'),
                                           duration: Duration(seconds: 2),
                                           backgroundColor:
-                                              const Color(0xFF4CAF50),
+                                              Color(0xFF4CAF50),
                                         ),
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                          Color(AppColors.ctaBrown),
-                                      foregroundColor: Colors.white,
+                                          const Color(AppColors.ctaBrown),
+                                      foregroundColor: const Color(0xFFFFFFFF),
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 16),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(6),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(6)),
                                       ),
                                       elevation: 4,
                                     ),
@@ -552,20 +551,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         width: 94,
         height: 33,
         decoration: BoxDecoration(
-          color: isSelected ? Color(AppColors.selected) : Colors.white,
+          color: isSelected ? const Color(AppColors.selected) : Colors.white,
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: isSelected
-                ? Color(AppColors.selected)
+                ? const Color(AppColors.selected)
                 : const Color(0xFFE0E0E0),
             width: 1,
           ),
           boxShadow: isSelected
-              ? [
+              ? const [
                   BoxShadow(
-                    color: Color(AppColors.selected).withValues(alpha: 0.3),
+                    color: Color(AppColors.selected),
                     blurRadius: 4,
-                    offset: const Offset(0, 2),
+                    offset: Offset(0, 2),
                   ),
                 ]
               : null,
