@@ -25,6 +25,7 @@ import 'package:vietnamese_fish_sauce_app/features/cart/presentation/views/check
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/views/order_tracking_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/support/presentation/views/customer_support_page.dart';
 import 'package:vietnamese_fish_sauce_app/features/support/presentation/views/support_chat_page.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/presentation/views/notification_page.dart';
 
 /// Application router configuration using Go Router
 class AppRouter {
@@ -164,6 +165,11 @@ class AppRouter {
               (state.extra as String?) ?? 'Trò chuyện với nhân viên tư vấn';
           return SupportChatPage(topic: topic);
         },
+      ),
+      GoRoute(
+        path: '/notifications',
+        name: 'notifications',
+        builder: (context, state) => const NotificationPage(),
       ),
       // Additional routes for authenticated users will be added later
     ],

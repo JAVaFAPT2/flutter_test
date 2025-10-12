@@ -31,9 +31,8 @@ class HomeBottomNavigation extends StatelessWidget {
           height: 40,
           scale: 1.0,
           badge: 1,
-          onTap: () {
-            // NOTE: Navigate to notifications page when implemented
-          },
+          onTap: () =>
+              context.read<NavigationCubit>().navigateToNotifications(context),
         ),
         BottomNavItem(
           icon: 'assets/figma_exports/profile_menu.png',

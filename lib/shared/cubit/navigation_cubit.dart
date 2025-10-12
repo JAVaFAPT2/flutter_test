@@ -78,6 +78,12 @@ class NavigationCubit extends Cubit<NavigationState> {
     context.push('/checkout');
     emit(state.copyWith(lastNavigation: NavigationType.checkout));
   }
+
+  /// Navigate to notifications page
+  void navigateToNotifications(BuildContext context) {
+    context.push('/notifications');
+    emit(state.copyWith(lastNavigation: NavigationType.notifications));
+  }
 }
 
 /// Navigation state
@@ -109,5 +115,6 @@ enum NavigationType {
   orders,
   products,
   checkout,
+  notifications,
   back,
 }

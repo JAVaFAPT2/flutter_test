@@ -66,6 +66,19 @@ import 'package:vietnamese_fish_sauce_app/features/profile/domain/usecases/updat
 import 'package:vietnamese_fish_sauce_app/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:vietnamese_fish_sauce_app/features/profile/presentation/bloc/change_password_bloc.dart';
 
+// Notification feature
+import 'package:vietnamese_fish_sauce_app/core/database/database_helper.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/domain/repositories/notification_repository.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/domain/usecases/get_notifications.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/domain/usecases/mark_notification_read.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/domain/usecases/mark_all_read.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/domain/usecases/delete_notification.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/domain/usecases/delete_all_notifications.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/domain/usecases/get_unread_count.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/data/datasources/notification_local_datasource.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/data/repositories/notification_repository_impl.dart';
+import 'package:vietnamese_fish_sauce_app/features/notification/presentation/bloc/notification_bloc.dart';
+
 // Shared
 import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 
@@ -103,6 +116,9 @@ Future<void> _initializeExternalDependencies() async {
 
   // FakeFirestore (temporary, replace with real Firebase/API later)
   getIt.registerSingleton<FakeFirestore>(FakeFirestore.instance);
+
+  // DatabaseHelper for sqflite
+  getIt.registerSingleton<DatabaseHelper>(DatabaseHelper.instance);
 }
 
 /// Initialize data sources
@@ -124,6 +140,11 @@ void _initializeDataSources() {
   // Home data sources
   getIt.registerLazySingleton<HomeRemoteDataSource>(
     () => HomeRemoteDataSourceImpl(getIt<FakeFirestore>()),
+  );
+
+  // Notification data sources
+  getIt.registerLazySingleton<NotificationLocalDataSource>(
+    () => NotificationLocalDataSourceImpl(getIt<DatabaseHelper>()),
   );
 }
 
@@ -160,6 +181,11 @@ void _initializeRepositories() {
   // Profile repository
   getIt.registerLazySingleton<ProfileRepository>(
     () => ProfileRepositoryImpl(getIt<SharedPreferences>()),
+  );
+
+  // Notification repository
+  getIt.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(getIt<NotificationLocalDataSource>()),
   );
 }
 
@@ -266,6 +292,31 @@ void _initializeUseCases() {
   getIt.registerLazySingleton<UpdateSettings>(
     () => UpdateSettings(getIt<ProfileRepository>()),
   );
+
+  // Notification use cases
+  getIt.registerLazySingleton<GetNotifications>(
+    () => GetNotifications(getIt<NotificationRepository>()),
+  );
+
+  getIt.registerLazySingleton<MarkNotificationRead>(
+    () => MarkNotificationRead(getIt<NotificationRepository>()),
+  );
+
+  getIt.registerLazySingleton<MarkAllRead>(
+    () => MarkAllRead(getIt<NotificationRepository>()),
+  );
+
+  getIt.registerLazySingleton<DeleteNotification>(
+    () => DeleteNotification(getIt<NotificationRepository>()),
+  );
+
+  getIt.registerLazySingleton<DeleteAllNotifications>(
+    () => DeleteAllNotifications(getIt<NotificationRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetUnreadCount>(
+    () => GetUnreadCount(getIt<NotificationRepository>()),
+  );
 }
 
 /// Initialize BLoCs and Cubits
@@ -330,6 +381,18 @@ void _initializeBlocs() {
   getIt.registerFactory<ChangePasswordBloc>(
     () => ChangePasswordBloc(
       changePasswordUseCase: getIt<ChangePassword>(),
+    ),
+  );
+
+  // Notification BLoC
+  getIt.registerFactory<NotificationBloc>(
+    () => NotificationBloc(
+      getNotifications: getIt<GetNotifications>(),
+      markNotificationRead: getIt<MarkNotificationRead>(),
+      markAllRead: getIt<MarkAllRead>(),
+      deleteNotification: getIt<DeleteNotification>(),
+      deleteAllNotifications: getIt<DeleteAllNotifications>(),
+      getUnreadCount: getIt<GetUnreadCount>(),
     ),
   );
 }
