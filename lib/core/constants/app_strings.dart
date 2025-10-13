@@ -231,4 +231,10 @@ abstract class AppStrings {
   // Order Tracking Page
   static const String orderTrackingTitle = 'Đơn đã đặt';
   static const String returnToHome = 'Quay lại trang chủ';
+
+  // Order page search and UI
+  static const String searchOrdersHint =
+      'Tìm kiếm theo đơn hàng hay khách hàng...';
+  static const String greeting = 'Xin chào,';
+  static const String noOrdersInPeriod = 'Chưa có đơn hàng nào';
 }

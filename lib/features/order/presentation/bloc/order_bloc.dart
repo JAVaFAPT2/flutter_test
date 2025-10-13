@@ -10,6 +10,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         super(const OrderState()) {
     on<OrderLoadRequested>(_onLoadRequested);
     on<OrderFilterChanged>(_onFilterChanged);
+    on<OrderSearchQueryChanged>(_onSearchQueryChanged);
   }
 
   final GetOrdersUseCase _getOrders;
@@ -34,5 +35,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
+  }
+
+  void _onSearchQueryChanged(
+      OrderSearchQueryChanged event, Emitter<OrderState> emit) {
+    emit(state.copyWith(searchQuery: event.query));
   }
 }

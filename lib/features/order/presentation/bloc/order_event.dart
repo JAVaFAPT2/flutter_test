@@ -19,3 +19,11 @@ class OrderFilterChanged extends OrderEvent {
   @override
   List<Object?> get props => [status];
 }
+
+class OrderSearchQueryChanged extends OrderEvent {
+  const OrderSearchQueryChanged(this.query);
+  final String query;
+
+  @override
+  List<Object?> get props => [query];
+}

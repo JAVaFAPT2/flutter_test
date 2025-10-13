@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:vietnamese_fish_sauce_app/core/constants/figma_assets.dart';
-import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/bottom_navigation.dart';
+import 'package:vietnamese_fish_sauce_app/shared/widgets/custom_bottom_navigation.dart';
+import 'package:vietnamese_fish_sauce_app/shared/cubit/navigation_cubit.dart';
 import 'package:vietnamese_fish_sauce_app/core/constants/app_strings.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/bloc/order_bloc.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/bloc/order_event.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/bloc/order_state.dart';
@@ -12,6 +14,9 @@ import 'package:vietnamese_fish_sauce_app/features/order/data/repositories/order
 import 'package:vietnamese_fish_sauce_app/core/fake/fake_firestore.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/widgets/order_filters.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/presentation/widgets/order_card.dart';
+import 'package:vietnamese_fish_sauce_app/features/home/presentation/widgets/home_app_bar.dart';
+import 'package:vietnamese_fish_sauce_app/features/order/presentation/widgets/order_search_bar.dart';
+import 'package:vietnamese_fish_sauce_app/features/order/presentation/widgets/order_date_range.dart';
 
 /// Orders page - Step 1: Scaffold with header/background/empty per Figma
 class OrderPage extends StatelessWidget {
@@ -22,27 +27,13 @@ class OrderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const HomeBottomNavigation(),
+      bottomNavigationBar: _buildBottomNavigation(context),
       body: Stack(
         children: [
           // Background
           Positioned.fill(
             child: Image.asset(
-              FigmaAssets.background,
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          // Optional green overlay if present on Figma like cart/auth
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: -180,
-            child: Image.asset(
-              FigmaAssets.graphicGreen,
-              width: double.infinity,
-              height: 680,
-              alignment: Alignment.topCenter,
+              FigmaAssets.orderTrackingBackground,
               fit: BoxFit.cover,
             ),
           ),
@@ -56,61 +47,101 @@ class OrderPage extends StatelessWidget {
               )..add(const OrderLoadRequested()),
               child: Column(
                 children: [
-                  _buildHeader(context),
+                  // Header with logo, greeting, and avatar
+                  const HomeAppBar(),
                   const _SeedOrdersOnce(),
+
                   const SizedBox(height: 8),
+
+                  // Search bar
+                  const OrderSearchBar(),
+
+                  const SizedBox(height: 8),
+
+                  // Title
+                  const Text(
+                    'Đơn hàng',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF030303),
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Date range
+                  const OrderDateRange(),
+
+                  const SizedBox(height: 8),
+
+                  // Filter tabs
                   const OrderFilters(),
+
                   const SizedBox(height: 8),
+
+                  // Orders list in white box
                   Expanded(
-                    child: BlocBuilder<OrderBloc, OrderState>(
-                      builder: (context, state) {
-                        if (state.isLoading) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        if (state.errorMessage != null) {
-                          return Center(
-                            child: Text(
-                              state.errorMessage!,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: const Color(0xFFD9D9D9)),
+                      ),
+                      child: BlocBuilder<OrderBloc, OrderState>(
+                        builder: (context, state) {
+                          if (state.isLoading) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          if (state.errorMessage != null) {
+                            return Center(
+                              child: Text(
+                                state.errorMessage!,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            );
+                          }
+                          if (state.filteredOrders.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.receipt_long,
+                                    size: 80,
+                                    color: Color(0xFFBBBBBB),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    AppStrings.noOrdersInPeriod,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Color(0xFFBBBBBB),
+                                      fontStyle: FontStyle.italic,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          return ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: state.filteredOrders.length,
+                            itemBuilder: (context, index) {
+                              final order = state.filteredOrders[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: OrderCard(order: order),
+                              );
+                            },
                           );
-                        }
-                        if (state.orders.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.receipt_long,
-                                  size: 80,
-                                  color: Colors.grey,
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  AppStrings.orderEmpty,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                        color: const Color(0xFF9E9E9E),
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                        return ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          itemCount: state.orders.length,
-                          itemBuilder: (context, index) {
-                            final order = state.orders[index];
-                            return OrderCard(order: order);
-                          },
-                        );
-                      },
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -122,44 +153,52 @@ class OrderPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).maybePop(),
-            child: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-              size: 24,
-            ),
-          ),
-          const Spacer(),
-          const Text(
-            'ĐƠN HÀNG',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const Spacer(),
-          Container(
-            width: 43,
-            height: 43,
-            decoration: const BoxDecoration(
-              color: Color(0xFF900407),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.person,
-              color: Colors.white,
-              size: 24,
-            ),
-          ),
-        ],
+  Widget _buildBottomNavigation(BuildContext context) {
+    return CustomBottomNavigation(
+      items: [
+        BottomNavItem(
+          icon: 'assets/figma_exports/cart_icon.png',
+          width: 40,
+          height: 40,
+          scale: 1.0,
+          onTap: () => context.read<NavigationCubit>().navigateToCart(context),
+        ),
+        BottomNavItem(
+          icon: 'assets/figma_exports/menu_box.png',
+          width: 40,
+          height: 40,
+          scale: 1.0,
+          onTap: () =>
+              context.read<NavigationCubit>().navigateToOrders(context),
+        ),
+        BottomNavItem(
+          icon: 'assets/figma_exports/bell_menu.png',
+          width: 40,
+          height: 40,
+          scale: 1.0,
+          badge: 1,
+          onTap: () =>
+              context.read<NavigationCubit>().navigateToNotifications(context),
+        ),
+        BottomNavItem(
+          icon: 'assets/figma_exports/profile_menu.png',
+          width: 40,
+          height: 40,
+          scale: 1.0,
+          onTap: () =>
+              context.read<NavigationCubit>().navigateToProfile(context),
+        ),
+      ],
+      centerItem: CenterNavItem(
+        icon: 'assets/figma_exports/home_menu.png',
+        size: 65,
+        innerSize: 45,
+        iconSize: 26,
+        onTap: () => context.read<NavigationCubit>().navigateToHome(context),
+        backgroundColor: const Color(0xFF004917), // Dark green
       ),
+      height: 85.0, // Slightly increased height for better spacing
+      selectedIndex: 1, // Orders tab is selected
     );
   }
 }
@@ -185,21 +224,31 @@ class _SeedOrdersOnceState extends State<_SeedOrdersOnce> {
         'code': '#MGF-0001',
         'status': 'pending',
         'total': 189000,
+        'customerName': 'Nguyen Van A',
       },
       {
         'code': '#MGF-0002',
         'status': 'shipping',
         'total': 259000,
+        'customerName': 'Tran Thi B',
       },
       {
         'code': '#MGF-0003',
         'status': 'delivered',
         'total': 99000,
+        'customerName': 'Le Van C',
       },
       {
         'code': '#MGF-0004',
         'status': 'cancelled',
         'total': 149000,
+        'customerName': 'Pham Thi D',
+      },
+      {
+        'code': '#MGF-0005',
+        'status': 'confirmed',
+        'total': 320000,
+        'customerName': 'Hoang Van E',
       },
     ]).then((_) {
       if (mounted) {

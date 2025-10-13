@@ -7,6 +7,7 @@ class Order extends Equatable {
     required this.createdAt,
     required this.status,
     required this.total,
+    this.customerName,
   });
 
   final String id;
@@ -14,7 +15,8 @@ class Order extends Equatable {
   final DateTime createdAt;
   final String status; // pending, confirmed, shipping, delivered, cancelled
   final double total;
+  final String? customerName; // Optional customer name for search functionality
 
   @override
-  List<Object?> get props => [id, code, createdAt, status, total];
+  List<Object?> get props => [id, code, createdAt, status, total, customerName];
 }

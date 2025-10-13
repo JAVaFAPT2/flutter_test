@@ -102,6 +102,30 @@ class FigmaAssets {
       '$_basePath/cb30dbcbd7c639bd2a7a4a79d27823ad92510a03.png';
   static const String orderTrackingSupportIcon =
       '$_basePath/388db152a4ce67138f7e1fdc4a25af1b0a3d53d2.png';
+
+  // Order page assets from Figma (new exports)
+  static const String searchIconSnap =
+      '$_basePath/5ebeb6fdb079cb59726383532e138987ae761db6.png';
+  static const String calendarIcon =
+      '$_basePath/92afaf3ff9a5311b833c13716525975bd5dc944c.png';
+  static const String logoMgfNew =
+      '$_basePath/040508d098e1db668ca3f16980fe72245f374b8c.png';
+  static const String avatarUser =
+      '$_basePath/2c35bad64ae48d63188489b3116d8c42bba536c5.png';
+  static const String homeIconNew =
+      '$_basePath/22abe47a96afe920a65bc163ce892ba63312ea6d.png';
+  static const String ordersIconNew =
+      '$_basePath/cb30dbcbd7c639bd2a7a4a79d27823ad92510a03.png';
+  static const String notificationsIconNew =
+      '$_basePath/686a0201390670bf5af7ad96bcf5f8aa75605db6.png';
+  static const String profileIconNew =
+      '$_basePath/76a88ff148a679585e1738f406e96b770efefec8.png';
+  static const String cartIconNew =
+      '$_basePath/9005924e997b3051fb7142d8a6b22ad007d66dcb.png';
+  static const String homeButtonBg =
+      '$_basePath/18d9cd0e91f7f6232be7083219ab57b3988755b3.svg';
+  static const String timelineLine =
+      '$_basePath/0990659f9c79fb3b69cf2ac9502bcabc92ea5ac5.svg';
 }
 
 // Legacy: FigmaProfileAssets moved to AppAssets for better organization

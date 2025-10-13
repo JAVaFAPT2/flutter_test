@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vietnamese_fish_sauce_app/features/order/domain/entities/order.dart';
+import 'package:vietnamese_fish_sauce_app/features/order/presentation/widgets/order_progress_timeline.dart';
 
 class OrderCard extends StatelessWidget {
   const OrderCard({super.key, required this.order});
@@ -12,55 +13,58 @@ class OrderCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.push('/order/${order.id}'),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFFF5F5F5), // Light gray background
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(color: const Color(0xFFE0E0E0)),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Order info row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  order.code,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4E3620),
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      order.code,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4E3620),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _formatDate(order.createdAt),
+                      style: const TextStyle(fontSize: 10, color: Colors.black),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  _formatDate(order.createdAt),
-                  style: const TextStyle(fontSize: 10, color: Colors.black),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _StatusChip(status: order.status),
+                    const SizedBox(height: 6),
+                    Text(
+                      _formatCurrency(order.total),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFC80000),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _StatusChip(status: order.status),
-                const SizedBox(height: 6),
-                Text(
-                  _formatCurrency(order.total),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFC80000),
-                  ),
-                ),
-              ],
-            ),
+
+            const SizedBox(height: 12),
+
+            // Progress timeline
+            OrderProgressTimeline(order: order),
           ],
         ),
       ),

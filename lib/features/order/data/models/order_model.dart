@@ -8,6 +8,7 @@ class OrderModel {
     required this.createdAt,
     required this.status,
     required this.total,
+    this.customerName,
   });
 
   factory OrderModel.fromMap(Map<String, dynamic> map) {
@@ -19,6 +20,7 @@ class OrderModel {
       total: (map['total'] is num)
           ? (map['total'] as num).toDouble()
           : double.tryParse(map['total']?.toString() ?? '0') ?? 0.0,
+      customerName: map['customerName']?.toString(),
     );
   }
 
@@ -27,6 +29,7 @@ class OrderModel {
   final DateTime createdAt;
   final String status;
   final double total;
+  final String? customerName;
 
   Map<String, dynamic> toMap() => {
         'id': id,
@@ -34,6 +37,7 @@ class OrderModel {
         'createdAt': createdAt.toIso8601String(),
         'status': status,
         'total': total,
+        'customerName': customerName,
       };
 
   domain.Order toDomain() => domain.Order(
@@ -42,5 +46,6 @@ class OrderModel {
         createdAt: createdAt,
         status: status,
         total: total,
+        customerName: customerName,
       );
 }

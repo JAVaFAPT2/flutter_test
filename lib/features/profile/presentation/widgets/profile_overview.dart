@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:vietnamese_fish_sauce_app/core/constants/app_assets.dart';
 import 'package:vietnamese_fish_sauce_app/core/domain/entities/user.dart';
 import 'package:vietnamese_fish_sauce_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:vietnamese_fish_sauce_app/features/profile/presentation/widgets/logout_dialog.dart';
 
 /// Lightweight, view-only profile overview.
 /// Reads user data from AuthBloc by default; can accept an override for testing.
@@ -83,35 +84,7 @@ class ProfileOverview extends StatelessWidget {
                 builder: (context) => _ActionTile(
                   iconPath: AppAssets.profileLogout,
                   text: 'Đăng xuất',
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (dialogContext) => AlertDialog(
-                        title: const Text('Đăng xuất'),
-                        content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(dialogContext).pop(),
-                            child: const Text('Hủy'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(dialogContext).pop();
-                              context
-                                  .read<AuthBloc>()
-                                  .add(const AuthLogoutRequested());
-                              context.go('/intro');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text('Đăng xuất'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                  onTap: () => LogoutDialog.show(context),
                 ),
               ),
             ],
